@@ -1,4 +1,4 @@
-package exposure.exposure;
+package exposure.getExposure;
 
 import org.junit.Test;
 

@@ -4,6 +4,6 @@
     android:layout_height="match_parent"
     android:background="#0099cc"
     android:orientation="vertical"
-    tools:context="exposure.exposure.ListActivity">
+    tools:context="exposure.getExposure.ListActivity">
 
 </LinearLayout>
