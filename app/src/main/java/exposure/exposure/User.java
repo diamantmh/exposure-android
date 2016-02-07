@@ -1,22 +1,35 @@
 package exposure.exposure;
 
 /**
- * Represents a user of Exposure.
+ * User is an immutable representation of a user of Exposure.
  */
 public class User {
 
-    // TODO: decide on what information the User object actually needs
     private int id;
     private String username;
-    private String fname;
-    private String lname;
     private String link;
     private String aboutMe;
 
-    public User() {
-        // TODO: implement constructor(s)
-
+    public User(int id, String username, String link, String aboutMe) {
+        this.id = id;
+        this.username = username;
+        this.link = link;
+        this.aboutMe = aboutMe;
     }
 
-    // TODO: write getter methods
+    public int getID() {
+        return id;
+    }
+
+    public String getName() {
+        return username;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public String getAboutMe() {
+        return aboutMe;
+    }
 }
