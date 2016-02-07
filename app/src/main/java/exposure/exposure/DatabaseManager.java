@@ -1,5 +1,8 @@
 package exposure.exposure;
 
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +16,13 @@ import java.util.List;
  */
 public class DatabaseManager {
 
-    // TODO: fields?
-    // TODO: constants?
-    public static final String WEB_SERVICE = "http://"; // TODO: Fill in url of web service
+    private RestTemplate restTemplate;
+
+    public static final String WEB_SERVICE = "http://service/"; // TODO: Fill in url of web service
 
     public DatabaseManager() {
-        // TODO: initialize fields?
+        restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
     /**
@@ -29,8 +33,19 @@ public class DatabaseManager {
      * @return true iff the location entry matching the given ID was updated
       */
     public boolean update(Location loc) {
-        // TODO: implement
-        return false;
+        final String url = WEB_SERVICE + "updateLocation";
+        return restTemplate.postForObject(url, loc, Boolean.class);
+        /* note to web service (that's you Tyler):
+         * for this method server side, you can get the Location object that
+         * I'm sending using:
+         *
+         * @RequestMapping(value="/updateLocation", method=RequestMethod.POST)
+         * public boolean updateLocation(@RequestBody Location loc)
+         *
+         * as your method signature. This maps this url to this method
+         * signature and retrieves the Location object from the body for your
+         * method parameter.
+         */
     }
 
     /**
@@ -41,8 +56,8 @@ public class DatabaseManager {
      * @return true iff the user entry matching the given ID was updated
      */
     public boolean update(User user) {
-        // TODO: implement
-        return false;
+        final String url = WEB_SERVICE + "updateUser";
+        return restTemplate.postForObject(url, user, Boolean.class);
     }
 
     /**
@@ -56,8 +71,8 @@ public class DatabaseManager {
      * entry was not successfully created.
      */
     public int insert(Location loc) {
-        // TODO: implement
-        return -1;
+        final String url = WEB_SERVICE + "insertLocation";
+        return restTemplate.postForObject(url, loc, Integer.class);
     }
 
     /**
@@ -70,8 +85,8 @@ public class DatabaseManager {
      * was not successfully created.
      */
     public int insert(Photo photo) {
-        // TODO: implement
-        return -1;
+        final String url = WEB_SERVICE + "insertPhoto";
+        return restTemplate.postForObject(url, photo, Integer.class);
     }
 
     /**
@@ -84,8 +99,8 @@ public class DatabaseManager {
      * was not successfully created.
      */
     public int insert(User user) {
-        // TODO: implement
-        return -1;
+        final String url = WEB_SERVICE + "insertUser";
+        return restTemplate.postForObject(url, user, Integer.class);
     }
 
     /**
@@ -98,11 +113,16 @@ public class DatabaseManager {
      * deleted from the database successfully
      */
     public boolean removeUser(int id) {
-        // TODO: implement
-        // you need to remove all photos where User.id = Photo.uid
-        // remove those photos from the photo storage
-        // then remove the entry for the user too.
-        return false;
+        final String url = WEB_SERVICE + "removeUser";
+
+        // We could use restTemplate.delete() here, but then we have no return
+        // A good RESTful application would use delete, but post is usable.
+        return restTemplate.postForObject(url, id, Boolean.class);
+        /* Note to web service:
+         * you need to remove all photos where User.id = Photo.uid,
+         * remove those photos from the photo storage,
+         * then remove the entry for the user too.
+         */
     }
 
     /**
@@ -113,21 +133,55 @@ public class DatabaseManager {
      * @return true iff the entry was deleted from the database successfully
      */
     public boolean removePhoto(int id) {
-        // TODO: implement
-        return false;
+        final String url = WEB_SERVICE + "removePhoto";
+        return restTemplate.postForObject(url, id, Boolean.class);
     }
 
     /**
-     * Returns a list of Photos that have been posted by the user that matches
-     * the given ID. The list is ordered in chronological order, newest photo
-     * first, that is, by post date descending.
+     * Returns a User object that matches the given id. Returns null if there
+     * is no user with the given id.
      *
      * @param id - the ID of the desired user
-     * @return a list of Photos posted by the user matching the given id
+     * @return the User that matches the given id
      */
-    public List<Photo> getUserPhotos(int id) {
-        // TODO: implement
-        List<Photo> photoList = new ArrayList<>();
-        return photoList;
+    public User getUser(int id) {
+        final String url = WEB_SERVICE + "getUser?id=" + id;
+        return restTemplate.getForObject(url, User.class);
+        /* note to web service:
+         * for this method server side, you can get the id param using:
+         *
+         * @RequestMapping("/getUser")
+         * public User getUser(@RequestParam(id="id") int id)
+         *
+         * as your method signature. This binds the id in my url to your
+         * method parameter. The @RequestMapping makes sure that urls that
+         * end in getUser are bound to your getUser method server side.
+         */
+    }
+
+    /**
+     * Returns an array of Photos posted by the user that matches the given ID.
+     * The array is ordered in chronological order, newest photo first, that
+     * is, by post date descending.
+     *
+     * @param id - the ID of the desired user
+     * @return an array of Photos posted by the user matching the given id
+     */
+    public Photo[] getUserPhotos(int id) {
+        final String url = WEB_SERVICE + "getUserPhotos?id=" + id;
+        return restTemplate.getForObject(url, Photo[].class);
+    }
+
+    /**
+     * Returns an array of Photos posted to the location that matches the given
+     * ID. The list is returned in chronological order, newest photo first,
+     * that is, by post date descending.
+     *
+     * @param id - the ID of the desired location
+     * @return a list of Photos posted to the location matching the given id
+     */
+    public Photo[] getLocationPhotos(int id) {
+        final String url = WEB_SERVICE + "getLocationPhotos?id=" + id;
+        return restTemplate.getForObject(url, Photo[].class);
     }
 }
