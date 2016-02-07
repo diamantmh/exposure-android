@@ -26,7 +26,11 @@ targetCompatibility = 1.8
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter")
+    compile("org.springframework:spring-jdbc")
+    compile("com.h2database:h2") 
     testCompile("junit:junit")
+    compile group:'com.microsoft',name:'sqljdbc4',version:'1.0'
 }
 
 task wrapper(type: Wrapper) {
