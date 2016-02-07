@@ -25,15 +25,14 @@ public class Controller {
 
     @RequestMapping("/greeting")
     public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
-    	test();
-    	JdbcTemplate insert = new JdbcTemplate(dataSource);
-    	insert.update("INSERT INTO PERSON VALUES('testname', 'kekona');");
         return new Greeting(String.format(template, name));
     }
     
-    private void test() {
-    	System.out.println("yay test");
-    	System.out.println(i);
+    @RequestMapping("/addUser")
+    public User addUser(@RequestParam(value="name", defaultValue="World") String name) {
+    	JdbcTemplate insert = new JdbcTemplate(dataSource);
+    	insert.update("INSERT INTO USER VALUES('testname', 'kekona');");
+    	return new User();
     }
 }
 
