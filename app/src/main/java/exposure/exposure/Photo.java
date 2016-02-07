@@ -3,11 +3,11 @@ package exposure.exposure;
 /**
  * Photo is an immutable representation of a photo.
  */
-public class Photo {
-    private int id;
-    private int authorID;
-    private int locID;
-    private String source;
+public final class Photo {
+    private final int id;
+    private final int authorID;
+    private final int locID;
+    private final String source;
 
     public Photo(int id, int authorID, int locID, String source) {
         this.id = id;

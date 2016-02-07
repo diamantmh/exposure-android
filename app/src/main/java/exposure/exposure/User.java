@@ -3,12 +3,12 @@ package exposure.exposure;
 /**
  * User is an immutable representation of a user of Exposure.
  */
-public class User {
+public final class User {
 
-    private int id;
-    private String username;
-    private String link;
-    private String aboutMe;
+    private final int id;
+    private final String username;
+    private final String link;
+    private final String aboutMe;
 
     public User(int id, String username, String link, String aboutMe) {
         this.id = id;
