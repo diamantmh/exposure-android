@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -24,6 +25,7 @@ public class Controller {
 	private static final boolean DEBUG = true;
 	private static final String GETID = "SELECT SCOPE_IDENTITY()";
     
+    // Set the Microsoft SQL Server Database Access Information
     static {
     	dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -32,17 +34,23 @@ public class Controller {
 		dataSource.setPassword("N0REGRETs");
     }
     
+    // Update location with given location ID
     private static final String UPDATELOCATION = "UPDATE Locations " + 
     	"SET lat = ?, lon = ?, total_rating = ?, num_of_ratings = ?, name = ?, description = ? " +
     	"WHERE id = ?";
-    	
-    private static final String TESTVALIDUSERID = "SELECT COUNT(*) FROM Locations WHERE ID = ?";
+    // Returns the number of locations that exist in the database with the specified location ID
+    private static final String TESTIFLOCEXISTS = "SELECT COUNT(*) FROM Locations WHERE ID = ?";
 
+    /**
+     * Updates location with matching location ID in the database
+     * @param loc Location object storing the target location ID and desired updated information
+     * @return	true if successfully updated a location entry in the database
+     */
     @RequestMapping("/updateLocation")
     public boolean updateLocation(@RequestBody Location loc) {
     	if (DEBUG) {
     		JdbcTemplate testValidId = new JdbcTemplate(dataSource);
-    		int i = testValidId.queryForObject(TESTVALIDUSERID, Integer.class, loc.getID());
+    		int i = testValidId.queryForObject(TESTIFLOCEXISTS, Integer.class, loc.getID());
     		assert(i == 1);
     	}
     	JdbcTemplate update = new JdbcTemplate(dataSource);
@@ -50,17 +58,24 @@ public class Controller {
     	return true;
     }
     
+    // Updates user information with the given user ID
     private static final String UPDATEUSER = "UPDATE Users " + 
     	"SET username = ?, src_link = ?, about_me = ? " +
     	"WHERE id = ?";
-    	 
-    private static final String TESTVALIDLOCID = "SELECT COUNT(*) FROM Users WHERE ID = ?";
+    
+    // Returns the number of users that exist in the database with the specified user ID
+    private static final String TESTIFUSEREXISTS = "SELECT COUNT(*) FROM Users WHERE ID = ?";
 
+    /**
+     * Updates user with matching user ID in the database
+     * @param user User object storing the target user ID and desired updated information
+     * @return
+     */
     @RequestMapping("/updateUser")
     public boolean updateUser(@RequestBody User user) {
     	if (DEBUG) {
     		JdbcTemplate testValidId = new JdbcTemplate(dataSource);
-    		int i = testValidId.queryForObject(TESTVALIDLOCID, Integer.class, user.getID());
+    		int i = testValidId.queryForObject(TESTIFUSEREXISTS, Integer.class, user.getID());
     		assert(i == 1);
     	}
     	JdbcTemplate update = new JdbcTemplate(dataSource);
@@ -68,10 +83,15 @@ public class Controller {
     	return true;
     }
     
+    // Inserts location into database
     private static final String INSERTLOCATION = "INSERT INTO Locations " + 
     	"VALUES (?,?,?,?,?,?)";
-    private static final String TESTIFLOCEXISTS = "SELECT COUNT(*) FROM Locations WHERE ID = ?";
     
+    /**
+     * Inserts a new location with the given description
+     * @param loc Location object containing the information to insert into the database
+     * @return the location ID of the inserted location
+     */
     @RequestMapping("/insertLocation")
     public int insertLocation(@RequestBody Location loc) {
     	if (DEBUG) {
@@ -87,10 +107,17 @@ public class Controller {
     	return id;
     }
     
+    // Insert photo into the database
     private static final String INSERTPHOTO = "INSERT INTO Photos " + 
     	"VALUES (?,?,?,?,?)";
+    // Returns the number of photos that exist in the database with the specified photo ID
     private static final String TESTIFPHOTOEXISTS = "SELECT COUNT(*) FROM Photos WHERE ID = ?";
 
+    /**
+     * Insert a new photo into the database
+     * @param photo Photo object containing the information to insert into the database
+     * @return the photo ID of the newly inserted photo
+     */
     @RequestMapping("/insertPhoto")
     public int insertPhoto(@RequestBody Photo photo) {
     	if (DEBUG) {
@@ -106,10 +133,15 @@ public class Controller {
 		return id;
     }
     
+    // Insert a new user into the database
     private static final String INSERTUSER = "INSERT INTO Users " + 
     	"VALUES (?,?,?)";
-    private static final String TESTIFUSEREXISTS = "SELECT COUNT(*) FROM Users WHERE ID = ?";
     
+    /**
+     * Inserts a new user into the database
+     * @param user User object containing information to insert into the database
+     * @return the user ID of the newly inserted user
+     */
     @RequestMapping("/insertUser")
     public int insertUser(@RequestBody User user) {
     	if (DEBUG) {
@@ -125,9 +157,15 @@ public class Controller {
     	return 0;
     }
     
+    // Removes the specified user from the database
     private static final String REMOVEUSER = "DELETE FROM Users " + 
     	"WHERE id = ?";
     
+    /**
+     * Removes the specified user from the database
+     * @param id the ID of the user to remove from the database
+     * @return true if the user is successfully removed from the database
+     */
     @RequestMapping("/removeUser")
     public boolean removeUser(@RequestBody int id) {
 		if (DEBUG) {
@@ -140,9 +178,15 @@ public class Controller {
     	return true;
     }
     
+    // Removes the specified photo from the database
     private static final String REMOVEPHOTO = "DELETE FROM Photos " + 
     	"WHERE id = ?";
     
+    /**
+     * Removes the specified photo from the database
+     * @param id the photo ID of the photo to remove from the database
+     * @return true if the photo is successfully removed from the database
+     */
     @RequestMapping("/removePhoto")
     public boolean removePhoto(@RequestBody int id) {
     	if (DEBUG) {
@@ -155,9 +199,15 @@ public class Controller {
     	return true;
     }
     
+    // Retrieves all users that exist in the database with the specified user ID
     private static final String GETUSER = "SELECT * FROM Users " + 
     	"WHERE id = ?";
     
+    /**
+     * Retrieves the user with the specified user ID
+     * @param id the user ID of the desired user
+     * @return the a User object or null if the user ID does not exist
+     */
     @RequestMapping("/getUser")
     public User getUser(@RequestParam(value="id") int id) {
     	if (DEBUG) {
@@ -165,15 +215,25 @@ public class Controller {
     		int i = testExists.queryForObject(TESTIFUSEREXISTS, Integer.class, id);
     		assert(i == 1);
     	}
-    	JdbcTemplate get = new JdbcTemplate(dataSource);
-    	User user = (User)get.queryForObject(GETUSER, new Object[] {id}, new UserRowMapper());
-    	return user;
+    	User user;
+    	try {
+	    	JdbcTemplate get = new JdbcTemplate(dataSource);
+	    	user = (User)get.queryForObject(GETUSER, new Object[] {id}, new UserRowMapper());
+    	} catch (EmptyResultDataAccessException e) {
+    		user = null;
+    	}
+	    return user;
     }    
     
+    // Retrieves all photos with the specified photo ID
     private static final String GETUSERPHOTOS = "SELECT * FROM Photos " + 
     	"WHERE uid = ?";
     
-    // returns null if there are no results
+    /**
+     * Retrieves all photos taken by the user with the specified user ID
+     * @param id the target user's ID
+     * @return an array of photos or null if no photos are found
+     */
     @RequestMapping("/getUserPhotos")
     public Photo[] getUserPhotos(@RequestParam(value="getUserPhotos") int id) {
     	if (DEBUG) {
@@ -196,10 +256,15 @@ public class Controller {
 		return arr;
     }
     
+    // Retrieves all photos with the specified location ID
     private static final String GETLOCPHOTOS = "SELECT * FROM Photos " + 
     	"WHERE lid = ?";
     
-    // returns null if there are no results
+    /**
+     * Retrieves all photos with the given location ID
+     * @param id the target locations id
+     * @return an array of photos or null if no photos are found
+     */
     @RequestMapping("/getLocationPhotos")
     public Photo[] getLocationPhotos(@RequestParam(value="getLocationPhotos") int id) {
     	if (DEBUG) {
@@ -222,15 +287,15 @@ public class Controller {
 		return arr;
     }
     
-    public class UserRowMapper implements RowMapper {
+    /**
+     * 
+     * @author Tyler
+     *
+     *	Maps SQLQuery return result row into an User object
+     */
+    private class UserRowMapper implements RowMapper {
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			return new User(rs.getInt("id"), rs.getString("username"), rs.getString("src_link"), rs.getString("about_me"));
-		}	
-	}
-	
-	public class PhotoRowMapper implements RowMapper {
-		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new Photo(rs.getInt("id"), rs.getInt("uid"), rs.getInt("lid"), rs.getString("src_link"), rs.getDate("post_date"), rs.getTime("post_time"));
 		}	
 	}
 }
