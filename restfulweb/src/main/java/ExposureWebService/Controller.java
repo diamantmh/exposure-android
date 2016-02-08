@@ -151,7 +151,7 @@ public class Controller {
     		assert(i == 1);
     	}
     	JdbcTemplate remove = new JdbcTemplate(dataSource);
-    	remove.update(REMOVEUSER, id);
+    	remove.update(REMOVEPHOTO, id);
     	return true;
     }
     
@@ -208,7 +208,7 @@ public class Controller {
     		assert(i == 1);
     	}
     	JdbcTemplate get = new JdbcTemplate(dataSource);
-    	List rows = get.queryForList(GETUSERPHOTOS, id);
+    	List rows = get.queryForList(GETLOCPHOTOS, id);
     	if (rows.isEmpty())
     		return null;
     	Photo[] arr = new Photo[rows.size()];
