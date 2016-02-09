@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">Exposure</string>
     <string name="title_activity_maps">Map</string>
+    <string name="app_id">1762527073968719</string>string>
 
     <string name="title_activity_list">ListActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_profile_view">ProfileViewActivity</string>
+    <string name="title_activity_login">Sign in</string>
 </resources>
