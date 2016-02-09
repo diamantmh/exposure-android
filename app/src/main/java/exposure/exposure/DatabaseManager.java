@@ -1,6 +1,6 @@
 package exposure.exposure;
 
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+//import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class DatabaseManager {
     private RestTemplate restTemplate;
-	public static final String WEB_SERVICE = "localhost:8080/"
+	public static final String WEB_SERVICE = "localhost:8080/";
     //public static final String WEB_SERVICE = "http://service/"; // TODO: Fill in url of web service
     public static final long NULL_ID = -1;
 
@@ -34,7 +34,7 @@ public class DatabaseManager {
      */
     public DatabaseManager() {
         restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        //restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
     /**

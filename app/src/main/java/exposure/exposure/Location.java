@@ -19,6 +19,8 @@ public class Location {
     // TODO: add comments to Location
     // private List<Comment> comments;
 
+    private static final long NULL_ID = -1;
+
     /*
      * class invariant,
      * name != null
@@ -76,7 +78,7 @@ public class Location {
     public Location(float lat, float lon, int totalRating,
                      int numOfRatings, String name, String desc,
                      Set<Category> categories) {
-        this(DatabaseManager.NULL_ID, lat, lon, totalRating, numOfRatings, name, desc, categories);
+        this(NULL_ID, lat, lon, totalRating, numOfRatings, name, desc, categories);
     }
 
     /**

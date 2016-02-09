@@ -8,7 +8,7 @@ package exposure.exposure;
 public class Category {
     private final long id;
     private final String content;
-    private static final String[] tags = {"OUTDOOR"};
+    private static final String[] tags = {"Outdoor","Indoor"};
 
     public static final long OUTDOORID = 1;
 
@@ -27,10 +27,20 @@ public class Category {
         this.content = tags[(int)id-1];
     }
 
+    /**
+     * Returns the unique identifier for this Category.
+     *
+     * @return the unique identifier for this Category
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * Returns the tag for this Category as a String.
+     *
+     * @return the tag for htis Category as a String
+     */
     public String getContent() {
         return content;
     }

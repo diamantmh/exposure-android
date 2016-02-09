@@ -6,10 +6,13 @@ package exposure.exposure;
  * @specfield id : long  // uniquely identifies this user for database interactions
  */
 public final class User {
+
     private final long id;
     private final String username;
     private final String link;
     private final String aboutMe;
+
+    private static final long NULL_ID = -1;
 
     /*
      * class invariant,
@@ -46,7 +49,7 @@ public final class User {
      * @param aboutMe - the user-supplied self description of this user
      */
     public User(String username, String link, String aboutMe) {
-        this(DatabaseManager.NULL_ID,username,link,aboutMe);
+        this(NULL_ID,username,link,aboutMe);
     }
 
     /**

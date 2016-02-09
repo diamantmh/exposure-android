@@ -8,12 +8,15 @@ import java.sql.Time;
  * @specfield id : long  // uniquely identifies this photo for database interactions
  */
 public final class Photo {
+
     private final long id;
     private final long authorID;
     private final long locID;
     private final String source;
     private final Date date;
     private final Time time;
+
+    private static final long NULL_ID = -1;
 
     /*
      * class invariant,
@@ -60,7 +63,7 @@ public final class Photo {
      * @param time - time photo was taken
      */
     public Photo(long authorID, long locID, String source, Date date, Time time) {
-        this(DatabaseManager.NULL_ID, authorID, locID, source, date, time);
+        this(NULL_ID, authorID, locID, source, date, time);
     }
 
     /**
