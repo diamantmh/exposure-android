@@ -3,7 +3,7 @@ package exposure.exposure;
 /**
  * Category is an immutable representation of a category or tag of a location.
  *
- * @specfield id : long  // uniquely identifies this Category for database interactions
+ * specfield id : long  // uniquely identifies this Category for database interactions
  */
 public class Category {
 

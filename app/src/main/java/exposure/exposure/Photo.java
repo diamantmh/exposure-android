@@ -5,7 +5,7 @@ import java.sql.Time;
 /**
  * Photo is an immutable representation of a photo.
  *
- * @specfield id : long  // uniquely identifies this photo for database interactions
+ * specfield id : long  // uniquely identifies this photo for database interactions
  */
 public final class Photo {
 

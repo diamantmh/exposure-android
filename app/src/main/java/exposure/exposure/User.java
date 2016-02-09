@@ -3,7 +3,7 @@ package exposure.exposure;
 /**
  * User is an immutable representation of a user of Exposure.
  *
- * @specfield id : long  // uniquely identifies this user for database interactions
+ * specfield id : long  // uniquely identifies this user for database interactions
  */
 public final class User {
 

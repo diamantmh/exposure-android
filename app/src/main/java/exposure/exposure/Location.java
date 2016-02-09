@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * Location is an immutable representation of a location on the map.
  *
- * @specfield id : long  // uniquely identifies this location for database interactions
+ * specfield id : long  // uniquely identifies this location for database interactions
  */
 public class Location {
 

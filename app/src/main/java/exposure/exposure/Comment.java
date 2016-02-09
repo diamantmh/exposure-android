@@ -2,6 +2,8 @@ package exposure.exposure;
 
 /**
  * Comment is an immutable representation of a post to a location.
+ *
+ * specfield id : long  // uniquely identifies this Category for database interactions
  */
 public class Comment {
 
