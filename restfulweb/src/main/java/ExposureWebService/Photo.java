@@ -6,14 +6,14 @@ import java.sql.Time;
  * Photo is an immutable representation of a photo.
  */
 public final class Photo {
-    private final int id;
-    private final int authorID;
-    private final int locID;
+    private final long id;
+    private final long authorID;
+    private final long locID;
     private final String source;
     private final Date date;
     private final Time time;
 
-    public Photo(int id, int authorID, int locID, String source, Date date, Time time) {
+    public Photo(long id, long authorID, long locID, String source, Date date, Time time) {
         this.id = id;
         this.authorID = authorID;
         this.locID = locID;
@@ -22,15 +22,15 @@ public final class Photo {
         this.time = (Time) time.clone();
     }
 
-    public int getID() {
+    public long getID() {
         return id;
     }
 
-    public int getAuthorID() {
+    public long getAuthorID() {
         return authorID;
     }
 
-    public int getLocID() {
+    public long getLocID() {
         return locID;
     }
 

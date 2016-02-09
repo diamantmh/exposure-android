@@ -7,17 +7,17 @@ import java.util.*;
  * with the set returned by getCategories().
  */
 public class Location {
-    private int id;
+    private long id;
     private double lat;
     private double lon;
-    private int totalRating;
-    private int numOfRatings;
+    private long totalRating;
+    private long numOfRatings;
     private String name;
     private String desc;
     private Set<String> categories;
 
-    public Location(int id, double lat, double lon, int totalRating,
-                    int numOfRatings, String name, String desc,
+    public Location(long id, double lat, double lon, long totalRating,
+                    long numOfRatings, String name, String desc,
                     Set<String> categories) {
         this.id = id;
         this.lat = lat;
@@ -29,7 +29,7 @@ public class Location {
         this.categories = categories;
     }
 
-    public int getID() {
+    public long getID() {
         return id;
     }
 
@@ -41,11 +41,11 @@ public class Location {
         return lon;
     }
     
-    public int getTotalRating() {
+    public long getTotalRating() {
     	return totalRating;
     }
     
-    public int getNumOfRatings() {
+    public long getNumOfRatings() {
     	return numOfRatings;
     }
 
@@ -53,7 +53,7 @@ public class Location {
         return (double) (totalRating) / numOfRatings;
     }
 
-    public void addRating(int newRating) {
+    public void addRating(long newRating) {
         totalRating += newRating;
         numOfRatings++;
     }
