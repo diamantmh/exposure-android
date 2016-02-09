@@ -20,6 +20,7 @@ import java.util.List;
  */
 public class DatabaseManager {
     private RestTemplate restTemplate;
+
 	public static final String WEB_SERVICE = "localhost:8080/";
     //public static final String WEB_SERVICE = "http://service/"; // TODO: Fill in url of web service
     public static final long NULL_ID = -1;
@@ -72,7 +73,7 @@ public class DatabaseManager {
      * @param loc - the Location with the desired data to be saved as a new
      *              entry in the database
      * @return the ID of the created location. Returns -1 if the location
-     * entry was not successfully created.
+     * entry was not successfully created
      */
     public long insert(Location loc) {
         final String url = WEB_SERVICE + "insertLocation";
@@ -87,7 +88,7 @@ public class DatabaseManager {
      * @param photo - the Photo with the desired data to be saved as a new entry
      *              in the database
      * @return the ID of the created photo entry. Returns -1 if the photo entry
-     * was not successfully created.
+     * was not successfully created
      */
     public long insert(Photo photo) {
         final String url = WEB_SERVICE + "insertPhoto";
@@ -102,11 +103,25 @@ public class DatabaseManager {
      * @param user - the User with the desired data to be saved as a new entry
      *              in the database
      * @return the ID of the created user entry. Returns -1 if the user entry
-     * was not successfully created.
+     * was not successfully created
      */
     public long insert(User user) {
         final String url = WEB_SERVICE + "insertUser";
         return restTemplate.postForObject(url, user, Long.class);
+    }
+
+    /**
+     * Returns the ID of the new entry in the database. Makes a new entry in the
+     * database for the given Comment. Returns -1 if the entry was not created.
+     *
+     * @requires comment to be a new comment (no ID specified when constructed)
+     * @param comment - the comment to be saved as a new entry in the database
+     * @return the ID of the created comment entry. Returns -1 if the comment
+     * entry was not successfully created
+     */
+    public long insert(Comment comment) {
+        final String url = WEB_SERVICE + "insertComment";
+        return restTemplate.postForObject(url, comment, Long.class);
     }
 
     /**
