@@ -32,7 +32,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCSObtbvKSVUvFZ3oYpFtHFZpbdFN1GA-g" />
+            android:value="AIzaSyCn8ZhUZDYAydvXJUCVSjjtL9LLQNHR7J8" />
 
         <activity
             android:name="io.github.getExposure.MapsActivity"
