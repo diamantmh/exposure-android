@@ -5,19 +5,19 @@ package ExposureWebService;
  */
 public final class User {
 
-    private final int id;
+    private final long id;
     private final String username;
     private final String link;
     private final String aboutMe;
 
-    public User(int id, String username, String link, String aboutMe) {
+    public User(long id, String username, String link, String aboutMe) {
         this.id = id;
         this.username = username;
         this.link = link;
         this.aboutMe = aboutMe;
     }
 
-    public int getID() {
+    public long getID() {
         return id;
     }
 

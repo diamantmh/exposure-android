@@ -1,4 +1,4 @@
-package exposure.exposure;
+package exposure.exposure; 
 
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,7 +50,7 @@ public class Controller {
     public boolean updateLocation(@RequestBody Location loc) {
     	if (DEBUG) {
     		JdbcTemplate testValidId = new JdbcTemplate(dataSource);
-    		int i = testValidId.queryForObject(TESTIFLOCEXISTS, Integer.class, loc.getID());
+    		long i = testValidId.queryForObject(TESTIFLOCEXISTS, Long.class, loc.getID());
     		assert(i == 1);
     	}
     	JdbcTemplate update = new JdbcTemplate(dataSource);
@@ -75,7 +75,7 @@ public class Controller {
     public boolean updateUser(@RequestBody User user) {
     	if (DEBUG) {
     		JdbcTemplate testValidId = new JdbcTemplate(dataSource);
-    		int i = testValidId.queryForObject(TESTIFUSEREXISTS, Integer.class, user.getID());
+    		long i = testValidId.queryForObject(TESTIFUSEREXISTS, Long.class, user.getID());
     		assert(i == 1);
     	}
     	JdbcTemplate update = new JdbcTemplate(dataSource);
@@ -93,17 +93,17 @@ public class Controller {
      * @return the location ID of the inserted location
      */
     @RequestMapping("/insertLocation")
-    public int insertLocation(@RequestBody Location loc) {
+    public long insertLocation(@RequestBody Location loc) {
     	if (DEBUG) {
     		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		int i = testExists.queryForObject(TESTIFLOCEXISTS, Integer.class, loc.getID());
+    		long i = testExists.queryForObject(TESTIFLOCEXISTS, Long.class, loc.getID());
     		assert(i == 0);
     	}
     	JdbcTemplate insert = new JdbcTemplate(dataSource);
     	insert.update(INSERTLOCATION, loc.getLat(), loc.getLon(), loc.getTotalRating(), loc.getNumOfRatings(), loc.getName(), loc.getDesc());
     	// This returns the newest id created by IDENTITY
     	// This part will require transactions to assure the correct value is returned
-    	int id = insert.queryForObject(GETID, Integer.class);
+    	long id = insert.queryForObject(GETID, Long.class);
     	return id;
     }
     
@@ -119,17 +119,17 @@ public class Controller {
      * @return the photo ID of the newly inserted photo
      */
     @RequestMapping("/insertPhoto")
-    public int insertPhoto(@RequestBody Photo photo) {
+    public long insertPhoto(@RequestBody Photo photo) {
     	if (DEBUG) {
     		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		int i = testExists.queryForObject(TESTIFPHOTOEXISTS, Integer.class, photo.getID());
+    		long i = testExists.queryForObject(TESTIFPHOTOEXISTS, Long.class, photo.getID());
     		assert(i == 0);
     	}
     	JdbcTemplate insert = new JdbcTemplate(dataSource);
     	insert.update(INSERTPHOTO, photo.getAuthorID(), photo.getLocID(), photo.getSource(), String.format("%tF", photo.getDate()), String.format("%tT", photo.getTime()));
 		// This returns the newest id created by IDENTITY
     	// This part will require transactions to assure the correct value is returned
-    	int id = insert.queryForObject(GETID, Integer.class);
+    	long id = insert.queryForObject(GETID, Long.class);
 		return id;
     }
     
@@ -143,17 +143,17 @@ public class Controller {
      * @return the user ID of the newly inserted user
      */
     @RequestMapping("/insertUser")
-    public int insertUser(@RequestBody User user) {
+    public long insertUser(@RequestBody User user) {
     	if (DEBUG) {
     		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		int i = testExists.queryForObject(TESTIFUSEREXISTS, Integer.class, user.getID());
+    		long i = testExists.queryForObject(TESTIFUSEREXISTS, Long.class, user.getID());
     		assert(i == 0);
     	}
 		JdbcTemplate insert = new JdbcTemplate(dataSource);
     	insert.update(INSERTUSER, user.getUsername(), user.getLink(), user.getAboutMe());
     	// This returns the newest id created by IDENTITY
     	// This part will require transactions to assure the correct value is returned
-    	int id = insert.queryForObject(GETID, Integer.class);
+    	long id = insert.queryForObject(GETID, Long.class);
     	return 0;
     }
     
@@ -167,10 +167,10 @@ public class Controller {
      * @return true if the user is successfully removed from the database
      */
     @RequestMapping("/removeUser")
-    public boolean removeUser(@RequestBody int id) {
+    public boolean removeUser(@RequestBody long id) {
 		if (DEBUG) {
     		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		int i = testExists.queryForObject(TESTIFUSEREXISTS, Integer.class, id);
+    		long i = testExists.queryForObject(TESTIFUSEREXISTS, Long.class, id);
     		assert(i == 1);
     	}
     	JdbcTemplate remove = new JdbcTemplate(dataSource);
@@ -188,10 +188,10 @@ public class Controller {
      * @return true if the photo is successfully removed from the database
      */
     @RequestMapping("/removePhoto")
-    public boolean removePhoto(@RequestBody int id) {
+    public boolean removePhoto(@RequestBody long id) {
     	if (DEBUG) {
     		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		int i = testExists.queryForObject(TESTIFPHOTOEXISTS, Integer.class, id);
+    		long i = testExists.queryForObject(TESTIFPHOTOEXISTS, Long.class, id);
     		assert(i == 1);
     	}
     	JdbcTemplate remove = new JdbcTemplate(dataSource);
@@ -209,10 +209,10 @@ public class Controller {
      * @return the a User object or null if the user ID does not exist
      */
     @RequestMapping("/getUser")
-    public User getUser(@RequestParam(value="id") int id) {
+    public User getUser(@RequestParam(value="id") long id) {
     	if (DEBUG) {
     		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		int i = testExists.queryForObject(TESTIFUSEREXISTS, Integer.class, id);
+    		long i = testExists.queryForObject(TESTIFUSEREXISTS, Long.class, id);
     		assert(i == 1);
     	}
     	User user;
@@ -235,10 +235,10 @@ public class Controller {
      * @return an array of photos or null if no photos are found
      */
     @RequestMapping("/getUserPhotos")
-    public Photo[] getUserPhotos(@RequestParam(value="getUserPhotos") int id) {
+    public Photo[] getUserPhotos(@RequestParam(value="getUserPhotos") long id) {
     	if (DEBUG) {
     		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		int i = testExists.queryForObject(TESTIFUSEREXISTS, Integer.class, id);
+    		long i = testExists.queryForObject(TESTIFUSEREXISTS, Long.class, id);
     		assert(i == 1);
     	}
     	JdbcTemplate get = new JdbcTemplate(dataSource);
@@ -249,7 +249,7 @@ public class Controller {
     	int counter = 0;
     	for (Object o : rows) {
     		Map row = (Map) o;
-			Photo photo = new Photo((int)row.get("id"), (int)row.get("uid"), (int)row.get("lid"), (String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time"));
+			Photo photo = new Photo((long)row.get("id"), (long)row.get("uid"), (long)row.get("lid"), (String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time"));
 			arr[counter] = photo;
 			counter++;
 		}
@@ -266,10 +266,10 @@ public class Controller {
      * @return an array of photos or null if no photos are found
      */
     @RequestMapping("/getLocationPhotos")
-    public Photo[] getLocationPhotos(@RequestParam(value="getLocationPhotos") int id) {
+    public Photo[] getLocationPhotos(@RequestParam(value="getLocationPhotos") long id) {
     	if (DEBUG) {
     		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		int i = testExists.queryForObject(TESTIFLOCEXISTS, Integer.class, id);
+    		long i = testExists.queryForObject(TESTIFLOCEXISTS, Long.class, id);
     		assert(i == 1);
     	}
     	JdbcTemplate get = new JdbcTemplate(dataSource);
@@ -280,7 +280,7 @@ public class Controller {
     	int counter = 0;
     	for (Object o : rows) {
     		Map row = (Map) o;
-			Photo photo = new Photo((int)row.get("id"), (int)row.get("uid"), (int)row.get("lid"), (String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time"));
+			Photo photo = new Photo((long)row.get("id"), (long)row.get("uid"), (long)row.get("lid"), (String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time"));
 			arr[counter] = photo;
 			counter++;
 		}
