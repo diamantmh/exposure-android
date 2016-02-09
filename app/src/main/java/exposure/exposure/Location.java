@@ -8,6 +8,7 @@ import java.util.*;
  * @specfield id : long  // uniquely identifies this location for database interactions
  */
 public class Location {
+
     private final long id;
     private final float lat;
     private final float lon;
