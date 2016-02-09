@@ -36,14 +36,14 @@ public class Location {
      * You should omit the ID in this case. Only use this constructor when you
      * have an ID provided by DatabaseManager.
      *
-     * @param id - unique identifier supplied by DatabaseManager
-     * @param lat - latitude of this location
-     * @param lon - longitude of this location
-     * @param totalRating - the total number of points this location has earned
-     * @param numOfRatings - the total number of reviews this location has received
-     * @param name - name of location
-     * @param desc - description of this location
-     * @param categories - all the tags associated with this location
+     * @param id unique identifier supplied by DatabaseManager
+     * @param lat latitude of this location
+     * @param lon longitude of this location
+     * @param totalRating the total number of points this location has earned
+     * @param numOfRatings the total number of reviews this location has received
+     * @param name name of location
+     * @param desc description of this location
+     * @param categories all the tags associated with this location
      */
     public Location(long id, float lat, float lon, int totalRating,
                     int numOfRatings, String name, String desc,
@@ -68,13 +68,13 @@ public class Location {
      * The ID parameter is omitted. This constructor should be used when using
      * DatabaseManager to insert a new Location into the database.
      *
-     * @param lat - latitude of this location
-     * @param lon - longitude of this location
-     * @param totalRating - the total number of points this location has earned
-     * @param numOfRatings - the total number of reviews this location has received
-     * @param name - name of location
-     * @param desc - description of this location
-     * @param categories - all the tags associated with this location
+     * @param lat latitude of this location
+     * @param lon longitude of this location
+     * @param totalRating the total number of points this location has earned
+     * @param numOfRatings the total number of reviews this location has received
+     * @param name name of location
+     * @param desc description of this location
+     * @param categories all the tags associated with this location
      */
     public Location(float lat, float lon, int totalRating,
                      int numOfRatings, String name, String desc,
@@ -142,7 +142,7 @@ public class Location {
     /**
      * Returns a new Location with the updated rating.
      *
-     * @param newRating - the new review to add to this Location
+     * @param newRating the new review to add to this Location
      * @return a new Location with the updated rating
      */
     public Location addRating(int newRating) {

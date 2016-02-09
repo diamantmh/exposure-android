@@ -32,13 +32,13 @@ public final class Photo {
      * should omit the ID in this case. Only use this constructor when you have
      * an ID provided by DatabaseManager.
      *
-     * @param id - unique identifier supplied by DatabaseManager
-     * @param authorID - unique identifier of the author of photo, supplied by DatabaseManager
-     * @param locID - unique identifier of location where photo was taken,
+     * @param id unique identifier supplied by DatabaseManager
+     * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
+     * @param locID unique identifier of location where photo was taken,
      *              supplied by DatabaseManager
-     * @param source - source link of photo
-     * @param date - date photo was taken
-     * @param time - time photo was taken
+     * @param source source link of photo
+     * @param date date photo was taken
+     * @param time time photo was taken
      */
     public Photo(long id, long authorID, long locID, String source, Date date, Time time) {
         this.id = id;
@@ -55,12 +55,12 @@ public final class Photo {
      * The ID parameter is omitted. This constructor should be used when using
      * DatabaseManager to insert a new photo into the database.
      *
-     * @param authorID - unique identifier of the author of photo, supplied by DatabaseManager
-     * @param locID - unique identifier of location where photo was taken,
+     * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
+     * @param locID unique identifier of location where photo was taken,
      *              supplied by DatabaseManager
-     * @param source - source link of photo
-     * @param date - date photo was taken
-     * @param time - time photo was taken
+     * @param source source link of photo
+     * @param date date photo was taken
+     * @param time time photo was taken
      */
     public Photo(long authorID, long locID, String source, Date date, Time time) {
         this(NULL_ID, authorID, locID, source, date, time);

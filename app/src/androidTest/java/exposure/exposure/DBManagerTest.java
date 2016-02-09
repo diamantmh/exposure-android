@@ -10,6 +10,7 @@ public class DBManagerTest {
 
         long userID = man.insert(user);
         assert(userID != 0 && userID != 1);
+        System.out.println("HELLO WORLD");
 
     }
 }

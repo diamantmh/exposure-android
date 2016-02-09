@@ -20,11 +20,11 @@ public class Comment {
      * DatabaseManager. Only use this constructor when you have an ID provided
      * by DatabaseManager.
      *
-     * @param id - unique identifier supplied by DatabaseManager
-     * @param authorID - unique identifier of the author of photo, supplied by DatabaseManager
-     * @param locID - unique identifier of location where photo was taken,
+     * @param id unique identifier supplied by DatabaseManager
+     * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
+     * @param locID unique identifier of location where photo was taken,
      *              supplied by DatabaseManager
-     * @param content - the body of the message posted to the location
+     * @param content the body of the message posted to the location
      */
     public Comment(long id, long authorID, long locID, String content) {
         this.id = id;
@@ -41,10 +41,10 @@ public class Comment {
      * in them, you must update that location using DatabaseManager for the
      * changes to be saved.
      *
-     * @param authorID - unique identifier of the author of photo, supplied by DatabaseManager
-     * @param locID - unique identifier of location where photo was taken,
+     * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
+     * @param locID unique identifier of location where photo was taken,
      *              supplied by DatabaseManager
-     * @param content - the body of the message posted to the location
+     * @param content the body of the message posted to the location
      */
     public Comment (long authorID, long locID, String content) {
         this(NULL_ID, authorID, locID, content);

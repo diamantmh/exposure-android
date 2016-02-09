@@ -43,7 +43,7 @@ public class DatabaseManager {
      * the entry in the database matching the given id with the given value.
      *
      * @requires loc to be an existing location (a location returned by DatabaseManager)
-     * @param loc - the Location with the desired data
+     * @param loc the Location with the desired data
      * @return true iff the location entry matching the given ID was updated
       */
     public boolean update(Location loc) {
@@ -56,7 +56,7 @@ public class DatabaseManager {
      * the entry in the database matching the given id with the given value.
      *
      * @requires user to be an existing user (a user returned by DatabaseManager)
-     * @param user - the User with the desired data
+     * @param user the User with the desired data
      * @return true iff the user entry matching the given ID was updated
      */
     public boolean update(User user) {
@@ -70,7 +70,7 @@ public class DatabaseManager {
      * created.
      *
      * @requires loc to be a new location (no ID specified when constructed)
-     * @param loc - the Location with the desired data to be saved as a new
+     * @param loc the Location with the desired data to be saved as a new
      *              entry in the database
      * @return the ID of the created location. Returns -1 if the location
      * entry was not successfully created
@@ -85,7 +85,7 @@ public class DatabaseManager {
      * database for the given Photo. Returns -1 if the entry was not created.
      *
      * @requires photo to be a new photo (no ID specified when constructed)
-     * @param photo - the Photo with the desired data to be saved as a new entry
+     * @param photo the Photo with the desired data to be saved as a new entry
      *              in the database
      * @return the ID of the created photo entry. Returns -1 if the photo entry
      * was not successfully created
@@ -100,7 +100,7 @@ public class DatabaseManager {
      * database for the given User. Returns -1 if the entry was not created.
      *
      * @requires user to be a new user (no ID specified when constructed)
-     * @param user - the User with the desired data to be saved as a new entry
+     * @param user the User with the desired data to be saved as a new entry
      *              in the database
      * @return the ID of the created user entry. Returns -1 if the user entry
      * was not successfully created
@@ -115,7 +115,7 @@ public class DatabaseManager {
      * database for the given Comment. Returns -1 if the entry was not created.
      *
      * @requires comment to be a new comment (no ID specified when constructed)
-     * @param comment - the comment to be saved as a new entry in the database
+     * @param comment the comment to be saved as a new entry in the database
      * @return the ID of the created comment entry. Returns -1 if the comment
      * entry was not successfully created
      */
@@ -130,7 +130,7 @@ public class DatabaseManager {
      * matches the given id. Also deletes any photos posted by this user.
      *
      * @requires id is a valid user ID provided by DatabaseManager
-     * @param id - the ID of the user entry to be deleted from the database
+     * @param id the ID of the user entry to be deleted from the database
      * @return true iff the user entry and user photo entries were all
      * deleted from the database successfully
      */
@@ -146,7 +146,7 @@ public class DatabaseManager {
      * from the database. Deletes the photo entry that matches the given id.
      *
      * @requires id is a valid photo ID provided by DatabaseManager
-     * @param id - The ID of the photo entry to be deleted from the database
+     * @param id The ID of the photo entry to be deleted from the database
      * @return true iff the entry was deleted from the database successfully
      */
     public boolean removePhoto(long id) {
@@ -159,7 +159,7 @@ public class DatabaseManager {
      * is no user with the given id.
      *
      * @requires id is a valid user ID provided by DatabaseManager
-     * @param id - the ID of the desired user
+     * @param id the ID of the desired user
      * @return the User that matches the given id
      */
     public User getUser(long id) {
@@ -173,7 +173,7 @@ public class DatabaseManager {
      * is, by post date descending.
      *
      * @requires id is a valid user ID provided by DatabaseManager
-     * @param id - the ID of the desired user
+     * @param id the ID of the desired user
      * @return an array of Photos posted by the user matching the given id or
      * null if no photos are found
      */
@@ -188,7 +188,7 @@ public class DatabaseManager {
      * that is, by post date descending. Returns null if no results are found.
      *
      * @requires id is a valid location ID provided by DatabaseManager
-     * @param id - the ID of the desired location
+     * @param id the ID of the desired location
      * @return an array of Photos posted to the location matching the given id
      * or null if no photos are found
      */
