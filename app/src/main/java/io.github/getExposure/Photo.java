@@ -1,4 +1,4 @@
-package exposure.exposure;
+package io.github.getExposure;
 
 import java.util.Map;
 

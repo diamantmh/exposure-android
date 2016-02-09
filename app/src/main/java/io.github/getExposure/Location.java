@@ -1,4 +1,4 @@
-package exposure.exposure;
+package io.github.getExposure;
 
 /**
  * Created by michaeldiamant on 2/6/16.

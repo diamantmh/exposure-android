@@ -1,4 +1,4 @@
-package exposure.exposure;
+package io.github.getExposure;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "exposure.exposure"
+        applicationId "io.github.getExposure"
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 1

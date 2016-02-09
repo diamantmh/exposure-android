@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="exposure.exposure">
+    package="io.github.getExposure">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -32,9 +32,14 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
+<<<<<<< HEAD
+            android:value="AIzaSyCn8ZhUZDYAydvXJUCVSjjtL9LLQNHR7J8" />
+
+=======
             android:value="@string/google_maps_key" />
+>>>>>>> master
         <activity
-            android:name=".MapsActivity"
+            android:name="io.github.getExposure.MapsActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,12 +48,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ListActivity"
+            android:name="io.github.getExposure.ListActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_list"
             android:theme="@style/FullscreenTheme" />
         <activity
-            android:name=".ProfileViewActivity"
+            android:name="io.github.getExposure.ProfileViewActivity"
             android:label="@string/title_activity_profile_view"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
