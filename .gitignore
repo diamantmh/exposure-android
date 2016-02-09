@@ -7,4 +7,5 @@
 /build
 /captures
 /restfulweb/target/
+*.class
 

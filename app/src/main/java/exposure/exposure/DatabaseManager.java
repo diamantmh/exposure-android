@@ -20,8 +20,8 @@ import java.util.List;
  */
 public class DatabaseManager {
     private RestTemplate restTemplate;
-
-    public static final String WEB_SERVICE = "http://service/"; // TODO: Fill in url of web service
+	public static final String WEB_SERVICE = "localhost:8080/"
+    //public static final String WEB_SERVICE = "http://service/"; // TODO: Fill in url of web service
     public static final long NULL_ID = -1;
 
     /*
