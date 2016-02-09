@@ -5,7 +5,7 @@ user to input their Facebook login information to login
 to Facebook through Exposure.
  */
 
-package exposure.exposure;
+package io.github.getExposure;
 
 import android.content.Intent;
 import android.os.Bundle;

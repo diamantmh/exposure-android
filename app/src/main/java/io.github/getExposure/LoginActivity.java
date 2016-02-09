@@ -5,7 +5,7 @@ appear on. During its creation (via onCreate()), it creates the
 LoginFragment and switches to its view.
  */
 
-package exposure.exposure;
+package io.github.getExposure;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;

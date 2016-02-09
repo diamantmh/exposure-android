@@ -5,9 +5,5 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-<<<<<<< HEAD
     tools:context="exposure.getExposure.MapsActivity" />
-=======
-    tools:context="exposure.exposure.MapsActivity"
-    tools:layout="@layout/notification_template_part_time" />
->>>>>>> master
+

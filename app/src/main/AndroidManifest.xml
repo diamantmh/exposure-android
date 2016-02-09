@@ -32,12 +32,8 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-<<<<<<< HEAD
-            android:value="AIzaSyCn8ZhUZDYAydvXJUCVSjjtL9LLQNHR7J8" />
+            android:value="AIzaSyCSObtbvKSVUvFZ3oYpFtHFZpbdFN1GA-g" />
 
-=======
-            android:value="@string/google_maps_key" />
->>>>>>> master
         <activity
             android:name="io.github.getExposure.MapsActivity"
             android:label="@string/title_activity_maps">
@@ -57,7 +53,7 @@
             android:label="@string/title_activity_profile_view"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".LoginActivity"
+            android:name="io.github.getExposure.LoginActivity"
             android:label="@string/title_activity_login">
         </activity>
         <activity

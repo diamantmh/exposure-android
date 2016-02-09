@@ -2,6 +2,7 @@
     <string name="app_name">Exposure</string>
     <string name="title_activity_maps">Map</string>
     <string name="app_id">1762527073968719</string>string>
+    <string name="google_app_id">1084709751783</string>string>
 
     <string name="title_activity_list">ListActivity</string>
     <string name="dummy_button">Dummy Button</string>
