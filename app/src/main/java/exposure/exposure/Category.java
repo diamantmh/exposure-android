@@ -28,7 +28,7 @@ public class Category {
     /**
      * Constructs a Category
      * @param id - the id of the content tag for this category (obtain through
-     *           static constants eg Category.OUTDOORID)
+     *           static constants eg Category.WALKING_ID)
      */
     public Category(long id) {
         this.id = id;

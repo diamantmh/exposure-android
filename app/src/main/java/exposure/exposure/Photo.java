@@ -96,7 +96,7 @@ public final class Photo {
      *
      * The returned ID can be used to interact with DatabaseManager.
      *
-     * @return the unique identifier of this user
+     * @return the unique identifier of the Location where this Photo was taken
      */
     public long getLocID() {
         return locID;
