@@ -39,6 +39,17 @@ public class DatabaseManager {
     }
 
     /**
+     * Constructs a DatabaseManager with the given RestTemplate.
+     *
+     * This constructor can be used to provide custom message converters,
+     * or it can be used for testing purposes (providing a mocked
+     * RestTemplate)
+     */
+    public DatabaseManager(RestTemplate rt) {
+        restTemplate = rt;
+    }
+
+    /**
      * Returns true if and only if the specified location is updated. Replaces
      * the entry in the database matching the given id with the given value.
      *
