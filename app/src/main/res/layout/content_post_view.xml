@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="io.github.getExposure.PostViewActivity"
+    tools:showIn="@layout/activity_post_view">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView" >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:contentDescription="@string/target_upload_photo"
+            android:layout_height="100dp"
+            android:id="@+id/photo"
+            android:src="@mipmap/take_photo_clipart"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="55dp"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="55dp"
+            android:id="@+id/description"
+            android:hint="Description..."
+            android:layout_below="@id/photo"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+
+</android.support.v4.widget.NestedScrollView>
