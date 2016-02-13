@@ -13,8 +13,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -25,8 +27,10 @@ import com.facebook.login.widget.LoginButton;
 
 
 public class LoginFragment extends Fragment {
-
+    private TextView message;
+    private Profile profile;
     private CallbackManager mCallbackManager;
+    private AccessTokenTracker mTokenTracker;
     private ProfileTracker mProfileTracker;
     private FacebookCallback<LoginResult> mFacebookCallback = new FacebookCallback<LoginResult>() {
         /*
@@ -36,7 +40,10 @@ public class LoginFragment extends Fragment {
         @Override
         public void onSuccess(LoginResult loginResult) {
             AccessToken accessToken = loginResult.getAccessToken();
-            Profile profile = Profile.getCurrentProfile();
+            if (profile != null)
+                message.setText("Welcome " + profile.getFirstName() + "!");
+            else
+                message.setText("Login failed: please try again.");
         }
 
         /*
@@ -44,6 +51,8 @@ public class LoginFragment extends Fragment {
          */
         @Override
         public void onCancel() {
+            profile = null;
+            message.setText("Login with Facebook to post and review photos and locations!");
         }
 
         /*
@@ -51,6 +60,8 @@ public class LoginFragment extends Fragment {
          */
         @Override
         public void onError(FacebookException e) {
+            profile = null;
+            message.setText("Login with Facebook to post and review photos and locations!");
         }
     };
 
@@ -61,8 +72,10 @@ public class LoginFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCallbackManager = CallbackManager.Factory.create();
+        setupTokenTracker();
         setupProfileTracker();
 
+        mTokenTracker.startTracking();
         mProfileTracker.startTracking();
     }
 
@@ -79,6 +92,7 @@ public class LoginFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         setupLoginButton(view);
+        setupMessageText(view);
     }
 
     /*
@@ -97,12 +111,22 @@ public class LoginFragment extends Fragment {
     public void onStop() {
         super.onStop();
         mProfileTracker.stopTracking();
+        mTokenTracker.stopTracking();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void setupTokenTracker() {
+        mTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+
+            }
+        };
     }
 
     /*
@@ -112,8 +136,22 @@ public class LoginFragment extends Fragment {
         mProfileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                profile = Profile.getCurrentProfile();
+                if (profile != null)
+                    message.setText("Welcome " + profile.getFirstName() + "!");
+                else
+                    message.setText("Login with Facebook to post and review photos and locations!");
             }
         };
+    }
+
+    private void setupMessageText(View view) {
+        message = (TextView) view.findViewById(R.id.message);
+        if (profile != null) {
+            message.setText("Welcome " + profile.getName());
+        } else {
+            message.setText("Login with Facebook to post and review photos and locations!");
+        }
     }
 
     /*

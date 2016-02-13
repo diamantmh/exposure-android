@@ -20,8 +20,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/app_id" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -35,8 +36,21 @@
             android:value="AIzaSyCn8ZhUZDYAydvXJUCVSjjtL9LLQNHR7J8" />
 
         <activity
-            android:name="io.github.getExposure.MapsActivity"
+            android:name=".MapsActivity"
             android:label="@string/title_activity_maps">
+        </activity>
+        <activity
+            android:name=".ListActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_list"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".ProfileViewActivity"
+            android:label="@string/title_activity_profile_view"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,24 +58,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="io.github.getExposure.ListActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_list"
-            android:theme="@style/FullscreenTheme" />
-        <activity
-            android:name="io.github.getExposure.ProfileViewActivity"
-            android:label="@string/title_activity_profile_view"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="io.github.getExposure.LoginActivity"
-            android:label="@string/title_activity_login">
-        </activity>
-        <activity
             android:name="com.facebook.FacebookActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name" />
-
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 
 </manifest>

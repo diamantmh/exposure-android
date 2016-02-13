@@ -9,4 +9,5 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_profile_view">ProfileViewActivity</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>
