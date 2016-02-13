@@ -48,7 +48,7 @@ public class Location {
      */
     public Location(long id, float lat, float lon, int totalRating,
                     int numOfRatings, String name, String desc,
-                    Set<Category> categories, List<Comment> comments) {
+                    Iterable<Category> categories, Iterable<Comment> comments) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -86,7 +86,7 @@ public class Location {
      */
     public Location(float lat, float lon, int totalRating,
                      int numOfRatings, String name, String desc,
-                     Set<Category> categories, List<Comment> comments) {
+                     Iterable<Category> categories, Iterable<Comment> comments) {
         this(NULL_ID, lat, lon, totalRating, numOfRatings, name, desc, categories, comments);
     }
 
