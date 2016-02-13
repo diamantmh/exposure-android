@@ -17,8 +17,7 @@ public class Location {
     private final String name;
     private final String desc;
     private Set<Category> categories;
-    // TODO: add comments to Location
-    // private List<Comment> comments;
+    private List<Comment> comments;
 
     private static final long NULL_ID = -1;
 
@@ -27,6 +26,7 @@ public class Location {
      * name != null
      * desc != null
      * categories != null
+     * comments != null
      */
 
     /**
@@ -44,10 +44,11 @@ public class Location {
      * @param name name of location
      * @param desc description of this location
      * @param categories all the tags associated with this location
+     * @param comments list of comments posted to this location
      */
     public Location(long id, float lat, float lon, int totalRating,
                     int numOfRatings, String name, String desc,
-                    Set<Category> categories) {
+                    Set<Category> categories, List<Comment> comments) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -55,10 +56,16 @@ public class Location {
         this.numOfRatings = numOfRatings;
         this.name = name;
         this.desc = desc;
+
         // safe deep copy in
-        categories = new HashSet<>();
+        this.categories = new HashSet<>();
         for (Category cat: categories) {
             this.categories.add(cat);
+        }
+        //safe deep copy in
+        this.comments = new ArrayList<>();
+        for (Comment comment : comments) {
+            this.comments.add(comment);
         }
     }
 
@@ -75,11 +82,12 @@ public class Location {
      * @param name name of location
      * @param desc description of this location
      * @param categories all the tags associated with this location
+     * @param comments list of comments posted to this location
      */
     public Location(float lat, float lon, int totalRating,
                      int numOfRatings, String name, String desc,
-                     Set<Category> categories) {
-        this(NULL_ID, lat, lon, totalRating, numOfRatings, name, desc, categories);
+                     Set<Category> categories, List<Comment> comments) {
+        this(NULL_ID, lat, lon, totalRating, numOfRatings, name, desc, categories, comments);
     }
 
     /**
@@ -95,34 +103,34 @@ public class Location {
     }
 
     /**
-     * Returns the latitude of this Location.
+     * Returns the latitude of this location.
      *
-     * @return the latitude of this Location
+     * @return the latitude of this location
      */
     public float getLat() {
         return lat;
     }
 
     /**
-     * Returns the longitude of this Location.
+     * Returns the longitude of this location.
      *
-     * @return the longitude of this Location
+     * @return the longitude of this location
      */
     public float getLon() {
         return lon;
     }
 
     /**
-     * Returns the total number of points this Location has earned
+     * Returns the total number of points this location has earned
      *
-     * @return the total number of points this Location has earned
+     * @return the total number of points this location has earned
      */
     public int getTotalRating() {
         return totalRating;
     }
 
     /**
-     * Returns the total number of reviews this Location has received.
+     * Returns the total number of reviews this location has received.
      *
      * @return the total number of reviews this location has received
      */
@@ -131,7 +139,7 @@ public class Location {
     }
 
     /**
-     * Returns the average rating this Location has received.
+     * Returns the average rating this location has received.
      *
      * @return the average rating this location has received
      */
@@ -142,12 +150,12 @@ public class Location {
     /**
      * Returns a new Location with the updated rating.
      *
-     * @param newRating the new review to add to this Location
+     * @param newRating the new review to add to this location
      * @return a new Location with the updated rating
      */
     public Location addRating(int newRating) {
         return new Location(id, lat, lon, totalRating + newRating,
-                numOfRatings + 1, name, desc, getCategories());
+                numOfRatings + 1, name, desc, getCategories(), getComments());
     }
 
     /**
@@ -169,10 +177,10 @@ public class Location {
     }
 
     /**
-     * Returns a set of all the categories, or tags, associated with this
+     * Returns a Set of all the categories, or tags, associated with this
      * Location.
      *
-     * @return a set of all categories, or tags, associated with this
+     * @return a Set of all categories, or tags, associated with this
      * Location
      */
     public Set<Category> getCategories () {
@@ -182,5 +190,19 @@ public class Location {
             retSet.add(cat);
         }
         return retSet;
+    }
+
+    /**
+     * Returns a List of all comments posted to this Location.
+     *
+     * @return a List of all comments posted to this Location
+     */
+    public List<Comment> getComments() {
+        List<Comment> commentsList = new ArrayList<>();
+        // safe deep copy out
+        for (Comment comment : comments) {
+            commentsList.add(comment);
+        }
+        return commentsList;
     }
 }
