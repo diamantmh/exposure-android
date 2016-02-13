@@ -85,8 +85,8 @@ public class Location {
      * @param comments list of comments posted to this location
      */
     public Location(float lat, float lon, int totalRating,
-                     int numOfRatings, String name, String desc,
-                     Iterable<Category> categories, Iterable<Comment> comments) {
+                    int numOfRatings, String name, String desc,
+                    Iterable<Category> categories, List<Comment> comments) {
         this(NULL_ID, lat, lon, totalRating, numOfRatings, name, desc, categories, comments);
     }
 
@@ -139,12 +139,14 @@ public class Location {
     }
 
     /**
-     * Returns the average rating this location has received.
+     * Returns the average rating this location has received. Returns -1 if
+     * this location hasn't received any reviews yet.
      *
-     * @return the average rating this location has received
+     * @return the average rating this location has received or -1 if there are
+     * no reviews for this location yet
      */
     public double getRating() {
-        return (double) (totalRating) / numOfRatings;
+       return (numOfRatings == 0) ? -1 : (double)totalRating/numOfRatings;
     }
 
     /**
