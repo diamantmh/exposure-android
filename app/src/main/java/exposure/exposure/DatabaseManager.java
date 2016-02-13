@@ -34,8 +34,7 @@ public class DatabaseManager {
      * Constructs a DatabaseManager.
      */
     public DatabaseManager() {
-        restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        this(new RestTemplate());
     }
 
     /**
@@ -47,6 +46,7 @@ public class DatabaseManager {
      */
     public DatabaseManager(RestTemplate rt) {
         restTemplate = rt;
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
     /**
@@ -154,8 +154,6 @@ public class DatabaseManager {
      */
     public boolean removeUser(long id) {
         final String url = WEB_SERVICE + "removeUser";
-
-
         return restTemplate.postForObject(url, id, Boolean.class);
     }
 
@@ -180,7 +178,8 @@ public class DatabaseManager {
      * Requires that id is a valid user ID provided by DatabaseManager.
      *
      * @param id the ID of the desired user
-     * @return the User that matches the given id
+     * @return the User that matches the given id or null if no there is no
+     * user with this ID
      */
     public User getUser(long id) {
         final String url = WEB_SERVICE + "getUser?id=" + id;
@@ -195,8 +194,7 @@ public class DatabaseManager {
      * Requires that id is a valid user ID provided by DatabaseManager.
      *
      * @param id the ID of the desired user
-     * @return an array of Photos posted by the user matching the given id or
-     * null if no photos are found
+     * @return an array of Photos posted by the user matching the given id
      */
     public Photo[] getUserPhotos(long id) {
         final String url = WEB_SERVICE + "getUserPhotos?id=" + id;
@@ -206,13 +204,13 @@ public class DatabaseManager {
     /**
      * Returns an array of Photos posted to the location that matches the given
      * ID. The list is returned in chronological order, newest photo first,
-     * that is, by post date descending. Returns null if no results are found.
+     * that is, by post date descending. Returns an array of length 0 if no
+     * results are found.
      *
      * Requires that id is a valid location ID provided by DatabaseManager.
      *
      * @param id the ID of the desired location
      * @return an array of Photos posted to the location matching the given id
-     * or null if no photos are found
      */
     public Photo[] getLocationPhotos(long id) {
         final String url = WEB_SERVICE + "getLocationPhotos?id=" + id;
