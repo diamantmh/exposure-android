@@ -7,9 +7,12 @@ import org.junit.Test;
 import org.junit.Before;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.sql.Time;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -46,12 +49,15 @@ public class DatabaseManagerTest {
         cat1 = new Category(Category.DRIVING_ID);
         cat2 = new Category(Category.SUMMER_ID);
 
-        HashSet<Category> cats1 = new HashSet<>();
-        cats1.add(cat1);
-        cats1.add(cat2);
+        Set<Category> cats = new HashSet<>();
+        cats.add(cat1);
+        cats.add(cat2);
 
-        newLoc = new Location(5,5,5,25,"Dumpster","It's really stinky here.", cats1); // no ID so it's new
-        retLoc = new Location(1,5,5,5,25,"Dumpster","It's really stinky here.", cats1); // has ID
+        List<Comment> comments = new ArrayList<>();
+        comments.add(retCom);
+
+        newLoc = new Location(5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // no ID so it's new
+        retLoc = new Location(1,5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // has ID
 
         newPhoto = new Photo(1,1,"link",new Date(1000000),new Time(1000000)); // no ID so it's new
         retPhoto = new Photo(1,1,1,"link",new Date(1000000),new Time(1000000)); // has ID
