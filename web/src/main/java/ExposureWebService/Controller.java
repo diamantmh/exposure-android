@@ -319,9 +319,8 @@ public class Controller {
 			arr[counter] = photo;
 			counter++;
 		}
-		return arr;
-    }
-    
+	}
+
     /**
      * 
      * @author Tyler
@@ -330,7 +329,20 @@ public class Controller {
      */
     private class UserRowMapper implements RowMapper {
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new User(rs.getInt("id"), rs.getString("username"), rs.getString("src_link"), rs.getString("about_me"));
+			return new User(rs.getLong("id"), rs.getString("username"), rs.getString("src_link"), rs.getString("about_me"));
+		}	
+	}
+	
+	/**
+     * 
+     * @author Tyler
+     *
+     *	Maps SQLQuery return result row into an Location object
+     */
+    private class LocationRowMapper implements RowMapper {
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return new Location(rs.getLong("id"), rs.getFloat("lat"), rs.getFloat("lon"), rs.getInt("totalRating"), 
+			rs.getInt("numOfRatings"), rs.getString("name"), rs.getString("desc"), null/*categories*/, null/*comments*/);
 		}	
 	}
 }
