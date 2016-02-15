@@ -66,16 +66,25 @@
         <activity
             android:name=".PostViewActivity"
             android:label="@string/title_activity_post_view"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".LocationViewActivity"
-            android:label="@string/title_activity_location_view"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".LocationViewActivity"
+            android:label="@string/title_activity_location_view"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
+
+        <activity
+            android:name=".PopUpCategories"
+            android:label="Categories"
+            android:theme="@style/AppTheme.CustomPOP">
+
         </activity>
     </application>
 
