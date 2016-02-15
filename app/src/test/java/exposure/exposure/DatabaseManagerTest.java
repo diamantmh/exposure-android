@@ -131,17 +131,23 @@ public class DatabaseManagerTest {
         when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 99, User.class))
                 .thenReturn(null);
 
+        // get location web service behavior
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 1, Location.class))
+                .thenReturn(retLoc);
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 99, Location.class))
+                .thenReturn(null);
+
         // get user photos web service behavior
         when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUserPhotos?id=" + 1, Photo[].class))
                 .thenReturn(photoArr);
         when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUserPhotos?id=" + 99, Photo[].class))
-                .thenReturn(new Photo[0]);
+                .thenReturn(null);
 
         // get location photos web service behavior
         when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocationPhotos?id=" + 1, Photo[].class))
                 .thenReturn(photoArr);
         when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocationPhotos?id=" + 99, Photo[].class))
-                .thenReturn(new Photo[0]);
+                .thenReturn(null);
 
         // make a new DatabaseManager that has a mocked RestTemplate inside
         man = new DatabaseManager(mockedRest);
@@ -310,6 +316,24 @@ public class DatabaseManagerTest {
     }
 
     @Test
+    public void testGetExistingLocation() throws Exception {
+        Location actual = man.getLocation((long) 1);
+        Location expected = retLoc;
+
+        assertEquals("Should return location matching the given ID", expected, actual);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 1, Location.class);
+    }
+
+    @Test
+    public void testGetBogusLocation() throws Exception {
+        Location actual = man.getLocation((long) 99);
+        Location expected = null;
+
+        assertEquals("Should return null when passed ID that does not match an existing location", expected, actual);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 99, Location.class);
+    }
+
+    @Test
     public void testGetExistingUserPhotos() throws Exception {
         Photo[] actual = man.getUserPhotos((long) 1);
         Photo[] expected = photoArr;
@@ -321,7 +345,7 @@ public class DatabaseManagerTest {
     @Test
     public void testGetBogusUserPhotos() throws Exception {
         Photo[] actual = man.getUserPhotos((long) 99);
-        Photo[] expected = new Photo[0];
+        Photo[] expected = null;
 
         assertArrayEquals("Should return an empty array", expected, actual);
         verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUserPhotos?id=" + 99, Photo[].class);
@@ -339,7 +363,7 @@ public class DatabaseManagerTest {
     @Test
     public void testGetBogusLocationPhotos() throws Exception {
         Photo[] actual = man.getLocationPhotos((long) 99);
-        Photo[] expected = new Photo[0];
+        Photo[] expected = null;
 
         assertArrayEquals("Should return an empty array", expected, actual);
         verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getLocationPhotos?id=" + 99, Photo[].class);

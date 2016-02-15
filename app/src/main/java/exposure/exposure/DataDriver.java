@@ -31,7 +31,7 @@ public class DataDriver {
     private static void interact() {
         Scanner in = new Scanner(System.in);
         boolean quit = false;
-        while(quit != false) {
+        while(!quit) {
             System.out.println("Enter a menu option");
             String input = in.nextLine();
             input = input.toLowerCase().trim();
@@ -115,7 +115,7 @@ public class DataDriver {
             cats.add(new Category(Category.WINTER_ID));
         }
 
-        List<Comment> comments = new ArrayList<Comment>();
+        List<Comment> comments = new ArrayList<>();
         System.out.println("Enter a first comment, or press return to create this location.");
         String comment = in.nextLine();
         while (!comment.equals("")) {
@@ -127,6 +127,29 @@ public class DataDriver {
         Location loc = new Location(lat, lon, totalRating, numOfRatings, name, desc, cats, comments);
         long id = man.insert(loc);
         System.out.println("New location has been entered into the database with ID, " + id);
+    }
+
+    private static void getUser(Scanner in) {
+        System.out.println("What is the ID of the user you want to look up?");
+        long id = Long.parseLong(in.nextLine());
+        User user = man.getUser(id);
+        if (user == null) {
+            System.out.println("That is not a valid user ID. Try \"insert u\" to add a user to the database.");
+        } else {
+            displayUser(user);
+        }
+    }
+
+    private static void getLocation(Scanner in) {
+        System.out.println("What is the ID of the location you want to look up?");
+        long id = Long.parseLong(in.nextLine());
+        Location loc = man.getLocation(id);
+        if (loc == null) {
+            System.out.println("That is not a valid location ID. Try \"insert l\" to add a location to the database.");
+        } else {
+            displayLocation(loc);
+        }
+
     }
 
     private static void displayLocation(Location loc) {

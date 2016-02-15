@@ -187,14 +187,30 @@ public class DatabaseManager {
     }
 
     /**
+     * Returns a Location object that matches the given id. Returns null if
+     * there is no location with the given id.
+     *
+     * Requires that id is a valid location ID provided by DatabaseManager.
+     *
+     * @param id the ID of the desired location
+     * @return the Location that matches the given id or null if there is no
+     * location with this ID
+     */
+    public Location getLocation(long id) {
+        final String url = WEB_SERVICE + "getLocation?id=" + id;
+        return restTemplate.getForObject(url, Location.class);
+    }
+
+    /**
      * Returns an array of Photos posted by the user that matches the given ID.
      * The array is ordered in chronological order, newest photo first, that
-     * is, by post date descending.
+     * is, by post date descending. Returns null if there are no results.
      *
      * Requires that id is a valid user ID provided by DatabaseManager.
      *
      * @param id the ID of the desired user
-     * @return an array of Photos posted by the user matching the given id
+     * @return an array of Photos posted by the user matching the given id or
+     * null if there are no results.
      */
     public Photo[] getUserPhotos(long id) {
         final String url = WEB_SERVICE + "getUserPhotos?id=" + id;
@@ -204,13 +220,13 @@ public class DatabaseManager {
     /**
      * Returns an array of Photos posted to the location that matches the given
      * ID. The list is returned in chronological order, newest photo first,
-     * that is, by post date descending. Returns an array of length 0 if no
-     * results are found.
+     * that is, by post date descending. Returns null if there are no results.
      *
      * Requires that id is a valid location ID provided by DatabaseManager.
      *
      * @param id the ID of the desired location
      * @return an array of Photos posted to the location matching the given id
+     * or null if there are no results.
      */
     public Photo[] getLocationPhotos(long id) {
         final String url = WEB_SERVICE + "getLocationPhotos?id=" + id;
