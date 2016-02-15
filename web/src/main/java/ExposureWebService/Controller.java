@@ -54,6 +54,11 @@ public class Controller {
     	}
     	JdbcTemplate update = new JdbcTemplate(dataSource);
     	update.update(UPDATELOCATION, loc.getLat(), loc.getLon(), loc.getTotalRating(), loc.getNumOfRatings(), loc.getName(), loc.getDesc(), loc.getID());
+    	if (DEBUG) {
+    		JdbcTemplate testValidId = new JdbcTemplate(dataSource);
+    		long i = testValidId.queryForObject(TESTIFLOCEXISTS, Long.class, loc.getID());
+    		assert(i == 1);
+    	}
     	return true;
     }
     
@@ -79,6 +84,11 @@ public class Controller {
     	}
     	JdbcTemplate update = new JdbcTemplate(dataSource);
     	update.update(UPDATEUSER, user.getUsername(), user.getLink(), user.getAboutMe(), user.getID());
+    	if (DEBUG) {
+    		JdbcTemplate testValidId = new JdbcTemplate(dataSource);
+    		long i = testValidId.queryForObject(TESTIFUSEREXISTS, Long.class, user.getID());
+    		assert(i == 1);
+    	}
     	return true;
     }
     
@@ -93,16 +103,16 @@ public class Controller {
      */
     @RequestMapping("/insertLocation")
     public long insertLocation(@RequestBody Location loc) {
-    	if (DEBUG) {
-    		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		long i = testExists.queryForObject(TESTIFLOCEXISTS, Long.class, loc.getID());
-    		assert(i == 0);
-    	}
     	JdbcTemplate insert = new JdbcTemplate(dataSource);
     	insert.update(INSERTLOCATION, loc.getLat(), loc.getLon(), loc.getTotalRating(), loc.getNumOfRatings(), loc.getName(), loc.getDesc());
     	// This returns the newest id created by IDENTITY
     	// This part will require transactions to assure the correct value is returned
     	long id = insert.queryForObject(GETID, Long.class);
+    	if (DEBUG) {
+    		JdbcTemplate testExists = new JdbcTemplate(dataSource);
+    		long i = testExists.queryForObject(TESTIFLOCEXISTS, Long.class, id);
+    		assert(i == 1);
+    	}
     	return id;
     }
     
@@ -119,16 +129,16 @@ public class Controller {
      */
     @RequestMapping("/insertPhoto")
     public long insertPhoto(@RequestBody Photo photo) {
-    	if (DEBUG) {
-    		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		long i = testExists.queryForObject(TESTIFPHOTOEXISTS, Long.class, photo.getID());
-    		assert(i == 0);
-    	}
     	JdbcTemplate insert = new JdbcTemplate(dataSource);
     	insert.update(INSERTPHOTO, photo.getAuthorID(), photo.getLocID(), photo.getSource(), String.format("%tF", photo.getDate()), String.format("%tT", photo.getTime()));
 		// This returns the newest id created by IDENTITY
     	// This part will require transactions to assure the correct value is returned
     	long id = insert.queryForObject(GETID, Long.class);
+    	if (DEBUG) {
+    		JdbcTemplate testExists = new JdbcTemplate(dataSource);
+    		long i = testExists.queryForObject(TESTIFPHOTOEXISTS, Long.class, id);
+    		assert(i == 1);
+    	}
 		return id;
     }
     
@@ -143,17 +153,17 @@ public class Controller {
      */
     @RequestMapping("/insertUser")
     public long insertUser(@RequestBody User user) {
-    	if (DEBUG) {
-    		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		long i = testExists.queryForObject(TESTIFUSEREXISTS, Long.class, user.getID());
-    		assert(i == 0);
-    	}
 		JdbcTemplate insert = new JdbcTemplate(dataSource);
     	insert.update(INSERTUSER, user.getUsername(), user.getLink(), user.getAboutMe());
     	// This returns the newest id created by IDENTITY
     	// This part will require transactions to assure the correct value is returned
     	long id = insert.queryForObject(GETID, Long.class);
-    	return 0;
+    	if (DEBUG) {
+    		JdbcTemplate testExists = new JdbcTemplate(dataSource);
+    		long i = testExists.queryForObject(TESTIFUSEREXISTS, Long.class, id);
+    		assert(i == 1);
+    	}
+    	return id;
     }
     
     // Removes the specified user from the database
@@ -222,7 +232,33 @@ public class Controller {
     		user = null;
     	}
 	    return user;
-    }    
+    }   
+    
+	// Retrieves all users that exist in the database with the specified user ID
+    private static final String GETLOCATION = "SELECT * FROM Locations " + 
+    	"WHERE id = ?";
+    
+    /**
+     * Retrieves the user with the specified user ID
+     * @param id the user ID of the desired user
+     * @return the a User object or null if the user ID does not exist
+     */
+    @RequestMapping("/getLocation")
+    public User getLocation(@RequestParam(value="id") long id) {
+    	if (DEBUG) {
+    		JdbcTemplate testExists = new JdbcTemplate(dataSource);
+    		long i = testExists.queryForObject(TESTIFLOCATIONEXISTS, Long.class, id);
+    		assert(i == 1);
+    	}
+    	Location loc;
+    	try {
+	    	JdbcTemplate get = new JdbcTemplate(dataSource);
+	    	loc = (Location)get.queryForObject(GETLOCATION, new Object[] {id}, new LocationRowMapper());
+    	} catch (EmptyResultDataAccessException e) {
+    		loc = null;
+    	}
+	    return loc;
+    }  
     
     // Retrieves all photos with the specified photo ID
     private static final String GETUSERPHOTOS = "SELECT * FROM Photos " + 
