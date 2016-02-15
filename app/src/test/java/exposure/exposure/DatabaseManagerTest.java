@@ -65,8 +65,8 @@ public class DatabaseManagerTest {
         newUser = new User("swammer","link","Hi, I like photography!");
         retUser = new User(1,"swammer","link","Hi, I like photography!");
 
-        newCom = new Comment(1,1,"I don't like this place at all, it stinks and is ugly.");
-        retCom = new Comment(1,1,1,"I don't like this place at all, it stinks and is ugly.");
+        newCom = new Comment(1,1,"I don't like this place at all, it stinks and is ugly.",new Date(1000000),new Time(1000000));
+        retCom = new Comment(1,1,1,"I don't like this place at all, it stinks and is ugly.", new Date(1000000),new Time(1000000));
 
         photoArr = new Photo[1];
         photoArr[0] = retPhoto;

@@ -1,7 +1,9 @@
 package exposure.exposure;
 
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
@@ -23,8 +25,8 @@ public class DataDriver {
         System.out.println("-----------------");
         menu();
         interact();
+        System.out.println();
         System.out.println("Thanks for using Exposure Lite!");
-        System.out.println("Exiting...");
         System.exit(0);
     }
 
@@ -119,7 +121,8 @@ public class DataDriver {
         System.out.println("Enter a first comment, or press return to create this location.");
         String comment = in.nextLine();
         while (!comment.equals("")) {
-            comments.add(new Comment(-1,-1,comment)); // here we would enter the ID of the author and location
+            // here we would enter the ID of the author and location
+            comments.add(new Comment(-1,-1,comment, new Date(1000000), new Time(1000000)));
             System.out.println("Enter another comment, or press return to create this location.");
         }
 
