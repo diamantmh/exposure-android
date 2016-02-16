@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Date;
 import java.sql.Time;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.File;
+import java.io.InputStream;
 
 @RestController
 public class Controller {
@@ -249,6 +253,12 @@ public class Controller {
 	// Retrieves all users that exist in the database with the specified user ID
     private static final String GETLOCATION = "SELECT * FROM Locations " + 
     	"WHERE id = ?";
+    // Retrieves all Categories with the specified location ID
+    private static final String GETCATEGORIES = "SELECT * FROM Categories " + 
+    	"WHERE lid = ?";
+    // Retrieves all Comments with the specified location ID
+    private static final String GETCOMMENTS = "SELECT * FROM Comments " + 
+    	"WHERE lid = ?";
     
     /**
      * Retrieves the user with the specified user ID
@@ -262,10 +272,47 @@ public class Controller {
     		long i = testExists.queryForObject(TESTIFLOCATIONEXISTS, Long.class, id);
     		assert(i == 1);
     	}
+    	
+    	// Get all categories associated with lid
+    	JdbcTemplate get = new JdbcTemplate(dataSource);
+    	List cats = get.queryForList(GETCATEGORIES, id);
+    	
+    	Category[] categories = null;
+    	// If the db list is no empty, construct categories array
+    	if (!cats.isEmpty()) {
+    		categories = new Category[cats.size()];
+			int counter = 0;
+			for (Object o : cats) {
+				Map row = (Map) o;
+				// Currently makes db blob into a inputstream. must convert to whatever photo variable is
+				Category category = new Category((long)row.get("cat_type_id"));
+				photos[counter] = category;
+				counter++;
+			}
+		}		
+		
+		// Get all comments associated with lid
+		List coms = get.queryForList(GETCOMMENTS, id);
+    	
+    	Comment[] comments = null;
+    	// If the db list is no empty, construct comments array
+    	if (!coms.isEmpty()) {
+    		comments = new Comment[coms.size()];
+			counter = 0;
+			for (Object o : coms) {
+				Map row = (Map) o;
+				// Currently makes db blob into a inputstream. must convert to whatever photo variable is
+				Comment comment = new Comment((long)row.get("id"), (long)row.get("uid"), (long)row.get("lid"), (String)row.get("comment"),
+				(Date)row.get("post_date"), (Time)row.get("post_time"));
+				comments[counter] = comment;
+				counter++;
+			}
+		}
+		    	
     	Location loc;
     	try {
 	    	JdbcTemplate get = new JdbcTemplate(dataSource);
-	    	loc = (Location)get.queryForObject(GETLOCATION, new Object[] {id}, new LocationRowMapper());
+	    	loc = (Location)get.queryForObject(GETLOCATION, new Object[] {id}, new LocationRowMapper(categories, comments));
     	} catch (EmptyResultDataAccessException e) {
     		loc = null;
     	}
@@ -325,16 +372,17 @@ public class Controller {
     	List rows = get.queryForList(GETLOCPHOTOS, id);
     	if (rows.isEmpty())
     		return null;
-    	Photo[] arr = new Photo[rows.size()];
+    	Photo[] photos = new Photo[rows.size()];
     	int counter = 0;
     	for (Object o : rows) {
     		Map row = (Map) o;
     		// Currently makes db blob into a inputstream. must convert to whatever photo variable is
 			Photo photo = new Photo((long)row.get("id"), (long)row.get("uid"), (long)row.get("lid"), 
 			(String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time"), (InputStream)row.get("image"));
-			arr[counter] = photo;
+			photos[counter] = photo;
 			counter++;
 		}
+		return photos;
 	}
 
     /**
@@ -356,9 +404,16 @@ public class Controller {
      *	Maps SQLQuery return result row into an Location object
      */
     private class LocationRowMapper implements RowMapper {
+    	private Category[] cats;
+    	private Comment[] coms;
+    	public LocationRowMapper(Category[] cats, Comment[] coms) {
+    		super();
+    		this.cats = cats;
+    		this.coms = coms;
+    	}
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			return new Location(rs.getLong("id"), rs.getFloat("lat"), rs.getFloat("lon"), rs.getInt("totalRating"), 
-			rs.getInt("numOfRatings"), rs.getString("name"), rs.getString("desc"), null/*categories*/, null/*comments*/);
+			rs.getInt("numOfRatings"), rs.getString("name"), rs.getString("desc"), cats, coms);
 		}	
 	}
 }
