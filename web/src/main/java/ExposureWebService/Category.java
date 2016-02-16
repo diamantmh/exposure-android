@@ -1,4 +1,4 @@
-package exposure.exposure;
+package ExposureWebService;
 
 /**
  * Category is an immutable representation of a category or tag of a location.

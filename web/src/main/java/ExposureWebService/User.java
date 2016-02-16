@@ -1,4 +1,4 @@
-package exposure.exposure;
+package ExposureWebService;
 
 /**
  * User is an immutable representation of a user of Exposure.

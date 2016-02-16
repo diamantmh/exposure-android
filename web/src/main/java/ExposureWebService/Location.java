@@ -1,4 +1,4 @@
-package exposure.exposure;
+package ExposureWebService;
 
 import java.util.*;
 
