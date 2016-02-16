@@ -1,6 +1,7 @@
 package ExposureWebService;
 import java.util.Date;
 import java.sql.Time;
+import java.io.File;
 
 /**
  * Photo is an immutable representation of a photo.
@@ -15,6 +16,7 @@ public final class Photo {
     private final String source;
     private final Date date;
     private final Time time;
+    private final File image;
 
     private static final long NULL_ID = -1;
 
@@ -47,6 +49,7 @@ public final class Photo {
         this.source = source;
         this.date = new Date(date.getTime());
         this.time = new Time(time.getTime());
+        this.image = null;
     }
 
     /**
@@ -127,5 +130,14 @@ public final class Photo {
      */
     public Time getTime() {
         return new Time(time.getTime());
+    }
+    
+    /**
+     * Returns the File of the image.
+     *
+     * @return the File of the image.
+     */
+    public File getImage() {
+        return image;
     }
 }

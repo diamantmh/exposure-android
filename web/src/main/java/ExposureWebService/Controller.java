@@ -14,15 +14,19 @@ import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Date;
+import java.util.Set;
+import java.util.HashSet;
 import java.sql.Time;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.FileNotFoundException;
 
 @RestController
 public class Controller {
@@ -137,14 +141,21 @@ public class Controller {
     @RequestMapping("/insertPhoto")
     public long insertPhoto(@RequestBody Photo photo) {
     	// Must make sure photo has an image field
-    	FileInputStream imageIs = new FileInputStream (photo.image);
+    	File image = photo.getImage();
+    	FileInputStream imageIs = null;
+    	try {
+    		imageIs = new FileInputStream (image);
+    	} catch (FileNotFoundException e){
+    		System.out.println("Image file was not found. This should never happen");
+    		assert(false);
+    	}
 		LobHandler lobHandler = new DefaultLobHandler();
     	
     	JdbcTemplate insert = new JdbcTemplate(dataSource);
     	insert.update(INSERTPHOTO, new Object[] {photo.getAuthorID(), photo.getLocID(), photo.getSource(), 
     	String.format("%tF", photo.getDate()), String.format("%tT", photo.getTime()), 
     	new SqlLobValue(imageIs, (int)image.length(), lobHandler)}, 
-    	new int[] {Types.LONG, Types.LONG, Types.VARCHAR, Types.DATE, Types.TIME,Types.BLOB});
+    	new int[] {Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.DATE, Types.TIME,Types.BLOB});
 		
 		// This returns the newest id created by IDENTITY
     	// This part will require transactions to assure the correct value is returned
@@ -261,15 +272,15 @@ public class Controller {
     	"WHERE lid = ?";
     
     /**
-     * Retrieves the user with the specified user ID
-     * @param id the user ID of the desired user
-     * @return the a User object or null if the user ID does not exist
+     * Retrieves the location with the specified location ID
+     * @param id the location ID of the desired user
+     * @return the a Location object or null if the location ID does not exist
      */
     @RequestMapping("/getLocation")
-    public User getLocation(@RequestParam(value="id") long id) {
+    public Location getLocation(@RequestParam(value="id") long id) {
     	if (DEBUG) {
     		JdbcTemplate testExists = new JdbcTemplate(dataSource);
-    		long i = testExists.queryForObject(TESTIFLOCATIONEXISTS, Long.class, id);
+    		long i = testExists.queryForObject(TESTIFLOCEXISTS, Long.class, id);
     		assert(i == 1);
     	}
     	
@@ -277,41 +288,36 @@ public class Controller {
     	JdbcTemplate get = new JdbcTemplate(dataSource);
     	List cats = get.queryForList(GETCATEGORIES, id);
     	
-    	Category[] categories = null;
+    	Set<Category> categories = null;
     	// If the db list is no empty, construct categories array
     	if (!cats.isEmpty()) {
-    		categories = new Category[cats.size()];
-			int counter = 0;
+    		categories = new HashSet<Category>();
 			for (Object o : cats) {
 				Map row = (Map) o;
 				// Currently makes db blob into a inputstream. must convert to whatever photo variable is
 				Category category = new Category((long)row.get("cat_type_id"));
-				photos[counter] = category;
-				counter++;
+				categories.add(category);
 			}
 		}		
 		
 		// Get all comments associated with lid
 		List coms = get.queryForList(GETCOMMENTS, id);
     	
-    	Comment[] comments = null;
+    	List<Comment> comments = null;
     	// If the db list is no empty, construct comments array
     	if (!coms.isEmpty()) {
-    		comments = new Comment[coms.size()];
-			counter = 0;
+    		comments = new ArrayList<Comment>();
 			for (Object o : coms) {
 				Map row = (Map) o;
 				// Currently makes db blob into a inputstream. must convert to whatever photo variable is
 				Comment comment = new Comment((long)row.get("id"), (long)row.get("uid"), (long)row.get("lid"), (String)row.get("comment"),
 				(Date)row.get("post_date"), (Time)row.get("post_time"));
-				comments[counter] = comment;
-				counter++;
+				comments.add(comment);
 			}
 		}
 		    	
     	Location loc;
     	try {
-	    	JdbcTemplate get = new JdbcTemplate(dataSource);
 	    	loc = (Location)get.queryForObject(GETLOCATION, new Object[] {id}, new LocationRowMapper(categories, comments));
     	} catch (EmptyResultDataAccessException e) {
     		loc = null;
@@ -345,7 +351,7 @@ public class Controller {
     		Map row = (Map) o;
     		// Currently makes db blob into a inputstream. must convert to whatever photo variable is
 			Photo photo = new Photo((long)row.get("id"), (long)row.get("uid"), (long)row.get("lid"), 
-			(String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time"), (InputStream)row.get("image"));
+			(String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time")/*, (InputStream)row.get("image")*/);
 			arr[counter] = photo;
 			counter++;
 		}
@@ -378,7 +384,7 @@ public class Controller {
     		Map row = (Map) o;
     		// Currently makes db blob into a inputstream. must convert to whatever photo variable is
 			Photo photo = new Photo((long)row.get("id"), (long)row.get("uid"), (long)row.get("lid"), 
-			(String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time"), (InputStream)row.get("image"));
+			(String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time")/*, (InputStream)row.get("image")*/);
 			photos[counter] = photo;
 			counter++;
 		}
@@ -404,9 +410,9 @@ public class Controller {
      *	Maps SQLQuery return result row into an Location object
      */
     private class LocationRowMapper implements RowMapper {
-    	private Category[] cats;
-    	private Comment[] coms;
-    	public LocationRowMapper(Category[] cats, Comment[] coms) {
+    	private Set<Category> cats;
+    	private List<Comment> coms;
+    	public LocationRowMapper(Set<Category> cats, List<Comment >coms) {
     		super();
     		this.cats = cats;
     		this.coms = coms;

@@ -6,6 +6,5 @@
 .DS_Store
 /build
 /captures
-/restfulweb/target/
 *.class
-
+/web/target/
