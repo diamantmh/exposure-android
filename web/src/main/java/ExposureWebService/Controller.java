@@ -9,6 +9,9 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.support.SqlLobValue;
+import org.springframework.jdbc.support.lob.DefaultLobHandler;
+import org.springframework.jdbc.support.lob.LobHandler;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -129,11 +132,20 @@ public class Controller {
      */
     @RequestMapping("/insertPhoto")
     public long insertPhoto(@RequestBody Photo photo) {
+    	// Must make sure photo has an image field
+    	FileInputStream imageIs = new FileInputStream (photo.image);
+		LobHandler lobHandler = new DefaultLobHandler();
+    	
     	JdbcTemplate insert = new JdbcTemplate(dataSource);
-    	insert.update(INSERTPHOTO, photo.getAuthorID(), photo.getLocID(), photo.getSource(), String.format("%tF", photo.getDate()), String.format("%tT", photo.getTime()));
+    	insert.update(INSERTPHOTO, new Object[] {photo.getAuthorID(), photo.getLocID(), photo.getSource(), 
+    	String.format("%tF", photo.getDate()), String.format("%tT", photo.getTime()), 
+    	new SqlLobValue(imageIs, (int)image.length(), lobHandler)}, 
+    	new int[] {Types.LONG, Types.LONG, Types.VARCHAR, Types.DATE, Types.TIME,Types.BLOB});
+		
 		// This returns the newest id created by IDENTITY
     	// This part will require transactions to assure the correct value is returned
     	long id = insert.queryForObject(GETID, Long.class);
+    	
     	if (DEBUG) {
     		JdbcTemplate testExists = new JdbcTemplate(dataSource);
     		long i = testExists.queryForObject(TESTIFPHOTOEXISTS, Long.class, id);
@@ -284,7 +296,9 @@ public class Controller {
     	int counter = 0;
     	for (Object o : rows) {
     		Map row = (Map) o;
-			Photo photo = new Photo((long)row.get("id"), (long)row.get("uid"), (long)row.get("lid"), (String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time"));
+    		// Currently makes db blob into a inputstream. must convert to whatever photo variable is
+			Photo photo = new Photo((long)row.get("id"), (long)row.get("uid"), (long)row.get("lid"), 
+			(String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time"), (InputStream)row.get("image"));
 			arr[counter] = photo;
 			counter++;
 		}
@@ -315,7 +329,9 @@ public class Controller {
     	int counter = 0;
     	for (Object o : rows) {
     		Map row = (Map) o;
-			Photo photo = new Photo((long)row.get("id"), (long)row.get("uid"), (long)row.get("lid"), (String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time"));
+    		// Currently makes db blob into a inputstream. must convert to whatever photo variable is
+			Photo photo = new Photo((long)row.get("id"), (long)row.get("uid"), (long)row.get("lid"), 
+			(String)row.get("src_link"), (Date)row.get("post_date"), (Time)row.get("post_time"), (InputStream)row.get("image"));
 			arr[counter] = photo;
 			counter++;
 		}
