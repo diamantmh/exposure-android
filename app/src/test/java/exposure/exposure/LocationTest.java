@@ -2,7 +2,9 @@ package exposure.exposure;
 
 import org.junit.Test;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
@@ -81,8 +83,8 @@ public class LocationTest {
     public void testCommentListImmutability() throws Exception {
         Set<Category> cats = new HashSet<>();
         List<Comment> comments = new ArrayList<>();
-        comments.add(new Comment(1,1,1,"This place is rad!"));
-        comments.add(new Comment(2,1,1,"You should check it out!"));
+        comments.add(new Comment(1,1,1,"This place is rad!",new Date(1000000),new Time(1000000)));
+        comments.add(new Comment(2,1,1,"You should check it out!",new Date(1000000),new Time(1000000)));
 
         Location loc = new Location(1,5,5,5,1,"Quad","It's great!",cats,comments);
 

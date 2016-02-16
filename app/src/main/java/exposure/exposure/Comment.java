@@ -1,5 +1,8 @@
 package exposure.exposure;
 
+import java.sql.Time;
+import java.util.Date;
+
 /**
  * Comment is an immutable representation of a post to a location.
  *
@@ -11,6 +14,8 @@ public class Comment {
     private final long authorID;
     private final long locID;
     private final String content;
+    private final Date date;
+    private final Time time;
 
     private static final long NULL_ID = -1;
 
@@ -28,11 +33,13 @@ public class Comment {
      *              supplied by DatabaseManager
      * @param content the body of the message posted to the location
      */
-    public Comment(long id, long authorID, long locID, String content) {
+    public Comment(long id, long authorID, long locID, String content, Date date, Time time) {
         this.id = id;
         this.authorID = authorID;
         this.locID = locID;
         this.content = content;
+        this.date = new Date(date.getTime());
+        this.time = new Time(time.getTime());
     }
 
     /**
@@ -48,8 +55,8 @@ public class Comment {
      *              supplied by DatabaseManager
      * @param content the body of the message posted to the location
      */
-    public Comment (long authorID, long locID, String content) {
-        this(NULL_ID, authorID, locID, content);
+    public Comment (long authorID, long locID, String content, Date date, Time time) {
+        this(NULL_ID, authorID, locID, content, date, time);
     }
 
     /**
@@ -95,6 +102,24 @@ public class Comment {
      */
     public String getContent() {
         return content;
+    }
+
+    /**
+     * Returns the Date this comment was posted.
+     *
+     * @return the Date this comment was posted.
+     */
+    public Date getDate() {
+        return new Date(date.getTime());
+    }
+
+    /**
+     * Returns the Time this comment was posted.
+     *
+     * @return the Time this comment was posted.
+     */
+    public Time getTime() {
+        return new Time(time.getTime());
     }
 }
 
