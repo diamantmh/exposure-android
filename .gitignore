@@ -7,4 +7,5 @@
 /build
 /captures
 *.class
+/web/target/*
 /web/target/
