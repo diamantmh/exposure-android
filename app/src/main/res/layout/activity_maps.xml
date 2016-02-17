@@ -1,9 +1,41 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MapsActivity">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/map"
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="exposure.getExposure.MapsActivity" />
+    android:layout_height="fill_parent"
+    tools:context="exposure.getExposure.MapsActivity"
+        android:layout_marginBottom="60dp" />
 
+    <ImageButton
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:id="@+id/toMapView"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:background="@android:color/darker_gray" />
+
+    <ImageButton
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:id="@+id/toProfileView"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" />
+
+    <ImageButton
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:id="@+id/toListView"
+        android:layout_alignTop="@+id/toMapView"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
