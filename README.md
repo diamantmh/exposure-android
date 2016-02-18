@@ -28,10 +28,10 @@ Once you have Exposure’s source code, follow these instructions in Android Stu
 - Select “Open Existing Android Studio Project”
 - Select the unzipped `exposure-android` directory
 - Start the database web service. To do so...
--- Open Terminal
--- Navigate to “/exposure-android/web/”
--- Run the “run” script
---- `./run`
+	- Open Terminal
+	- Navigate to “/exposure-android/web/”
+	- Run the “run” script
+		- `./run`
 - Once Gradle finishes building, click the green play button to run the app
 - Select the “Nexus 5 API 23” Android Virtual Device
 - Voila, Exposure should start up in the Android Emulator with a map view
