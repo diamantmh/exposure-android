@@ -1,20 +1,24 @@
-package ExposureWebService; 
-
+package ExposureWebService;
 import java.util.Date;
 import java.sql.Time;
+import java.io.File;
 
 /**
  * Photo is an immutable representation of a photo.
  *
- * @specfield id : long  // uniquely identifies this photo for database interactions
+ * specfield id : long  // uniquely identifies this photo for database interactions
  */
 public final class Photo {
+
     private final long id;
     private final long authorID;
     private final long locID;
     private final String source;
     private final Date date;
     private final Time time;
+    private final File image;
+
+    private static final long NULL_ID = -1;
 
     /*
      * class invariant,
@@ -30,13 +34,13 @@ public final class Photo {
      * should omit the ID in this case. Only use this constructor when you have
      * an ID provided by DatabaseManager.
      *
-     * @param id - unique identifier supplied by DatabaseManager
-     * @param authorID - unique identifier of the author of photo, supplied by DatabaseManager
-     * @param locID - unique identifier of location where photo was taken,
+     * @param id unique identifier supplied by DatabaseManager
+     * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
+     * @param locID unique identifier of location where photo was taken,
      *              supplied by DatabaseManager
-     * @param source - source link of photo
-     * @param date - date photo was taken
-     * @param time - time photo was taken
+     * @param source source link of photo
+     * @param date date photo was taken
+     * @param time time photo was taken
      */
     public Photo(long id, long authorID, long locID, String source, Date date, Time time) {
         this.id = id;
@@ -45,6 +49,7 @@ public final class Photo {
         this.source = source;
         this.date = new Date(date.getTime());
         this.time = new Time(time.getTime());
+        this.image = null;
     }
 
     /**
@@ -53,15 +58,15 @@ public final class Photo {
      * The ID parameter is omitted. This constructor should be used when using
      * DatabaseManager to insert a new photo into the database.
      *
-     * @param authorID - unique identifier of the author of photo, supplied by DatabaseManager
-     * @param locID - unique identifier of location where photo was taken,
+     * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
+     * @param locID unique identifier of location where photo was taken,
      *              supplied by DatabaseManager
-     * @param source - source link of photo
-     * @param date - date photo was taken
-     * @param time - time photo was taken
+     * @param source source link of photo
+     * @param date date photo was taken
+     * @param time time photo was taken
      */
     public Photo(long authorID, long locID, String source, Date date, Time time) {
-        this(-1, authorID, locID, source, date, time);
+        this(NULL_ID, authorID, locID, source, date, time);
     }
 
     /**
@@ -94,7 +99,7 @@ public final class Photo {
      *
      * The returned ID can be used to interact with DatabaseManager.
      *
-     * @return the unique identifier of this user
+     * @return the unique identifier of the Location where this Photo was taken
      */
     public long getLocID() {
         return locID;
@@ -125,5 +130,14 @@ public final class Photo {
      */
     public Time getTime() {
         return new Time(time.getTime());
+    }
+    
+    /**
+     * Returns the File of the image.
+     *
+     * @return the File of the image.
+     */
+    public File getImage() {
+        return image;
     }
 }

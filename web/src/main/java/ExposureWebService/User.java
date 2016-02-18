@@ -1,15 +1,18 @@
-package ExposureWebService; 
+package ExposureWebService;
 
 /**
  * User is an immutable representation of a user of Exposure.
  *
- * @specfield id : long  // uniquely identifies this user for database interactions
+ * specfield id : long  // uniquely identifies this user for database interactions
  */
 public final class User {
+
     private final long id;
     private final String username;
     private final String link;
     private final String aboutMe;
+
+    private static final long NULL_ID = -1;
 
     /*
      * class invariant,
@@ -23,10 +26,10 @@ public final class User {
      * should omit the ID in this case. Only use this constructor when you have
      * an ID provided by DatabaseManager.
      *
-     * @param id - unique identifier supplied by DatabaseManager
-     * @param username - display name of this user
-     * @param link - source of profile picture of this user
-     * @param aboutMe - the user-supplied self description of this user
+     * @param id unique identifier supplied by DatabaseManager
+     * @param username display name of this user
+     * @param link source of profile picture of this user
+     * @param aboutMe the user-supplied self description of this user
      */
     public User(long id, String username, String link, String aboutMe) {
         this.id = id;
@@ -41,12 +44,12 @@ public final class User {
      * The ID parameter is omitted. This constructor should be used when using
      * DatabaseManager to insert a new User into the database.
      *
-     * @param username - display name of this user
-     * @param link - source of profile picture of this user
-     * @param aboutMe - the user-supplied self description of this user
+     * @param username display name of this user
+     * @param link source of profile picture of this user
+     * @param aboutMe the user-supplied self description of this user
      */
     public User(String username, String link, String aboutMe) {
-        this(-1,username,link,aboutMe);
+        this(NULL_ID,username,link,aboutMe);
     }
 
     /**
