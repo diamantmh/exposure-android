@@ -1,5 +1,9 @@
 package exposure.exposure;
 
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+
+import com.google.android.gms.maps.SupportMapFragment;
 
 import java.sql.Time;
 import java.util.ArrayList;
@@ -12,150 +16,90 @@ import java.util.Set;
 /**
  * Example class that demonstrates the use of DatabaseManager
  */
-public class DataDriver {
+public class DataDriver extends FragmentActivity {
 
     private static DatabaseManager man;
 
-    public static void main(String[] args ) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        run();
+    }
+
+    private void run() {
+        System.out.println("-----------------");
+        System.out.println("Welcome to the DatabaseManager Demo");
+        System.out.println("-----------------");
+        System.out.println();
         System.out.println("Instantiating DatabaseManager...");
         man = new DatabaseManager();
+        System.out.println("DatabaseManager initiated!");
+        System.out.println("Trying out some functionality...");
 
-        System.out.println("-----------------");
-        System.out.println("Welcome to Exposure Lite");
-        System.out.println("-----------------");
-        menu();
-        interact();
+        // test bad insert user
         System.out.println();
-        System.out.println("Thanks for using Exposure Lite!");
+        System.out.println("Insert bogus user,");
+        User retUser = new User(50, "I'm bogus", "link", "There's nothing to say about me");
+        long resID = man.insert(retUser);
+        System.out.println("Returned ID is: " + resID);
+        assert(resID == -1);
+
+        // test good insert user
+        System.out.println();
+        System.out.println("Inserting a valid user,");
+        User newUser = new User("good user", "link", "I'm a good user, I hope I make it to the database!");
+        displayUser(newUser);
+        long userID = man.insert(newUser);
+        System.out.println("Returned ID is: " + userID);
+        assert(userID > 0);
+
+        // test bad update user
+        System.out.println();
+        System.out.println("Updating new user with no ID (bad operation)");
+        boolean badRes = man.update(new User(newUser.getUsername(), newUser.getLink(), "This won't be saved!"));
+        String resultStrBad = (badRes) ? "User updated" : "User was not updated!";
+        System.out.println(resultStrBad);
+        assert(badRes);
+
+        // test good update user
+        System.out.println();
+        System.out.println("Updating user that was just inserted with ID = " + userID);
+        boolean goodRes = man.update(new User(userID, newUser.getUsername(), newUser.getLink(), "The about me section is different now!"));
+        String resultStrGood = (goodRes) ? "User updated" : "User was not updated!";
+        System.out.println(resultStrGood);
+        assert(goodRes);
+
+        // test bad get user
+        System.out.println();
+        System.out.println("Attempting to retrieve a user that doesn't exist");
+        User noResultUser = man.getUser(-1);
+        assert (noResultUser == null);
+        System.out.println("Returned null because no user with this ID");
+
+        // test good get user
+        System.out.println();
+        System.out.println("Retrieving updated user with ID = " + userID);
+        User updatedUser = man.getUser(userID);
+        assert(updatedUser != null);
+        System.out.println("Updated user:");
+        displayUser(updatedUser);
+
+        // test bad remove user
+        System.out.println();
+        System.out.println("Attempting to remove a user that doesn't exist");
+
+        // test good remove user
+        System.out.println();
+        System.out.println("Removing user with id = " + userID);
+        boolean remResGood = man.removeUser(userID);
+        assert(remResGood);
+        System.out.println("User removed");
+
+        System.out.println("Thanks for using the DatabaseManager Demo!");
         System.exit(0);
     }
 
-    private static void interact() {
-        Scanner in = new Scanner(System.in);
-        boolean quit = false;
-        while(!quit) {
-            System.out.println("Enter a menu option");
-            String input = in.nextLine();
-            input = input.toLowerCase().trim();
-            if (input.equals("m")) {
-                menu();
-            } else if (input.equals("insert u")) {
-                insertUser(in);
-            } else if (input.equals("insert l")) {
-                insertLocation(in);
-            } else if (input.equals("get u")) {
-                getUser(in);
-            } else if (input.equals("get l")) {
-                getLocation(in);
-            } else if (input.equals("q")) {
-                quit = true;
-            } else {
-                System.out.println("Unrecognized command. Try 'm' to see valid commands.");
-            }
-        }
-    }
-
-    private static void menu() {
-        System.out.println("m - display menu");
-        System.out.println("insert u - add a new user");
-        System.out.println("insert l - add a new location");
-        System.out.println("get u - retrieve a user");
-        System.out.println("get l - retrieve a location");
-        System.out.println("q - quit");
-        System.out.println();
-    }
-
-    private static void insertUser(Scanner in) {
-        System.out.println("Enter the username of this new user");
-        String username = in.nextLine();
-
-        System.out.println("Enter a link to the profile picture of this user");
-        String link = in.nextLine();
-
-        System.out.println("Enter a description for the \"About Me\" section of this user");
-        String aboutMe = in.nextLine();
-
-        User user = new User(username,link,aboutMe);
-        long id = man.insert(user);
-        System.out.println("New user has been entered into the database with ID, " + id);
-    }
-
-    private static void insertLocation(Scanner in) {
-        System.out.println("Enter the latitude: ");
-        float lat = Float.parseFloat(in.nextLine());
-
-        System.out.println("Enter the longitude: ");
-        float lon = Float.parseFloat(in.nextLine());
-
-        System.out.println("Enter the total rating: ");
-        int totalRating = Integer.getInteger(in.nextLine());
-
-        System.out.println("Enter the total number of reviews: ");
-        int numOfRatings = Integer.getInteger(in.nextLine());
-
-        System.out.println("Enter the name: ");
-        String name = in.nextLine();
-
-        System.out.println("Enter the description: ");
-        String desc = in.nextLine();
-
-        Set<Category> cats = new HashSet<>();
-        System.out.println("Is this location a walking location? (type y if so?)");
-        if (in.nextLine().toLowerCase().trim().equals("y")) {
-            cats.add(new Category(Category.WALKING_ID));
-        }
-        System.out.println("Is this location a driving location?");
-        if (in.nextLine().toLowerCase().trim().equals("y")) {
-            cats.add(new Category(Category.DRIVING_ID));
-        }
-        System.out.println("Is this location a summer location?");
-        if (in.nextLine().toLowerCase().trim().equals("y")) {
-            cats.add(new Category(Category.SUMMER_ID));
-        }
-        System.out.println("Is this location a winter location?");
-        if (in.nextLine().toLowerCase().trim().equals("y")) {
-            cats.add(new Category(Category.WINTER_ID));
-        }
-
-        List<Comment> comments = new ArrayList<>();
-        System.out.println("Enter a first comment, or press return to create this location.");
-        String comment = in.nextLine();
-        while (!comment.equals("")) {
-            // here we would enter the ID of the author and location
-            comments.add(new Comment(-1,-1,comment, new Date(1000000), new Time(1000000)));
-            System.out.println("Enter another comment, or press return to create this location.");
-        }
-
-        System.out.println();
-        Location loc = new Location(lat, lon, totalRating, numOfRatings, name, desc, cats, comments);
-        long id = man.insert(loc);
-        System.out.println("New location has been entered into the database with ID, " + id);
-    }
-
-    private static void getUser(Scanner in) {
-        System.out.println("What is the ID of the user you want to look up?");
-        long id = Long.parseLong(in.nextLine());
-        User user = man.getUser(id);
-        if (user == null) {
-            System.out.println("That is not a valid user ID. Try \"insert u\" to add a user to the database.");
-        } else {
-            displayUser(user);
-        }
-    }
-
-    private static void getLocation(Scanner in) {
-        System.out.println("What is the ID of the location you want to look up?");
-        long id = Long.parseLong(in.nextLine());
-        Location loc = man.getLocation(id);
-        if (loc == null) {
-            System.out.println("That is not a valid location ID. Try \"insert l\" to add a location to the database.");
-        } else {
-            displayLocation(loc);
-        }
-
-    }
-
-    private static void displayLocation(Location loc) {
+    private void displayLocation(Location loc) {
         System.out.println(loc.getName());
         System.out.println(loc.getDesc());
         if (!loc.getCategories().isEmpty()) {
@@ -165,23 +109,23 @@ public class DataDriver {
             }
         }
         System.out.println();
-        System.out.println("Location ID: " + loc.getID());
-        System.out.println("latitude and longitude: " + loc.getLat() + ", " + loc.getLon());
-        System.out.println("Rating: " + loc.getRating());
+        System.out.println("\tLocation ID: " + loc.getID());
+        System.out.println("\tlatitude and longitude: " + loc.getLat() + ", " + loc.getLon());
+        System.out.println("\tRating: " + loc.getRating());
         if (!loc.getComments().isEmpty()) {
-            System.out.println("Comments: ");
+            System.out.println("\tComments: ");
             for (Comment com : loc.getComments()) {
-                System.out.println(com.getContent() + " ");
+                System.out.println("\t\t" + com.getContent() + " ");
             }
         }
         System.out.println();
     }
 
-    private static void displayUser(User user) {
-        System.out.println("User ID: " + user.getID());
-        System.out.println("Username: " + user.getUsername());
-        System.out.println("About me:");
-        System.out.println(user.getAboutMe());
+    private void displayUser(User user) {
+        System.out.println("\tUser ID: " + user.getID());
+        System.out.println("\tUsername: " + user.getUsername());
+        System.out.println("\tAbout me:");
+        System.out.println("\t" + user.getAboutMe());
         System.out.println();
     }
 }
