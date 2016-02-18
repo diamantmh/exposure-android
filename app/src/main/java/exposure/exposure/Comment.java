@@ -130,5 +130,19 @@ public class Comment {
     public Time getTime() {
         return new Time(time.getTime());
     }
+
+    /**
+     * Returns a Comment with the given id
+     *
+     * This method is a more convenient way to inject an ID into the object
+     * without having to construct a new one yourself. Only use this method
+     * if you have been provided a valid ID from DatabaseManager.
+     *
+     * @return a Comment with the given id
+     */
+    public Comment addID(long id) {
+        return new Comment(id,authorID,locID,content,
+                new Date(date.getTime()),new Time(time.getTime()));
+    }
 }
 

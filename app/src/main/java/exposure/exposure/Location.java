@@ -207,4 +207,18 @@ public class Location {
         }
         return commentsList;
     }
+
+    /**
+     * Returns a Location with the given id
+     *
+     * This method is a more convenient way to inject an ID into the object
+     * without having to construct a new one yourself. Only use this method
+     * if you have been provided a valid ID from DatabaseManager.
+     *
+     * @return a Location with the given id
+     */
+    public Location addID(long id) {
+        return new Location(id,lat,lon,totalRating,numOfRatings,name,desc,
+                getCategories(),getComments());
+    }
 }

@@ -128,4 +128,17 @@ public final class Photo {
     public Time getTime() {
         return new Time(time.getTime());
     }
+
+    /**
+     * Returns a Photo with the given id
+     *
+     * This method is a more convenient way to inject an ID into the object
+     * without having to construct a new one yourself. Only use this method
+     * if you have been provided a valid ID from DatabaseManager.
+     *
+     * @return a Photo with the given id
+     */
+    public Photo addID(long id) {
+        return new Photo(id,locID,source,new Date(date.getTime()),new Time(time.getTime()));
+    }
 }

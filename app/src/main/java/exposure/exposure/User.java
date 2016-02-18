@@ -90,4 +90,17 @@ public final class User {
     public String getAboutMe() {
         return aboutMe;
     }
+
+    /**
+     * Returns a User with the given id
+     *
+     * This method is a more convenient way to inject an ID into the object
+     * without having to construct a new one yourself. Only use this method
+     * if you have been provided a valid ID from DatabaseManager.
+     *
+     * @return a User with the given id
+     */
+    public User addID(long id) {
+        return new User(id,username,link,aboutMe);
+    }
 }
