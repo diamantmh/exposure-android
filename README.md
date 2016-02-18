@@ -53,16 +53,15 @@ In order to assure the RESTful web application was correctly operating, several 
 For automated daily builds and test runs, we’re using Travis CI, a integrated GitHub test and deployment service. To setup the build system:
 
 - Ensure Travis CI is authorized on the GitHub account and repository
-- Add `.travis.yml` file to the repository
-- Push the new Travis file up to the repository to trigger the build
+- Push a commit to the repository and Travis will automatically build and run tests
 
-Travis CI triggers builds with any git push as long as there is a `.travis.yml` file within the repository. As Travis is integrated with the “getexposure” organization on GitHub, any emails from the integration service will go out to the entire team.
-
-However, as our application currently stands, we are simply passing information to and from the database. These are more integration tests focused and don’t require unit tests. These integration tests have yet to be planned and will be integrated with Travis CI. Additionally, the main test suite we have created primarily focus on assertions to ensure and check functionality while debugging. These assertions will be integrated into Travis CI as well.
+Travis is integrated with the “getexposure” organization on GitHub such that any emails from the integration service will go out to the entire team.
 
 ### Release
 
-When a version of Exposure is ready to go (i.e. stable), tags will be used to mark different versions of Exposure and pushed up to the GitHub repository. The repository will also be ZIP compressed and uploaded to the team website such that each version can be viewed.
+To organize releases, we will use GitHub's release feature.
+
+The repository will also be ZIP compressed and uploaded to the team website such that each version can be viewed.
 
 ### Access Bug Reporting
 
