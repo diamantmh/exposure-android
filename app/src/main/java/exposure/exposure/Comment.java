@@ -19,8 +19,17 @@ public class Comment {
 
     private static final long NULL_ID = -1;
 
+    /*
+     * class invariant,
+     * String != null
+     * date != null
+     * time != null
+     */
+
     /**
      * Constructs a Comment with the given parameters.
+     *
+     * Requires date and time to be not null
      *
      * Should not be used when adding a new comment to a Location. You should
      * omit the ID in this case, add it to Location, then update Location using
@@ -37,7 +46,7 @@ public class Comment {
         this.id = id;
         this.authorID = authorID;
         this.locID = locID;
-        this.content = content;
+        this.content = (content==null) ? "" : content;
         this.date = new Date(date.getTime());
         this.time = new Time(time.getTime());
     }

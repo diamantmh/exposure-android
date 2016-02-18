@@ -3,9 +3,6 @@ package exposure.exposure;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * DatabaseManager is an abstraction that handles interactions with the
  * database. DatabaseManager can provide data from, add data to, and update
