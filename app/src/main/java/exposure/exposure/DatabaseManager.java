@@ -263,7 +263,7 @@ public class DatabaseManager {
      * @param lon1 longitude of the left side of the rectangle range
      * @param lon2 longitude of the right side of the rectangle range
      * @return an array of Location within the given square radius of null if
-     * ther are no results
+     * there are no results
      */
     public Location[] getLocationsInRange(float lat1, float lat2, float lon1, float lon2) {
         final String url = WEB_SERVICE + "getLocationsInRange?lat1=" + lat1 + "&lat2=" + lat2
