@@ -14,8 +14,11 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +28,7 @@ import java.util.Date;
 public class PostActivity extends AppCompatActivity {
     private TextView categories;
     private ImageView photo;
+    private EditText description;
     static final int REQUEST_IMAGE_CAPTURE = 2;
     private String mCurrentPhotoPath;
     private String[] permissions;
@@ -44,6 +48,17 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
+        description = (EditText) findViewById(R.id.description);
+
+        Button post = (Button) findViewById(R.id.submit);
+        post.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                post();
+
+            }
+        });
+
         photo = (ImageView) findViewById((R.id.photo));
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +74,38 @@ public class PostActivity extends AppCompatActivity {
                 permissions,
                 5
         );
+    }
+
+    public void post() {
+        Intent postViewIntent = new Intent(getApplicationContext(), LocationView.class);
+        boolean flag = false;
+
+        if(mCurrentPhotoPath == null) {
+            Toast toast = Toast.makeText(getApplicationContext(), "please upload or take a photo!", Toast.LENGTH_SHORT);
+            toast.show();
+            flag = true;
+        } else {
+            postViewIntent.putExtra("photo", mCurrentPhotoPath);
+        }
+
+        if(description.getText().toString().equals("") && !flag) {
+            Toast toast = Toast.makeText(getApplicationContext(), "you need to enter a description first!", Toast.LENGTH_SHORT);
+            toast.show();
+            flag = true;
+        } else {
+            postViewIntent.putExtra("description", description.getText().toString());
+        }
+
+        if(categories.getText().toString().equals("Categories") && !flag) {
+            Toast toast = Toast.makeText(getApplicationContext(), "please add some categories!", Toast.LENGTH_SHORT);
+            toast.show();
+            flag = true;
+        } else {
+            postViewIntent.putExtra("categories", categories.getText().toString());
+        }
+        if(!flag) {
+            startActivity(postViewIntent);
+        }
     }
 
     private void selectImage() {
@@ -145,18 +192,15 @@ public class PostActivity extends AppCompatActivity {
             galleryAddPic();
         } else if (requestCode == 3 && resultCode == RESULT_OK) {
             Uri selectedImage = data.getData();
-            if(!isExternalStorageReadable()) {
-
-            } else {
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                cursor.moveToFirst();
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String picturePath = cursor.getString(columnIndex);
-                cursor.close();
-                Bitmap imageBitmap = BitmapFactory.decodeFile(picturePath);
-                photo.setImageBitmap(imageBitmap);
-            }
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            mCurrentPhotoPath = picturePath;
+            cursor.close();
+            Bitmap imageBitmap = BitmapFactory.decodeFile(picturePath);
+            photo.setImageBitmap(imageBitmap);
         }
     }
 
