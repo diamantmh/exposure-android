@@ -62,8 +62,8 @@ public class DatabaseManagerTest {
         newLoc = new Location(5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // no ID so it's new
         retLoc = new Location(1,5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // has ID
 
-        newPhoto = new Photo(1,1,"link",new Date(1000000),new Time(1000000),new File()); // no ID so it's new
-        retPhoto = new Photo(1,1,1,"link",new Date(1000000),new Time(1000000),new File()); // has ID
+        newPhoto = new Photo(1,1,"link",new Date(1000000),new Time(1000000),new File("https://avatars2.githubusercontent.com/u/16708552?v=3&s=200")); // no ID so it's new
+        retPhoto = new Photo(1,1,1,"link",new Date(1000000),new Time(1000000),new File("https://avatars2.githubusercontent.com/u/16708552?v=3&s=200")); // has ID
 
         newUser = new User("swammer","link","Hi, I like photography!");
         retUser = new User(1,"swammer","link","Hi, I like photography!");
