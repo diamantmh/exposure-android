@@ -21,6 +21,11 @@ android {
             multiDexEnabled true
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 repositories { mavenCentral() } // For Facebook SDK usage
