@@ -143,6 +143,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LatLng seattle = new LatLng(47, -122);
             curr = seattle;
         }
+        mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
 
         // Add a marker in Sydney and move the camera
         //LatLng sydney = new LatLng(-34, 151);
@@ -164,19 +165,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String user = ""; // user who "founded" the location
             int number = -1; // number of photos at the same location
             //mMap.setInfoWindowAdapter(new MapsInfoWindow(this, "hihi"));
-            /*
-            mMap.setOnInfoWindowClickListener(new MapsInfoWindowListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    String input = "info window clicked";
-                    CharSequence str =  input.subSequence(0, input.length());
-                    Toast.makeText(MapsActivity.this, str, Toast.LENGTH_SHORT).show();
-                }
-            });
-            */
-            mMap.addMarker(new MarkerOptions().position(tmp).title("Rando: " + i)
-                    .snippet("(Lat, Long): (" + tmp.latitude + ", " + tmp.longitude + ")\n" +
-                            "Started by user: " + user + " Number of photos: " + number));
+            mMap.addMarker(new MarkerOptions().position(tmp).title("Random pin #" + i)
+                    .snippet("(Lat, Long): (" + tmp.latitude + ", " + tmp.longitude + ") " +
+                            "click to view photos"));
         }
 
         /*
@@ -603,4 +594,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
     */
+
+    private class MapsInfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                String input = "Info window clicked";
+                System.out.println("info window clicked");
+                CharSequence str =  input.subSequence(0, input.length());
+                Toast.makeText(MapsActivity.this, str, Toast.LENGTH_SHORT).show();
+                // change this to post view
+                Intent listViewIntent = new Intent(getApplicationContext(), ListActivity.class);
+                startActivity(listViewIntent);
+            }
+    }
 }
+
+
