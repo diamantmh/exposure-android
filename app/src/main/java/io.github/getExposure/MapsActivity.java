@@ -38,18 +38,23 @@ import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.BreakIterator;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 // doesn't save state of activity, changing screen orientation/language can break it
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback/*,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener */{
     private static final int REQUEST_CHECK_SETTINGS = -1;
 
     //not quite sure what this does yet, but can't be -1, probably not negative
@@ -87,6 +92,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //Custom options, options implemented through xml
+        //Other way is through MapView class or MapFragment
+        /*
+        GoogleMapOptions options = new GoogleMapOptions();
+        options.mapType(GoogleMap.MAP_TYPE_NORMAL)
+                .zoomControlsEnabled(true).compassEnabled(true);
+        */
+
+
 
         // Create an instance of GoogleAPIClient.
         /*//
@@ -106,15 +120,120 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        System.out.println("onMapReady() called");
+        mMap = googleMap;
+        LatLng curr;
+        if (mLastLocation != null) {
+            System.out.println("Found a current location");
+            curr = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        } else {
+            LatLng seattle = new LatLng(47, -122);
+            curr = seattle;
+        }
+
+        // Add a marker in Sydney and move the camera
+        //LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(curr).title("Marker at Seattle"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(10));
+    }
+
+
+    /**
+     * Adds random 10 markers per button press
+     * @param view
+     */
+    public void addMarker(View view) {
+        List locations = new ArrayList<Location>();
+        Random r = new Random();
+        for (int i = 0; i < 10; i++) {
+            LatLng tmp = (new LatLng(r.nextInt(181)- 90, r.nextInt(361) - 180));
+            mMap.addMarker(new MarkerOptions().position(tmp).title("Marker at rando: " + i));
+        }
+
+        /*
+        DatabaseManager db = new DatabaseManager();
+        // need to get all ID's from db
+        List collectionOfAllIDs = new ArrayList<String>();
+        List locations = new ArrayList<Location>();
+        for (String id: collectionOfAllIDs) {
+            Location temp = db.getLocation(id);
+            if (temp.getLatitude() ... && temp.getLongitude() ...) {
+                locations.add(temp);
+            }
+        }
+
+        for (Location t : locations) {
+            LatLng temp = new LatLng(t.getLatitude(), t.getLongitude());
+            // t.toString() should be the location t's name
+            mMap.addMarker(new MarkerOptions().position(temp).title(t.toString()));
+        }
+        LatLng seattle = new LatLng(47, 122);
+        mMap.addMarker(new MarkerOptions().position(seattle).title("Marker at Seeattle"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(seattle));
+        */
+    }
+
+
+    /** Called when the user clicks the Search button */
+    //TODO: implement searching thing
+
+    public void search(View view) {
+        // DO something
+        Intent intent = new Intent(this, SearchActivity.class);
+        EditText editText = (EditText) findViewById(R.id.search_exposure);
+        String message = editText.getText().toString();
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
+    }
+
+    // Called when the user clicks the map/list button
+    public void launchListView(View view) {
+        Intent listViewIntent = new Intent(getApplicationContext(), ListActivity.class);
+        startActivity(listViewIntent);
+    }
+
+    // Called when the user clicks the profile button
+    public void launchProfileView(View view) {
+        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileViewActivity.class);
+        startActivity(profileViewIntent);
+    }
+
+    // Called when the user clicks the post button
+    //TODO: currently just goes back to map view
+    public void launchPostView(View view) {
+        /*
+        Intent intent = new Intent(this, ProfileViewActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, message);
+        EditText editText = (EditText) findViewById(R.id.);
+        String message = editText.getText().toString();
+        */
+        Intent postViewIntent = new Intent(getApplicationContext(), MapsActivity.class);
+        startActivity(postViewIntent);
+    }
+
+    /**
      * Centeres map around location
      * @param location
      */
+    /*
     private void makeUseOfNewLocation(Location location) {
         LatLng curr = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.addMarker(new MarkerOptions().position(curr).title("Marker at current"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
         System.out.println("new loc: Lat: " + location.getLatitude() + " Long: " + location.getLongitude());
     }
+    */
 
     /*
         protected void getCurrentLocationSettingsAndRequestChangeIfNecessary() {
@@ -161,6 +280,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
         }
     */
+    /*
     //create location request
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -200,7 +320,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
+    */
+/*
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -227,25 +348,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // permissions this app might request
         }
     }
+*/
 
     /**
      * What to do onStart()
      */
+    /*
     protected void onStart() {
         System.out.println("onStart() method called");
         mGoogleApiClient.connect();
         super.onStart();
     }
-
+*/
     /**
      * What to do onStop()
      */
+    /*
     protected void onStop() {
         System.out.println("onStop() method called");
         mGoogleApiClient.disconnect();
         super.onStop();
     }
-
+*/
     /*
     protected void myRequestLocationUpdates() {
         // Acquire a reference to the system Location Manager
@@ -269,6 +393,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
     */
+    /*
     protected void startLocationUpdates() {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -284,7 +409,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
     }
-
+*/
+    /*
     //TODO: what happens when user doesn't give location?
     @Override
     public void onConnected(Bundle connectionHint) {
@@ -303,7 +429,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mGoogleApiClient, mLocationRequest, this);
             //System.out.println("result is: " + result.toString());
         }
-
+*/
 
 /*
         int permissionCheck = ContextCompat.checkSelfPermission(this,
@@ -396,9 +522,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // user doesn't want to give location
             System.out.println("SecurityException: " + s.toString());
         }
-        */
-    }
 
+    }
+    */
+/*
     @Override
     public void onLocationChanged(Location location) {
         System.out.println("onlocationchanged called");
@@ -440,74 +567,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.i(TAG, "Location services suspended");
         // do something
     }
+*/
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        System.out.println("onMapReady() called");
-        mMap = googleMap;
-        LatLng curr;
-        if (mLastLocation != null) {
-            System.out.println("Found a current location");
-            curr = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        } else {
-            LatLng sydney = new LatLng(-34, 151);
-            curr = sydney;
-        }
-
-        // Add a marker in Sydney and move the camera
-        //LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(curr).title("Marker at Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
-    }
-
-
-
-    /** Called when the user clicks the Search button */
-    //TODO: implement searching thing
-
-    public void search(View view) {
-        // DO something
-        Intent intent = new Intent(this, SearchActivity.class);
-        EditText editText = (EditText) findViewById(R.id.search_exposure);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
-    }
-
-    // Called when the user clicks the map/list button
-    public void launchListView(View view) {
-        Intent listViewIntent = new Intent(getApplicationContext(), ListActivity.class);
-        startActivity(listViewIntent);
-    }
-
-    // Called when the user clicks the profile button
-    public void launchProfileView(View view) {
-        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileViewActivity.class);
-        startActivity(profileViewIntent);
-    }
-
-    // Called when the user clicks the post button
-    //TODO: currently just goes back to map view
-    public void launchPostView(View view) {
-        /*
-        Intent intent = new Intent(this, ProfileViewActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, message);
-        EditText editText = (EditText) findViewById(R.id.);
-        String message = editText.getText().toString();
-        */
-        Intent postViewIntent = new Intent(getApplicationContext(), MapsActivity.class);
-        startActivity(postViewIntent);
-    }
-
+/*
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -522,4 +584,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
         }
     }
+    */
 }
