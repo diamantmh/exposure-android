@@ -16,7 +16,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:id="@+id/imageView"
+        android:id="@+id/photo"
         android:src="@mipmap/take_photo_clipart"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
@@ -25,19 +25,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Description.."
-        android:id="@+id/textView"
+        android:id="@+id/description"
         android:textSize="15pt"
-        android:layout_below="@+id/imageView"
+        android:layout_below="@+id/photo"
         android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="categories"
-        android:id="@+id/textView2"
+        android:id="@+id/categories"
         android:layout_marginTop="20dp"
         android:textSize="12pt"
-        android:layout_below="@+id/textView"
+        android:layout_below="@+id/description"
         android:layout_centerHorizontal="true" />
 
     <LinearLayout
@@ -45,7 +45,7 @@
         android:layout_width="match_parent"
         android:id="@+id/comments"
         android:layout_height="match_parent"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/categories"
         android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true">
 
