@@ -108,7 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         EditText editText = (EditText) findViewById(R.id.);
         String message = editText.getText().toString();
         */
-        Intent postViewIntent = new Intent(getApplicationContext(), MapsActivity.class);
+        Intent postViewIntent = new Intent(getApplicationContext(), PostView.class);
         startActivity(postViewIntent);
     }
 
