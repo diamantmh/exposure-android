@@ -1,4 +1,5 @@
 package exposure.exposure;
+import java.io.File;
 import java.util.Date;
 import java.sql.Time;
 
@@ -64,8 +65,8 @@ public final class Photo {
      * @param date date photo was taken
      * @param time time photo was taken
      */
-    public Photo(long authorID, long locID, String source, Date date, Time time) {
-        this(NULL_ID, authorID, locID, source, date, time);
+    public Photo(long authorID, long locID, String source, Date date, Time time, File file) {
+        this(NULL_ID, authorID, locID, source, date, time, file);
     }
 
     /**
@@ -141,7 +142,7 @@ public final class Photo {
      * @return a Photo with the given id
      */
     public Photo addID(long id) {
-        return new Photo(id,locID,source,new Date(date.getTime()),new Time(time.getTime()));
+        return new Photo(id,locID,source,new Date(date.getTime()),new Time(time.getTime()), file);
     }
     
     /**
