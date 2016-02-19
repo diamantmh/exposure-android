@@ -1,6 +1,7 @@
 package exposure.exposure;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 
 import java.sql.Time;
@@ -31,8 +32,14 @@ public class DataDriver extends FragmentActivity {
         System.out.println("Instantiating DatabaseManager...");
         man = new DatabaseManager();
         System.out.println("DatabaseManager initiated!");
-        System.out.println("Trying out some functionality...");
 
+        System.out.println("Allowing networking on main thread (this causes lock-ups so don't do this)");
+        // Ignoring the NetworkOnMainThreadException.
+        // Exposure shouldn't do this, but instead use an AsyncTask
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        System.out.println("Trying out some functionality...");
         // test bad insert user
         System.out.println();
         System.out.println("Inserting bogus user,");
