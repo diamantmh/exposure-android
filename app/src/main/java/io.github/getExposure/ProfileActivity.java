@@ -12,7 +12,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.widget.ProfilePictureView;
 
-public class ProfileViewActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
     private Profile profile;
     private ProfilePictureView picview;
     private TextView profilename;

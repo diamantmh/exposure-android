@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -48,7 +47,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         toProfileView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent profileViewIntent = new Intent(getApplicationContext(), ProfileViewActivity.class);
+                Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
                 startActivity(profileViewIntent);
             }
         });
@@ -95,7 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // Called when the user clicks the profile button
     public void launchProfileView(View view) {
-        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileViewActivity.class);
+        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
         startActivity(profileViewIntent);
     }
 
@@ -103,12 +102,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //TODO: currently just goes back to map view
     public void launchPostView(View view) {
         /*
-        Intent intent = new Intent(this, ProfileViewActivity.class);
+        Intent intent = new Intent(this, ProfileActivity.class);
         intent.putExtra(EXTRA_MESSAGE, message);
         EditText editText = (EditText) findViewById(R.id.);
         String message = editText.getText().toString();
         */
-        Intent postViewIntent = new Intent(getApplicationContext(), PostView.class);
+        Intent postViewIntent = new Intent(getApplicationContext(), PostActivity.class);
         startActivity(postViewIntent);
     }
 
