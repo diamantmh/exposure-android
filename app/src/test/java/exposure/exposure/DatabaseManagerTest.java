@@ -7,12 +7,15 @@ import org.junit.Test;
 import org.junit.Before;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.sql.Time;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import exposure.exposure.Photo;
 
 import static org.junit.Assert.*;
 
@@ -59,8 +62,8 @@ public class DatabaseManagerTest {
         newLoc = new Location(5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // no ID so it's new
         retLoc = new Location(1,5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // has ID
 
-        newPhoto = new Photo(1,1,"link",new Date(1000000),new Time(1000000)); // no ID so it's new
-        retPhoto = new Photo(1,1,1,"link",new Date(1000000),new Time(1000000)); // has ID
+        newPhoto = new Photo(1,1,"link",new Date(1000000),new Time(1000000),new File()); // no ID so it's new
+        retPhoto = new Photo(1,1,1,"link",new Date(1000000),new Time(1000000),new File()); // has ID
 
         newUser = new User("swammer","link","Hi, I like photography!");
         retUser = new User(1,"swammer","link","Hi, I like photography!");

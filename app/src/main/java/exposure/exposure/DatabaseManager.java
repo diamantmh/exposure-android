@@ -78,7 +78,7 @@ public class DatabaseManager {
      * database for the given Location. Returns -1 if the entry was not
      * created.
      *
-     * Requires that loc to be a new location (no ID specified when constructed).
+     * Requires that loc to be a new location (no  ID specified when constructed).
      *
      * @param loc the Location with the desired data to be saved as a new
      *              entry in the database

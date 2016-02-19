@@ -40,6 +40,8 @@ public class DataDriver extends FragmentActivity {
         StrictMode.setThreadPolicy(policy);
 
         System.out.println("Trying out some functionality...");
+/*
+
         // test bad insert user
         System.out.println();
         System.out.println("Inserting bogus user,");
@@ -79,15 +81,16 @@ public class DataDriver extends FragmentActivity {
         User noResultUser = man.getUser(-1);
         if (noResultUser != null) { throw new AssertionError(); }
         System.out.println("Returned null because no user with this ID");
+*/
 
         // test good get user
         System.out.println();
-        System.out.println("Retrieving updated user with ID = " + userID);
-        User retrievedUser = man.getUser(userID);
+        System.out.println("Retrieving updated user with ID = " + 3);
+        User retrievedUser = man.getUser(3);
         if (retrievedUser == null) { throw new AssertionError(); }
         System.out.println("Updated user:");
         displayUser(retrievedUser);
-
+/*
         // test bad remove user
         System.out.println();
         System.out.println("Attempting to remove a user that doesn't exist (id = -1)");
@@ -143,7 +146,8 @@ public class DataDriver extends FragmentActivity {
         if (retrievedLocation == null) { throw new AssertionError(); }
         System.out.println("Updated location:");
         displayLocation(retrievedLocation);
-
+*/
+/*
         // test good insert photo
         System.out.println();
         System.out.println("Inserting new photo with no ID specified");
@@ -159,7 +163,7 @@ public class DataDriver extends FragmentActivity {
         boolean removePhotoRes = man.removePhoto(retPhoto.getID());
         if (removePhotoRes) { throw new AssertionError(); }
         System.out.println("Photo removed");
-
+*/
 
         System.out.println("Thanks for using the DatabaseManager Demo!");
         System.exit(0);
