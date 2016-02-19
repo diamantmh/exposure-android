@@ -19,4 +19,5 @@
     <string name="button_post">Post</string>
     <string name="button_profile">Profile</string>
     <string name="button_list">ListView</string>
+
 </resources>
