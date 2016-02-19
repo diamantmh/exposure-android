@@ -34,6 +34,9 @@ public final class Photo {
      * should omit the ID in this case. Only use this constructor when you have
      * an ID provided by DatabaseManager.
      *
+     * Date and Time must not be null. You must fill in the date and time at
+     * instantiation.
+     *
      * @param id unique identifier supplied by DatabaseManager
      * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
      * @param locID unique identifier of location where photo was taken,
@@ -47,8 +50,8 @@ public final class Photo {
         this.authorID = authorID;
         this.locID = locID;
         this.source = source;
-        this.date = new Date(date.getTime());
-        this.time = new Time(time.getTime());
+        this.date = (date == null) ? new Date(0) : new Date(date.getTime());
+        this.time = (time == null) ? new Time(0) : new Time(time.getTime());
         this.file = file;
     }
 
