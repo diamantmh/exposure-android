@@ -68,6 +68,15 @@ public class Comment {
         this(NULL_ID, authorID, locID, content, date, time);
     }
 
+    public Comment () {
+        id = NULL_ID;
+        authorID = NULL_ID;
+        locID = NULL_ID;
+        content = "";
+        date = new Date(0);
+        time = new Time(0);
+    }
+
     /**
      * Returns the unique identifier for this Comment.
      *
