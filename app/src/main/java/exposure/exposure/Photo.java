@@ -19,6 +19,7 @@ public final class Photo {
     private final File file;
 
     private static final long NULL_ID = -1;
+    private static final String DEFAULT_PICTURE = "https://avatars2.githubusercontent.com/u/16708552?v=3&s=200";
 
     /*
      * class invariant,
@@ -34,8 +35,8 @@ public final class Photo {
      * should omit the ID in this case. Only use this constructor when you have
      * an ID provided by DatabaseManager.
      *
-     * Date and Time must not be null. You must fill in the date and time at
-     * instantiation.
+     * Parameters date and time must not be null. You must fill in the date and
+     * time at instantiation. Behavior not specified if file is null.
      *
      * @param id unique identifier supplied by DatabaseManager
      * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
@@ -49,10 +50,10 @@ public final class Photo {
         this.id = id;
         this.authorID = authorID;
         this.locID = locID;
-        this.source = source;
+        this.source = (source == null) ? "" : source;
         this.date = (date == null) ? new Date(0) : new Date(date.getTime());
         this.time = (time == null) ? new Time(0) : new Time(time.getTime());
-        this.file = file;
+        this.file = (file == null) ? new File(DEFAULT_PICTURE) : file;
     }
 
     /**
@@ -60,6 +61,9 @@ public final class Photo {
      *
      * The ID parameter is omitted. This constructor should be used when using
      * DatabaseManager to insert a new photo into the database.
+     *
+     * Parameters date and time must not be null. You must fill in the date and
+     * time at instantiation. Behavior not specified if file is null.
      *
      * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
      * @param locID unique identifier of location where photo was taken,
@@ -136,6 +140,15 @@ public final class Photo {
     }
 
     /**
+     * Returns the File of this photo.
+     *
+     * @return the File of this photo.
+     */
+    public File getFile() {
+        return file;
+    }
+
+    /**
      * Returns a Photo with the given id
      *
      * This method is a more convenient way to inject an ID into the object
@@ -146,14 +159,5 @@ public final class Photo {
      */
     public Photo addID(long id) {
         return new Photo(id,locID,source,new Date(date.getTime()),new Time(time.getTime()), file);
-    }
-    
-    /**
-     * Returns the File of this photo.
-     *
-     * @return the File of this photo.
-     */
-    public File getFile() {
-    	return file;
     }
 }
