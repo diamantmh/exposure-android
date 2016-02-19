@@ -15,6 +15,7 @@ public final class Photo {
     private final String source;
     private final Date date;
     private final Time time;
+    private final File file;
 
     private static final long NULL_ID = -1;
 
@@ -40,13 +41,14 @@ public final class Photo {
      * @param date date photo was taken
      * @param time time photo was taken
      */
-    public Photo(long id, long authorID, long locID, String source, Date date, Time time) {
+    public Photo(long id, long authorID, long locID, String source, Date date, Time time, File file) {
         this.id = id;
         this.authorID = authorID;
         this.locID = locID;
         this.source = source;
         this.date = new Date(date.getTime());
         this.time = new Time(time.getTime());
+        this.file = file;
     }
 
     /**
@@ -140,5 +142,14 @@ public final class Photo {
      */
     public Photo addID(long id) {
         return new Photo(id,locID,source,new Date(date.getTime()),new Time(time.getTime()));
+    }
+    
+    /**
+     * Returns the File of this photo.
+     *
+     * @return the File of this photo.
+     */
+    public File getFile() {
+    	return file;
     }
 }
