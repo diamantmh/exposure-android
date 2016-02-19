@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import android.location.Location;
+import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.google.android.gms.common.ConnectionResult;
@@ -43,6 +44,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.BreakIterator;
@@ -91,6 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
 
         //Custom options, options implemented through xml
         //Other way is through MapView class or MapFragment
@@ -153,12 +156,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Adds random 10 markers per button press
      * @param view
      */
-    public void addMarker(View view) {
+    public void addPins(View view) {
         List locations = new ArrayList<Location>();
         Random r = new Random();
         for (int i = 0; i < 10; i++) {
             LatLng tmp = (new LatLng(r.nextInt(181)- 90, r.nextInt(361) - 180));
-            mMap.addMarker(new MarkerOptions().position(tmp).title("Marker at rando: " + i));
+            String user = ""; // user who "founded" the location
+            int number = -1; // number of photos at the same location
+            //mMap.setInfoWindowAdapter(new MapsInfoWindow(this, "hihi"));
+            /*
+            mMap.setOnInfoWindowClickListener(new MapsInfoWindowListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    String input = "info window clicked";
+                    CharSequence str =  input.subSequence(0, input.length());
+                    Toast.makeText(MapsActivity.this, str, Toast.LENGTH_SHORT).show();
+                }
+            });
+            */
+            mMap.addMarker(new MarkerOptions().position(tmp).title("Rando: " + i)
+                    .snippet("(Lat, Long): (" + tmp.latitude + ", " + tmp.longitude + ")\n" +
+                            "Started by user: " + user + " Number of photos: " + number));
         }
 
         /*
