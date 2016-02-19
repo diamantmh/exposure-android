@@ -56,27 +56,20 @@ public class DataDriver extends FragmentActivity {
 
         // test update user
         System.out.println();
-        System.out.println("Updating user that was just inserted with ID = " + 10);
-        boolean goodRes = man.update(new User(10, "updated username", "updated link", "The about me section is different now!"));
+        System.out.println("Updating user that was just inserted with ID = " + userID);
+        boolean goodRes = man.update(new User(userID, "updated username", "updated link", "The about me section is different now!"));
         if (!goodRes) { throw new AssertionError(); }
         System.out.println("User updated");
 
         // test get user
         System.out.println();
-        System.out.println("Retrieving updated user with ID = " + 3);
-        User retrievedUser = man.getUser(3);
+        System.out.println("Retrieving updated user with ID = " + userID);
+        User retrievedUser = man.getUser(userID);
         if (retrievedUser == null) { throw new AssertionError(); }
         System.out.println("Updated user:");
         displayUser(retrievedUser);
 
-        // test remove user
-        System.out.println();
-        System.out.println("Removing user with id = " + 4);
-        boolean remResGood = man.removeUser(4);
-        if (!remResGood) { throw new AssertionError(); }
-        System.out.println("User removed");
-
-
+        /*
         // location tests
         // test insert location
         System.out.println();
@@ -90,6 +83,7 @@ public class DataDriver extends FragmentActivity {
         System.out.println("Returned ID is: " + retLocID);
         if (retLocID <= 0) { throw new AssertionError(); }
         Location retLoc = newLoc.addID(retLocID);
+        */
 
         // test insert comment
         System.out.println();
@@ -100,6 +94,7 @@ public class DataDriver extends FragmentActivity {
         Comment retCom = newCom.addID(comID);
         System.out.println("Returned ID is: " + comID);
 
+        /*
         // test update location
         System.out.println();
         System.out.println("Updating location that was just inserted with ID = " + retLocID);
@@ -118,33 +113,28 @@ public class DataDriver extends FragmentActivity {
         if (retrievedLocation == null) { throw new AssertionError(); }
         System.out.println("Updated location:");
         displayLocation(retrievedLocation);
+        */
 
         // test insert photo
         System.out.println();
         System.out.println("Inserting new photo with no ID specified");
         System.out.println("Creating a photo...");
-        File newPNG = new File("exposure-logo.png");
-        Photo newPhoto = new Photo(1,1,"",new Date(0),new Time(0), newPNG);
+        File newPNG = new File("/Users/Tyler/Desktop/testimage.jpg");
+        Photo newPhoto = new Photo(userID,1,"",new Date(0),new Time(0), newPNG);
         long photoID = man.insert(newPhoto);
         if (photoID <= 0) { throw new AssertionError(); }
         Photo retPhoto = newPhoto.addID(photoID);
         System.out.println("Returned ID is: " + photoID);
 
-        // test remove photo
-        System.out.println();
-        System.out.println("Removing user with id = " + retPhoto.getID());
-        boolean removePhotoRes = man.removePhoto(retPhoto.getID());
-        if (removePhotoRes) { throw new AssertionError(); }
-        System.out.println("Photo removed");
-
         // test get user photos
         System.out.println();
-        System.out.println("Retrieving user photos from user with id = " + 1);
-        Photo[] userPhotos = man.getUserPhotos(1);
+        System.out.println("Retrieving user photos from user with id = " + userID);
+        Photo[] userPhotos = man.getUserPhotos(userID);
         if (userPhotos == null) {
             System.out.println("There are no returned photos! The return array is null.");
         } else {
             System.out.println("There were " + userPhotos.length + " photos returned.");
+            System.out.println("Source is: " + userPhotos[0].getSource());
         }
 
         // test get location photos
@@ -156,6 +146,20 @@ public class DataDriver extends FragmentActivity {
         } else {
             System.out.println("There were " + locPhotos.length + " photos returned.");
         }
+
+        // test remove photo
+        System.out.println();
+        System.out.println("Removing photo with id = " + (photoID - 1));
+        boolean removePhotoRes = man.removePhoto(photoID - 1);
+        if (!removePhotoRes) { throw new AssertionError(); }
+        System.out.println("Photo removed");
+
+        // test remove user
+        System.out.println();
+        System.out.println("Removing user with id = " + (userID - 1);
+        boolean remResGood = man.removeUser(userID);
+        if (!remResGood) { throw new AssertionError(); }
+        System.out.println("User removed");
 
         System.out.println("Thanks for using the DatabaseManager Demo!");
         System.exit(0);

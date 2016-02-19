@@ -76,6 +76,17 @@ public final class Photo {
         this(NULL_ID, authorID, locID, source, date, time, file);
     }
 
+    // Only used for Json mapping
+    public Photo() {
+        id = NULL_ID;
+       authorID = NULL_ID;
+        locID = NULL_ID;
+        source = "";
+        date = null;
+        time = null;
+        file = null;
+    }
+
     /**
      * Returns the unique identifier for this photo.
      *
