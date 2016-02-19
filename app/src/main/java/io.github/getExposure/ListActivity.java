@@ -32,7 +32,7 @@ public class ListActivity extends AppCompatActivity {
 
         toProfileView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent profileViewIntent = new Intent(getApplicationContext(), ProfileViewActivity.class);
+                Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
                 startActivity(profileViewIntent);
             }
         });

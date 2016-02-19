@@ -61,7 +61,7 @@
             android:label="@string/title_activity_list"
             android:theme="@style/FullscreenTheme" />
         <activity
-            android:name=".ProfileViewActivity"
+            android:name=".ProfileActivity"
             android:label="@string/title_activity_profile_view"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -76,7 +76,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <activity
-            android:name=".PostView"
+            android:name=".PostActivity"
             android:label="@string/title_activity_post_view"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>

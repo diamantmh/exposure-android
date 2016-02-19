@@ -189,7 +189,7 @@ public class LoginFragment extends Fragment {
 
         profileViewSwitcher.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent profileViewIntent = new Intent(getContext(), ProfileViewActivity.class);
+                Intent profileViewIntent = new Intent(getContext(), ProfileActivity.class);
                 startActivity(profileViewIntent);
             }
         });
