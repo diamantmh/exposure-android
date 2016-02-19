@@ -90,6 +90,18 @@ public class Location {
         this(NULL_ID, lat, lon, totalRating, numOfRatings, name, desc, categories, comments);
     }
 
+    public Location () {
+        id = NULL_ID;
+        lat = 0;
+        lon = 0;
+        totalRating = 0;
+        numOfRatings = 0;
+        name = "";
+        desc = "";
+        categories = new HashSet<>();
+        comments = new ArrayList<>();
+    }
+
     /**
      * Returns the unique identifier for this Location.
      *
