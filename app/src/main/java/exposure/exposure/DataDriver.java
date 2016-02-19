@@ -40,8 +40,8 @@ public class DataDriver extends FragmentActivity {
         StrictMode.setThreadPolicy(policy);
 
         System.out.println("Trying out some functionality...");
-/*
 
+/*
         // test bad insert user
         System.out.println();
         System.out.println("Inserting bogus user,");
@@ -49,7 +49,7 @@ public class DataDriver extends FragmentActivity {
         long resID = man.insert(bogusUser);
         System.out.println("Returned ID is: " + resID);
         if (resID != -1) { throw new AssertionError(); }
-
+*/
         // test good insert user
         System.out.println();
         System.out.println("Inserting a valid user,");
@@ -60,7 +60,7 @@ public class DataDriver extends FragmentActivity {
         System.out.println("User has been inserted");
         User retUser = newUser.addID(userID);
         displayUser(retUser);
-
+/*
         // test bad update user
         System.out.println();
         System.out.println("Updating new user with no ID (bad operation)");

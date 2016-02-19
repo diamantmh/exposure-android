@@ -52,6 +52,13 @@ public final class User {
         this(NULL_ID,username,link,aboutMe);
     }
 
+    public User() {
+        //empty constructor used only for JSON conversion
+        this.id = NULL_ID;
+        this.username = "";
+        link = "";
+        aboutMe = "";
+    }
     /**
      * Returns the unique identifier for this user.
      *

@@ -18,7 +18,8 @@ import org.springframework.web.client.RestTemplate;
 public class DatabaseManager {
     private RestTemplate restTemplate;
 
-	public static final String WEB_SERVICE = "http://exposureweb.cloudapp.net/REST/WebService/";
+	public static final String WEB_SERVICE = "http://exposureweb.cloudapp.net/RESTfulProject/REST/WebService/";
+
     public static final long NULL_ID = -1;
 
     /*
@@ -78,7 +79,7 @@ public class DatabaseManager {
      * database for the given Location. Returns -1 if the entry was not
      * created.
      *
-     * Requires that loc to be a new location (no  ID specified when constructed).
+     * Requires that loc to be a new location (no ID specified when constructed).
      *
      * @param loc the Location with the desired data to be saved as a new
      *              entry in the database
