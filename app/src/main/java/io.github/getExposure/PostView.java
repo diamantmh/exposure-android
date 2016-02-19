@@ -41,7 +41,7 @@ public class PostView extends AppCompatActivity {
         categories.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(PostView.this, PopUpCategories.class), 1);
+                startActivityForResult(new Intent(getApplicationContext(), PopUpCategoriesView.class), 1);
             }
         });
 
@@ -74,14 +74,13 @@ public class PostView extends AppCompatActivity {
                 if (options[item].equals("Take Photo")) {
                     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                        Log.d("BEUSO", "here");
                         File photoFile = null;
                         try {
                             photoFile = createImageFile();
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
-                        Log.d("BEUSO", "now");
+
                         // Continue only if the File was successfully created
                         if (photoFile != null) {
                             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
@@ -143,13 +142,12 @@ public class PostView extends AppCompatActivity {
             }
         } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bitmap myBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-            Log.d("NAMSD", "SS");
             photo.setImageBitmap(myBitmap);
             galleryAddPic();
         } else if (requestCode == 3 && resultCode == RESULT_OK) {
             Uri selectedImage = data.getData();
             if(!isExternalStorageReadable()) {
-                Log.d("NAMSD", "SS");
+
             } else {
                 String[] filePathColumn = {MediaStore.Images.Media.DATA};
                 Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
