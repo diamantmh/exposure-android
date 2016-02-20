@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 public class DatabaseManager {
     private RestTemplate restTemplate;
 
-	public static final String WEB_SERVICE = "http://exposureweb.cloudapp.net/RESTfulProject/REST/WebService/";
+	public static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
 
     public static final long NULL_ID = -1;
 
