@@ -63,13 +63,15 @@ import java.text.DateFormat;
 import java.util.Date;
 
 */
-/*
-MapsActivity is the activity class responsible for the "map view" of Exposure.
-It allows users to browse pins based on the location of queries and the location given
-by their devices' GPS.
-
-Author: Michael Shintaku
-
+/**
+ *  MapsActivity is the activity class responsible for the "map view" of Exposure.
+ *  It allows users to browse pins based on the location of queries and the location given
+ *  by their devices' GPS, and displays them on a map.
+ *
+ *  @author Michael Shintaku
+ *  @version 0.5
+ *  @since 2016-02-03
+ *
  */
 
 //TODO: save state of activity, changing screen orientation/language can break it
@@ -303,7 +305,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Switches the activity from the MapsActivity to PostActivity
      * @param view
      */
-    //TODO: currently just goes back to map view
     public void launchPostView(View view) {
         Intent postViewIntent = new Intent(getApplicationContext(), PostActivity.class);
         startActivity(postViewIntent);
