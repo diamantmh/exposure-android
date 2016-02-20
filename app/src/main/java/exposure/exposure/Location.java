@@ -69,6 +69,7 @@ public class Location {
         i = 0;
         for (Comment comment : comments) {
             this.comments[i] = comment;
+            i++;
         }
     }
 
@@ -160,10 +161,10 @@ public class Location {
      * @return the average rating this location has received or -1 if there are
      * no reviews for this location yet
      */
-    public double getRating() {
+/*    public double getRating() {
        return (numOfRatings == 0) ? -1 : (double)totalRating/numOfRatings;
     }
-
+*/
     /**
      * Returns a new Location with the updated rating.
      *

@@ -56,9 +56,12 @@ public class DatabaseManager {
      * @param loc the Location with the desired data
      * @return true iff the location entry matching the given ID was updated
       */
-    public boolean update(WebLocation loc) {
+
+    public boolean update(Location loc) {
+        WebLocation wLoc = new WebLocation(loc.getLat(),loc.getLon(),loc.getTotalRating(),
+                loc.getNumOfRatings(),loc.getName(),loc.getDesc());
         final String url = WEB_SERVICE + "updateLocation";
-        return restTemplate.postForObject(url, loc, Boolean.class);
+        return restTemplate.postForObject(url, wLoc, Boolean.class);
     }
 
     /**
@@ -87,9 +90,11 @@ public class DatabaseManager {
      * @return the ID of the created location. Returns -1 if the location
      * entry was not successfully created
      */
-    public long insert(WebLocation loc) {
+    public long insert(Location loc) {
+        WebLocation wLoc = new WebLocation(loc.getLat(),loc.getLon(),loc.getTotalRating(),
+                loc.getNumOfRatings(),loc.getName(),loc.getDesc());
         final String url = WEB_SERVICE + "insertLocation";
-        return restTemplate.postForObject(url, loc, Long.class);
+        return restTemplate.postForObject(url, wLoc, Long.class);
     }
 
     /**
@@ -137,6 +142,20 @@ public class DatabaseManager {
     public long insert(Comment comment) {
         final String url = WEB_SERVICE + "insertComment";
         return restTemplate.postForObject(url, comment, Long.class);
+    }
+
+    /**
+     * Returns true if and only if the new entry was successfully entered into
+     * in the database. Makes a new entry in the database for the given
+     * Category associated with the location id in the given category.
+     *
+     * @param category the category to be inserted into the database
+     * @return true if and only if the category is registered into the
+     * database.
+     */
+    public long insert(Category category) {
+        final String url = WEB_SERVICE + "insertCategory";
+        return restTemplate.postForObject(url, category, Long.class);
     }
 
     /**
@@ -270,5 +289,177 @@ public class DatabaseManager {
         final String url = WEB_SERVICE + "getLocationsInRange?lat1=" + lat1 + "&lat2=" + lat2
                 + "&lon1=" + lon1 + "&lon2=" + lon2;
         return restTemplate.getForObject(url, Location[].class);
+    }
+
+    /**
+     * WebLocation is an immutable representation of a location on the map. This
+     * class can be used for sending data to the web service and should only be used
+     * internally by Databasemanager.
+     *
+     * specfield id : long  // uniquely identifies this location for database interactions
+     */
+    public static class WebLocation {
+
+        private final long id;
+        private final float lat;
+        private final float lon;
+        private final int totalRating;
+        private final int numOfRatings;
+        private final String name;
+        private final String desc;
+
+        private static final long NULL_ID = -1;
+
+        /*
+         * class invariant,
+         * name != null
+         * desc != null
+         * categories != null
+         * comments != null
+         */
+
+        /**
+         * Constructs a Location with the specified parameters.
+         *
+         * Should not be used when inserting a new Location using DatabaseManager.
+         * You should omit the ID in this case. Only use this constructor when you
+         * have an ID provided by DatabaseManager.
+         *
+         * @param id unique identifier supplied by DatabaseManager
+         * @param lat latitude of this location
+         * @param lon longitude of this location
+         * @param totalRating the total number of points this location has earned
+         * @param numOfRatings the total number of reviews this location has received
+         * @param name name of location
+         * @param desc description of this location
+         */
+        public WebLocation(long id, float lat, float lon, int totalRating,
+                        int numOfRatings, String name, String desc) {
+            this.id = id;
+            this.lat = lat;
+            this.lon = lon;
+            this.totalRating = totalRating;
+            this.numOfRatings = numOfRatings;
+            this.name = name;
+            this.desc = desc;
+        }
+
+        /**
+         * Constructs a Location with the specified parameters.
+         *
+         * The ID parameter is omitted. This constructor should be used when using
+         * DatabaseManager to insert a new Location into the database.
+         *
+         * @param lat latitude of this location
+         * @param lon longitude of this location
+         * @param totalRating the total number of points this location has earned
+         * @param numOfRatings the total number of reviews this location has received
+         * @param name name of location
+         * @param desc description of this location
+         */
+        public WebLocation(float lat, float lon, int totalRating,
+                        int numOfRatings, String name, String desc) {
+            this(NULL_ID, lat, lon, totalRating, numOfRatings, name, desc);
+        }
+
+        public WebLocation () {
+            id = NULL_ID;
+            lat = 0;
+            lon = 0;
+            totalRating = 0;
+            numOfRatings = 0;
+            name = "";
+            desc = "";
+        }
+
+        /**
+         * Returns the unique identifier for this Location.
+         *
+         * The returned ID can be used to interact with DatabaseManager.
+         *
+         * @return the unique identifier of this user or -1 if this Location has
+         * no ID (if ID omitted when constructed)
+         */
+        public long getID() {
+            return id;
+        }
+
+        /**
+         * Returns the latitude of this location.
+         *
+         * @return the latitude of this location
+         */
+        public float getLat() {
+            return lat;
+        }
+
+        /**
+         * Returns the longitude of this location.
+         *
+         * @return the longitude of this location
+         */
+        public float getLon() {
+            return lon;
+        }
+
+        /**
+         * Returns the total number of points this location has earned
+         *
+         * @return the total number of points this location has earned
+         */
+        public int getTotalRating() {
+            return totalRating;
+        }
+
+        /**
+         * Returns the total number of reviews this location has received.
+         *
+         * @return the total number of reviews this location has received
+         */
+        public int getNumOfRatings() {
+            return numOfRatings;
+        }
+
+        /**
+         * Returns a new Location with the updated rating.
+         *
+         * @param newRating the new review to add to this location
+         * @return a new Location with the updated rating
+         */
+        public WebLocation addRating(int newRating) {
+            return new WebLocation(id, lat, lon, totalRating + newRating,
+                    numOfRatings + 1, name, desc);
+        }
+
+        /**
+         * Returns the name of this Location.
+         *
+         * @return the name of this Location
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Return the description of this Location
+         *
+         * @return the description of this Location
+         */
+        public String getDesc() {
+            return desc;
+        }
+
+        /**
+         * Returns a Location with the given id
+         *
+         * This method is a more convenient way to inject an ID into the object
+         * without having to construct a new one yourself. Only use this method
+         * if you have been provided a valid ID from DatabaseManager.
+         *
+         * @return a Location with the given id
+         */
+        public WebLocation addID(long id) {
+            return new WebLocation(id,lat,lon,totalRating,numOfRatings,name,desc);
+        }
     }
 }
