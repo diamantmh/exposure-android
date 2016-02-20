@@ -40,6 +40,7 @@ Once you have Exposure’s source code, follow these instructions in Android Stu
 	- Navigate to “/exposure-android/web/”
 	- Run the “run” script
 		- `./run`
+- Replace your `debug.keystore` file located at `~/.android/debug.keystore` with Exposure's `debug.keystore` [here](https://drive.google.com/drive/u/0/folders/0B2oTf4T_FgbITHYtYnl0SmF0UEE)
 - Once Gradle finishes building, click the green play button to run the app
 - Select the “Nexus 5 API 23” Android Virtual Device
 - Voila, Exposure should start up in the Android Emulator with a map view
@@ -55,6 +56,17 @@ Another design pattern Exposure uses is the Builder pattern. With many of the mo
 To test the Exposure DatabaseManager, we implemented several unit tests to assure that the manager was correctly sending and receiving the expected information to and from the RESTful web application. Standard valid input was prepared and used to create http requests. These http requests were sent to the RESTful web application. If a valid expected object were returned, the test would pass, and would fail otherwise. If we send an invalid request, the test would pass if we received the expected response.
 
 In order to assure the RESTful web application was correctly operating, several things were needed to be done. First, the database needed to be pre-populated with known data. Second, http requests were generated. To test that the application was correctly implemented, we manually created http requests and sent it to the address the application was currently running using google chrome. For valid http requests, we expected google chrome to return a valid tuple of elements that were known to be stored on the database. For invalid http requests, we expected to get an appropriate error from google chrome. We also placed numerous assert statements that would be run if the DEBUG flag was set to be true.
+
+#### DatabaseManager Tests
+
+The DatabaseManager has tests in place to test the following functions:
+
+- Creating new Users, Locations, Photos, and Comments sends data to the database properly
+- Querying Users, Locations, Photos, and Comments returns the proper data
+- Inserting duplicate Users, Locations, Photos, and Comments doesn't work
+- Removing existing Users, Locations, Photos, and Comments removes proper data
+- Removing nonexisting Users, Locations, Photos, and Comments doesn't remove any data
+- Querying multiple Location Photos returns all the proper data
 
 ### Setup Automated Daily Builds
 
