@@ -8,6 +8,7 @@ package exposure.exposure;
 public class Category {
 
     private final long id;
+    private final long locID;
     private final String content;
     private static final String[] tags = {"summer","fall","winter","spring",
             "driving","walking","hiking"};
@@ -27,11 +28,12 @@ public class Category {
 
     /**
      * Constructs a Category
-     * @param id the id of the content tag for this category (obtain through
+     * @param categoryID the id of the content tag for this category (obtain through
      *           static constants eg Category.WALKING_ID)
      */
-    public Category(long id) {
-        this.id = id;
+    public Category(long locID, long categoryID) {
+        this.id = categoryID;
+        this.locID = locID;
         this.content = tags[(int)id-1];
     }
 
