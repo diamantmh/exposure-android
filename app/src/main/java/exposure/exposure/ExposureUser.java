@@ -1,11 +1,11 @@
 package exposure.exposure;
 
 /**
- * User is an immutable representation of a user of Exposure.
+ * ExposureUser is an immutable representation of a user of Exposure.
  *
  * specfield id : long  // uniquely identifies this user for database interactions
  */
-public final class User {
+public final class ExposureUser {
 
     private final long id;
     private final String username;
@@ -20,9 +20,9 @@ public final class User {
      */
 
     /**
-     * Constructs a User with the specified parameters.
+     * Constructs a ExposureUser with the specified parameters.
      *
-     * Should not be used when inserting a new User using DatabaseManager. You
+     * Should not be used when inserting a new ExposureUser using DatabaseManager. You
      * should omit the ID in this case. Only use this constructor when you have
      * an ID provided by DatabaseManager.
      *
@@ -31,7 +31,7 @@ public final class User {
      * @param link source of profile picture of this user
      * @param aboutMe the user-supplied self description of this user
      */
-    public User(long id, String username, String link, String aboutMe) {
+    public ExposureUser(long id, String username, String link, String aboutMe) {
         this.id = id;
         this.username = username;
         this.link = link;
@@ -39,20 +39,20 @@ public final class User {
     }
 
     /**
-     * Constructs a User with the specified parameters.
+     * Constructs a ExposureUser with the specified parameters.
      *
      * The ID parameter is omitted. This constructor should be used when using
-     * DatabaseManager to insert a new User into the database.
+     * DatabaseManager to insert a new ExposureUser into the database.
      *
      * @param username display name of this user
      * @param link source of profile picture of this user
      * @param aboutMe the user-supplied self description of this user
      */
-    public User(String username, String link, String aboutMe) {
+    public ExposureUser(String username, String link, String aboutMe) {
         this(NULL_ID,username,link,aboutMe);
     }
 
-    public User() {
+    public ExposureUser() {
         //empty constructor used only for JSON conversion
         this.id = NULL_ID;
         this.username = "";
@@ -64,7 +64,7 @@ public final class User {
      *
      * The returned ID can be used to interact with DatabaseManager.
      *
-     * @return the unique identifier of this user or -1 if this User has
+     * @return the unique identifier of this user or -1 if this ExposureUser has
      * no ID (if ID omitted when constructed)
      */
     public long getID() {
@@ -99,15 +99,15 @@ public final class User {
     }
 
     /**
-     * Returns a User with the given id
+     * Returns a ExposureUser with the given id
      *
      * This method is a more convenient way to inject an ID into the object
      * without having to construct a new one yourself. Only use this method
      * if you have been provided a valid ID from DatabaseManager.
      *
-     * @return a User with the given id
+     * @return a ExposureUser with the given id
      */
-    public User addID(long id) {
-        return new User(id,username,link,aboutMe);
+    public ExposureUser addID(long id) {
+        return new ExposureUser(id,username,link,aboutMe);
     }
 }

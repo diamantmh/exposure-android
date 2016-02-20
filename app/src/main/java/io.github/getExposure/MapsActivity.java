@@ -3,17 +3,14 @@ package io.github.getExposure;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Point;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.util.Log;
 
 
-import android.location.Location;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -23,7 +20,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -31,11 +27,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import exposure.exposure.DatabaseManager;
+import exposure.exposure.ExposureLocation;
 /*
 import android.widget.ImageButton;
 import android.widget.Button;
@@ -233,8 +226,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         float originLon = (float) center.longitude;
         float radiusLat = (float) (ne.latitude - sw.latitude);
         float radiusLon = (float) (ne.longitude - sw.longitude);
-        exposure.exposure.Location[] locationsInRadius = db.getLocationsInRadius(originLat, originLon, radiusLat, radiusLon);
-        for (exposure.exposure.Location t : locationsInRadius) {
+        ExposureLocation[] locationsInRadius = db.getLocationsInRadius(originLat, originLon, radiusLat, radiusLon);
+        for (ExposureLocation t : locationsInRadius) {
             double tLat = t.getLat();
             double tLon = t.getLon();
             LatLng temp = new LatLng(tLat, tLon);

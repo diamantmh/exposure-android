@@ -4,11 +4,11 @@ import java.util.Date;
 import java.sql.Time;
 
 /**
- * Photo is an immutable representation of a photo.
+ * ExposurePhoto is an immutable representation of a photo.
  *
  * specfield id : long  // uniquely identifies this photo for database interactions
  */
-public final class Photo {
+public final class ExposurePhoto {
 
     private final long id;
     private final long authorID;
@@ -29,9 +29,9 @@ public final class Photo {
      */
 
     /**
-     * Constructs a Photo with the specified parameters.
+     * Constructs a ExposurePhoto with the specified parameters.
      *
-     * Should not be used when inserting a new Photo using DatabaseManager. You
+     * Should not be used when inserting a new ExposurePhoto using DatabaseManager. You
      * should omit the ID in this case. Only use this constructor when you have
      * an ID provided by DatabaseManager.
      *
@@ -46,7 +46,7 @@ public final class Photo {
      * @param date date photo was taken
      * @param time time photo was taken
      */
-    public Photo(long id, long authorID, long locID, String source, Date date, Time time, File file) {
+    public ExposurePhoto(long id, long authorID, long locID, String source, Date date, Time time, File file) {
         this.id = id;
         this.authorID = authorID;
         this.locID = locID;
@@ -57,7 +57,7 @@ public final class Photo {
     }
 
     /**
-     * Constructs a Photo with the specified parameters.
+     * Constructs a ExposurePhoto with the specified parameters.
      *
      * The ID parameter is omitted. This constructor should be used when using
      * DatabaseManager to insert a new photo into the database.
@@ -72,11 +72,11 @@ public final class Photo {
      * @param date date photo was taken
      * @param time time photo was taken
      */
-    public Photo(long authorID, long locID, String source, Date date, Time time, File file) {
+    public ExposurePhoto(long authorID, long locID, String source, Date date, Time time, File file) {
         this(NULL_ID, authorID, locID, source, date, time, file);
     }
     
-    public Photo() {
+    public ExposurePhoto() {
         id = NULL_ID;
         authorID = NULL_ID;
         locID = NULL_ID;
@@ -87,7 +87,7 @@ public final class Photo {
     }
 
     // Only used for Json mapping
-    public Photo() {
+    public ExposurePhoto() {
         id = NULL_ID;
        authorID = NULL_ID;
         locID = NULL_ID;
@@ -102,7 +102,7 @@ public final class Photo {
      *
      * The returned ID can be used to interact with DatabaseManager.
      *
-     * @return the unique identifier of this photo or -1 if this Photo has
+     * @return the unique identifier of this photo or -1 if this ExposurePhoto has
      * no ID (if ID omitted when constructed)
      */
     public long getID() {
@@ -110,12 +110,12 @@ public final class Photo {
     }
 
     /**
-     * Returns the unique identifier of the User that originally posted this
+     * Returns the unique identifier of the ExposureUser that originally posted this
      * photo.
      *
      * The returned ID can be used to interact with DatabaseManager.
      *
-     * @return the unique identifier of the User that posted this photo
+     * @return the unique identifier of the ExposureUser that posted this photo
      */
     public long getAuthorID() {
         return authorID;
@@ -127,7 +127,7 @@ public final class Photo {
      *
      * The returned ID can be used to interact with DatabaseManager.
      *
-     * @return the unique identifier of the Location where this Photo was taken
+     * @return the unique identifier of the ExposureLocation where this ExposurePhoto was taken
      */
     public long getLocID() {
         return locID;
@@ -170,15 +170,15 @@ public final class Photo {
     }
 
     /**
-     * Returns a Photo with the given id
+     * Returns a ExposurePhoto with the given id
      *
      * This method is a more convenient way to inject an ID into the object
      * without having to construct a new one yourself. Only use this method
      * if you have been provided a valid ID from DatabaseManager.
      *
-     * @return a Photo with the given id
+     * @return a ExposurePhoto with the given id
      */
-    public Photo addID(long id) {
-        return new Photo(id,locID,source,new Date(date.getTime()),new Time(time.getTime()), file);
+    public ExposurePhoto addID(long id) {
+        return new ExposurePhoto(id,locID,source,new Date(date.getTime()),new Time(time.getTime()), file);
     }
 }

@@ -3,11 +3,11 @@ package exposure.exposure;
 import java.util.*;
 
 /**
- * Location is an immutable representation of a location on the map.
+ * ExposureLocation is an immutable representation of a location on the map.
  *
  * specfield id : long  // uniquely identifies this location for database interactions
  */
-public class Location {
+public class ExposureLocation {
 
     private final long id;
     private final float lat;
@@ -30,9 +30,9 @@ public class Location {
      */
 
     /**
-     * Constructs a Location with the specified parameters.
+     * Constructs a ExposureLocation with the specified parameters.
      *
-     * Should not be used when inserting a new Location using DatabaseManager.
+     * Should not be used when inserting a new ExposureLocation using DatabaseManager.
      * You should omit the ID in this case. Only use this constructor when you
      * have an ID provided by DatabaseManager.
      *
@@ -46,9 +46,9 @@ public class Location {
      * @param categories all the tags associated with this location
      * @param comments list of comments posted to this location
      */
-    public Location(long id, float lat, float lon, int totalRating,
-                    int numOfRatings, String name, String desc,
-                    Set<Category> categories, List<Comment> comments) {
+    public ExposureLocation(long id, float lat, float lon, int totalRating,
+                            int numOfRatings, String name, String desc,
+                            Set<Category> categories, List<Comment> comments) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -74,10 +74,10 @@ public class Location {
     }
 
     /**
-     * Constructs a Location with the specified parameters.
+     * Constructs a ExposureLocation with the specified parameters.
      *
      * The ID parameter is omitted. This constructor should be used when using
-     * DatabaseManager to insert a new Location into the database.
+     * DatabaseManager to insert a new ExposureLocation into the database.
      *
      * @param lat latitude of this location
      * @param lon longitude of this location
@@ -88,13 +88,13 @@ public class Location {
      * @param categories all the tags associated with this location
      * @param comments list of comments posted to this location
      */
-    public Location(float lat, float lon, int totalRating,
-                    int numOfRatings, String name, String desc,
-                    Set<Category> categories, List<Comment> comments) {
+    public ExposureLocation(float lat, float lon, int totalRating,
+                            int numOfRatings, String name, String desc,
+                            Set<Category> categories, List<Comment> comments) {
         this(NULL_ID, lat, lon, totalRating, numOfRatings, name, desc, categories, comments);
     }
 
-    public Location () {
+    public ExposureLocation() {
         id = NULL_ID;
         lat = 0;
         lon = 0;
@@ -107,11 +107,11 @@ public class Location {
     }
 
     /**
-     * Returns the unique identifier for this Location.
+     * Returns the unique identifier for this ExposureLocation.
      *
      * The returned ID can be used to interact with DatabaseManager.
      *
-     * @return the unique identifier of this user or -1 if this Location has
+     * @return the unique identifier of this user or -1 if this ExposureLocation has
      * no ID (if ID omitted when constructed)
      */
     public long getID() {
@@ -166,29 +166,29 @@ public class Location {
     }
 */
     /**
-     * Returns a new Location with the updated rating.
+     * Returns a new ExposureLocation with the updated rating.
      *
      * @param newRating the new review to add to this location
-     * @return a new Location with the updated rating
+     * @return a new ExposureLocation with the updated rating
      */
-    public Location addRating(int newRating) {
-        return new Location(id, lat, lon, totalRating + newRating,
+    public ExposureLocation addRating(int newRating) {
+        return new ExposureLocation(id, lat, lon, totalRating + newRating,
                 numOfRatings + 1, name, desc, getCategories(), getComments());
     }
 
     /**
-     * Returns the name of this Location.
+     * Returns the name of this ExposureLocation.
      *
-     * @return the name of this Location
+     * @return the name of this ExposureLocation
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Return the description of this Location
+     * Return the description of this ExposureLocation
      *
-     * @return the description of this Location
+     * @return the description of this ExposureLocation
      */
     public String getDesc() {
         return desc;
@@ -196,10 +196,10 @@ public class Location {
 
     /**
      * Returns a Set of all the categories, or tags, associated with this
-     * Location.
+     * ExposureLocation.
      *
      * @return a Set of all categories, or tags, associated with this
-     * Location
+     * ExposureLocation
      */
     public Set<Category> getCategories () {
         Set<Category> retSet = new HashSet<>();
@@ -211,9 +211,9 @@ public class Location {
     }
 
     /**
-     * Returns a List of all comments posted to this Location.
+     * Returns a List of all comments posted to this ExposureLocation.
      *
-     * @return a List of all comments posted to this Location
+     * @return a List of all comments posted to this ExposureLocation
      */
     public List<Comment> getComments() {
         List<Comment> commentsList = new ArrayList<>();
@@ -225,16 +225,16 @@ public class Location {
     }
 
     /**
-     * Returns a Location with the given id
+     * Returns a ExposureLocation with the given id
      *
      * This method is a more convenient way to inject an ID into the object
      * without having to construct a new one yourself. Only use this method
      * if you have been provided a valid ID from DatabaseManager.
      *
-     * @return a Location with the given id
+     * @return a ExposureLocation with the given id
      */
-    public Location addID(long id) {
-        return new Location(id,lat,lon,totalRating,numOfRatings,name,desc,
+    public ExposureLocation addID(long id) {
+        return new ExposureLocation(id,lat,lon,totalRating,numOfRatings,name,desc,
                 getCategories(),getComments());
     }
 }
