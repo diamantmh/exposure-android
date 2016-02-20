@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/color_border">
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Out Doors"
+        android:id="@+id/outDoors"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp"
+        android:checked="false" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scenic"
+        android:id="@+id/scenic"
+        android:layout_below="@+id/outDoors"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp"
+        android:checked="false" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Landscape"
+        android:id="@+id/landscape"
+        android:layout_below="@+id/scenic"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Winter"
+        android:id="@+id/winter"
+        android:layout_below="@+id/landscape"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Spring"
+        android:id="@+id/spring"
+        android:layout_below="@+id/winter"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp" />
+
+
+
+
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mountains"
+        android:id="@+id/mountains"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="50dp" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Water"
+        android:id="@+id/water"
+        android:layout_below="@+id/mountains"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="50dp"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forest"
+        android:id="@+id/forest"
+        android:layout_below="@+id/water"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="50dp"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Summer"
+        android:id="@+id/summer"
+        android:layout_below="@+id/forest"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="50dp"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Autumn"
+        android:id="@+id/autumn"
+        android:layout_below="@+id/summer"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="50dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Done"
+        android:background="@drawable/color_border"
+        android:id="@+id/submit"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/autumn"
+        android:layout_marginTop="20dp"/>
+</RelativeLayout>

@@ -5,18 +5,27 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "exposure.exposure"
+        applicationId "io.github.getExposure"
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        // testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            // Enabling multidex support for Travis.
+            multiDexEnabled true
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
@@ -28,13 +37,27 @@ android {
     }
 }
 
+repositories { mavenCentral() } // For Facebook SDK usage
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.google.android.gms:play-services-maps:8.4.0'
     compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.3.2'
     compile files('build/org.apache.httpcomponents.httpclient_4.5.1.jar')
+    
+}    // For tracking device location
+    compile 'com.google.android.gms:play-services:8.4.0'
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+//    testCompile 'junit:junit:4.12'
+    // For Facebook SDK usage
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.google.android.gms:play-services-maps:8.4.0'
+    compile 'com.android.support:support-v4:23.0.1'
+    compile 'com.android.support:design:23.0.1'
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
+//    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
 }
