@@ -82,9 +82,10 @@ public class DataDriver extends FragmentActivity {
         // test insert location
         System.out.println();
         System.out.println("Inserting new location with no ID specified");
-        Category[] cats = new Category[1];
-        cats[0] = new Category(Category.WALKING_ID);;
-        Location newLoc = new Location(10,10,20,4,"Quad", "There are nice trees here!", cats, new Comment[0]);
+        Category cat = new Category(Category.WALKING_ID);
+        Set<Category> cats = new HashSet<>();
+        cats.add(cat);
+        Location newLoc = new Location(10,10,20,4,"Quad", "There are nice trees here!", cats, new ArrayList<Comment>());
         displayLocation(newLoc);
         long retLocID = man.insert(newLoc);
         System.out.println("Returned ID is: " + retLocID);
@@ -175,7 +176,7 @@ public class DataDriver extends FragmentActivity {
     private void displayLocation(Location loc) {
         System.out.println(loc.getName());
         System.out.println(loc.getDesc());
-        if (loc.getCategories().length != 0) {
+        if (!loc.getCategories().isEmpty()) {
             System.out.println("Categories: ");
             for (Category cat : loc.getCategories()) {
                 System.out.print(cat.getContent() + " ");
@@ -185,7 +186,7 @@ public class DataDriver extends FragmentActivity {
         System.out.println("\tLocation ID: " + loc.getID());
         System.out.println("\tlatitude and longitude: " + loc.getLat() + ", " + loc.getLon());
         System.out.println("\tRating: " + loc.getRating());
-        if (loc.getComments().length != 0) {
+        if (!loc.getComments().isEmpty()) {
             System.out.println("\tComments: ");
             for (Comment com : loc.getComments()) {
                 System.out.println("\t\t" + com.getContent() + " ");
