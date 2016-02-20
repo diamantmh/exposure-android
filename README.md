@@ -70,7 +70,7 @@ The DatabaseManager has tests in place to test the following functions:
 
 ### Setup Automated Daily Builds
 
-For automated daily builds and test runs, we’re using Travis CI, a integrated GitHub test and deployment service. To setup the build system:
+For automated daily builds and test runs, we’re using Travis CI, a integrated GitHub test and deployment service. You can find the build reports [here](https://travis-ci.org/getexposure/exposure-android). To setup the build system:
 
 - Ensure Travis CI is authorized on the GitHub account and repository
 - Push a commit to the repository and Travis will automatically build and run tests
