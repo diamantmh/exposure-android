@@ -48,7 +48,7 @@ public class Location {
      */
     public Location(long id, float lat, float lon, int totalRating,
                     int numOfRatings, String name, String desc,
-                    Category[] categories, Comment[] comments) {
+                    Set<Category> categories, List<Comment> comments) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -58,14 +58,17 @@ public class Location {
         this.desc = desc;
 
         // safe deep copy in
-        this.categories = new Category[categories.length];
-        for (int i = 0; i < categories.length; i++) {
-            this.categories[i] = categories[i];
+        this.categories = new Category[categories.size()];
+        int i = 0;
+        for (Category cat: categories) {
+            this.categories[i] = cat;
+            i++;
         }
         //safe deep copy in
-        this.comments = new Comment[comments.length];
-        for (int i = 0; i < comments.length; i++) {
-            this.comments[i] = comments[i];
+        this.comments = new Comment[comments.size()];
+        i = 0;
+        for (Comment comment : comments) {
+            this.comments[i] = comment;
         }
     }
 
@@ -86,7 +89,7 @@ public class Location {
      */
     public Location(float lat, float lon, int totalRating,
                     int numOfRatings, String name, String desc,
-                    Category[] categories, Comment[] comments) {
+                    Set<Category> categories, List<Comment> comments) {
         this(NULL_ID, lat, lon, totalRating, numOfRatings, name, desc, categories, comments);
     }
 
@@ -191,32 +194,33 @@ public class Location {
     }
 
     /**
-     * Returns a array of all the categories, or tags, associated with this
+     * Returns a Set of all the categories, or tags, associated with this
      * Location.
      *
-     * @return a array of all categories, or tags, associated with this
+     * @return a Set of all categories, or tags, associated with this
      * Location
      */
-    public Category[] getCategories () {
-        Category[] cats = new Category[categories.length];
-        for (int i = 0; i < categories.length; i++) {
-            cats[i] = categories[i];
+    public Set<Category> getCategories () {
+        Set<Category> retSet = new HashSet<>();
+        // safe deep copy out
+        for (Category cat: categories) {
+            retSet.add(cat);
         }
-        return cats;
+        return retSet;
     }
 
     /**
-     * Returns a array of all comments posted to this Location.
+     * Returns a List of all comments posted to this Location.
      *
-     * @return a array of all comments posted to this Location
+     * @return a List of all comments posted to this Location
      */
-    public Comment[] getComments() {
-        //safe deep copy out
-        Comment[] coms = new Comment[comments.length];
-        for (int i = 0; i < comments.length; i++) {
-            coms[i] = comments[i];
+    public List<Comment> getComments() {
+        List<Comment> commentsList = new ArrayList<>();
+        // safe deep copy out
+        for (Comment comment : comments) {
+            commentsList.add(comment);
         }
-        return coms;
+        return commentsList;
     }
 
     /**
