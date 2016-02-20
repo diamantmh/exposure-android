@@ -5,7 +5,7 @@ appear on. During its creation (via onCreate()), it creates the
 LoginFragment and switches to its view.
  */
 
-package io.github.getExposure;
+package io.github.getExposure.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +14,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
-import com.facebook.FacebookSdk;
+import io.github.getExposure.post.PostActivity;
+import io.github.getExposure.R;
+import io.github.getExposure.maps.MapsActivity;
 
 public class LoginActivity extends FragmentActivity {
     private static final String STATE_SELECTED_FRAGMENT_INDEX = "selected_fragment_index";

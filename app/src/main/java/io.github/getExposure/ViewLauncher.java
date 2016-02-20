@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import io.github.getExposure.post.PostActivity;
+import io.github.getExposure.profile.ProfileActivity;
+
 /**
  * Created by Michael on 2/19/2016.
  */

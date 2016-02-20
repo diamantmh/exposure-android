@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
+
+import io.github.getExposure.maps.MapsActivity;
+import io.github.getExposure.post.PostActivity;
+import io.github.getExposure.profile.ProfileActivity;
 
 /**
  *  ListActivity is the activity class responsible for the "list view" of Exposure.

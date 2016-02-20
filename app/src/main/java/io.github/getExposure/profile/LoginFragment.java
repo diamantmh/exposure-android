@@ -5,7 +5,7 @@ user to input their Facebook login information to login
 to Facebook through Exposure.
  */
 
-package io.github.getExposure;
+package io.github.getExposure.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +26,8 @@ import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
+
+import io.github.getExposure.R;
 
 
 public class LoginFragment extends Fragment {

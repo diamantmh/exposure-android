@@ -1,4 +1,4 @@
-package io.github.getExposure;
+package io.github.getExposure.maps;
 
 
 import android.app.Activity;
@@ -22,15 +22,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.util.Random;
 
-import exposure.exposure.DatabaseManager;
-import exposure.exposure.ExposureLocation;
+import io.github.getExposure.ListActivity;
+import io.github.getExposure.post.PostActivity;
+import io.github.getExposure.profile.ProfileActivity;
+import io.github.getExposure.R;
 /*
 import android.widget.ImageButton;
 import android.widget.Button;

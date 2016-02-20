@@ -1,4 +1,4 @@
-package exposure.exposure;
+package io.github.getExposure.database;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package exposure.exposure;
+package io.github.getExposure.database;
 
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;

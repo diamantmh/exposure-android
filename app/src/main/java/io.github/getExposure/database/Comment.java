@@ -1,4 +1,4 @@
-package exposure.exposure;
+package io.github.getExposure.database;
 
 import java.sql.Time;
 import java.util.Date;

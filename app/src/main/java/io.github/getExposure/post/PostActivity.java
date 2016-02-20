@@ -1,4 +1,4 @@
-package io.github.getExposure;
+package io.github.getExposure.post;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import io.github.getExposure.R;
 
 public class PostActivity extends AppCompatActivity {
     private TextView categories;

@@ -1,4 +1,4 @@
-package exposure.exposure;
+package io.github.getExposure.database;
 
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -79,12 +79,12 @@ public class DataDriver extends FragmentActivity {
         Category cat = new Category(userID, Category.WALKING_ID);
         Set<Category> cats = new HashSet<>();
         cats.add(cat);
-        Location newLoc = new Location(10,10,20,4,"Quad", "There are nice trees here!", cats, new ArrayList<Comment>());
+        ExposureLocation newLoc = new ExposureLocation(10,10,20,4,"Quad", "There are nice trees here!", cats, new ArrayList<Comment>());
         displayLocation(newLoc);
         long retLocID = man.insert(newLoc);
         System.out.println("Returned Location ID is: " + retLocID);
         if (retLocID <= 0) { throw new AssertionError(); }
-        Location retLoc = newLoc.addID(retLocID);
+        ExposureLocation retLoc = newLoc.addID(retLocID);
 
         // test insert comment
         System.out.println();
@@ -98,7 +98,7 @@ public class DataDriver extends FragmentActivity {
         // test update location
         System.out.println();
         System.out.println("Updating location that was just inserted with ID = " + retLocID);
-        Location updatedLocation = new Location(retLocID, retLoc.getLat(), retLoc.getLon(), retLoc.getTotalRating() + 10,
+        ExposureLocation updatedLocation = new ExposureLocation(retLocID, retLoc.getLat(), retLoc.getLon(), retLoc.getTotalRating() + 10,
                 retLoc.getNumOfRatings(), retLoc.getName(), retLoc.getDesc(), retLoc.getCategories(), retLoc.getComments());
         boolean goodLocRes = man.update(updatedLocation);
         if (!goodLocRes) { throw new AssertionError(); }

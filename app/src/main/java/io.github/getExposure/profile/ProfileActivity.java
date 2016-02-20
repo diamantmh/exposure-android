@@ -1,15 +1,18 @@
-package io.github.getExposure;
+package io.github.getExposure.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.facebook.Profile;
 import com.facebook.login.widget.ProfilePictureView;
+
+import io.github.getExposure.post.PostActivity;
+import io.github.getExposure.R;
+import io.github.getExposure.maps.MapsActivity;
 
 public class ProfileActivity extends AppCompatActivity {
     private Profile profile;

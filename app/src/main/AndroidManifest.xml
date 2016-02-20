@@ -50,7 +50,7 @@
             android:value="AIzaSyCn8ZhUZDYAydvXJUCVSjjtL9LLQNHR7J8" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".maps.MapsActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,11 +64,11 @@
             android:label="@string/title_activity_list"
             android:theme="@style/FullscreenTheme" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".profile.ProfileActivity"
             android:label="@string/title_activity_profile_view"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".profile.LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
         <activity
@@ -78,20 +78,20 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <activity
-            android:name=".PostActivity"
+            android:name=".post.PostActivity"
             android:label="@string/title_activity_post_view"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".LocationView"
+            android:name=".post.LocationView"
             android:label="@string/title_activity_location_view"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".PopUpCategoriesView"
+            android:name=".post.PopUpCategoriesView"
             android:label="Categories"
             android:theme="@style/AppTheme.CustomPOP"></activity>
         <activity
-            android:name="exposure.exposure.DataDriver"
+            android:name=".database.DataDriver"
             android:label="@string/title_data_driver"
             android:theme="@style/AppTheme.CustomPOP">
         </activity>

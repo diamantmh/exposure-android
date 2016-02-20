@@ -1,4 +1,4 @@
-package exposure.exposure;
+package io.github.getExposure.database;
 
 /**
  * ExposureUser is an immutable representation of a user of Exposure.

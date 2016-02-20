@@ -1,4 +1,4 @@
-package io.github.getExposure;
+package io.github.getExposure.post;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import io.github.getExposure.R;
 
 public class LocationView extends AppCompatActivity {
     private LinearLayout commentArea;

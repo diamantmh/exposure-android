@@ -1,4 +1,4 @@
-package io.github.getExposure;
+package io.github.getExposure.post;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+
+import io.github.getExposure.R;
 
 /**
  * Created by michaeldiamant on 2/12/16.

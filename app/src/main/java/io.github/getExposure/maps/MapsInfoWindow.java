@@ -1,4 +1,4 @@
-package io.github.getExposure;
+package io.github.getExposure.maps;
 
 import android.content.Context;
 import android.graphics.Picture;
