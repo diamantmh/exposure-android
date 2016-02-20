@@ -36,8 +36,28 @@
         android:id="@+id/button2"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_apply_filter"
+        android:onClick="addPins"
+        android:id="@+id/randoButton"
+        android:layout_below="@+id/Filters_spinner"
+        android:layout_alignParentStart="true" />
+    <Spinner
+        android:id="@+id/Filters_spinner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:layout_below="@+id/search_exposure"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/randoButton"
+        android:background="#cbcbcb"
+        android:elevation="@android:dimen/app_icon_size"> </Spinner>
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    <!-- compass needs permissions programmed in to work -->
+    <fragment
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/map"
@@ -45,8 +65,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="exposure.getExposure.MapsActivity"
-        android:layout_centerHorizontal="true"
+        map:uiCompass="true"
+        map:mapType="normal"
+        map:uiZoomControls="true"
         android:layout_below="@+id/button2"
+        android:layout_alignParentStart="true"
         android:layout_above="@+id/mapToolBar" />
 
     <LinearLayout
@@ -85,7 +108,6 @@
             android:layout_weight="1"
             android:id="@+id/button5" />
     </LinearLayout>
-
 
 
 </RelativeLayout>
