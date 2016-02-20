@@ -88,7 +88,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     //private Location mLastLocation;
 
-    /* Variables used in developing 1.0
+    /*  Variables used in developing 1.0
     public final static String EXTRA_MESSAGE = "io.github.getExposure.BLURB";
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int REQUEST_CHECK_SETTINGS = -1;
