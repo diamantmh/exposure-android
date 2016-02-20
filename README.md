@@ -99,6 +99,14 @@ Developers on our team will be responsible for reviewing the list of open bugs p
 
 ## Base Feature Release (1.0)
 
+Features not yet implemented:
+
+- List view
+
+Features partially implemented:
+
+- Filters on the map view doesn't yet work, and "Apply Filters" only adds dummy locations
+
 Functional features include:
 
 - Users, Photos, Locations, Comments, and Categories can be created, added, and queried from the database via a web service.
