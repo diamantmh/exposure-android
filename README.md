@@ -2,7 +2,9 @@
 
 Exposure is an Android application that helps you find and tell other people about nearby photo locations. Exposure allows you to view photo locations in different forms. From a quick glance in a map view to a detailed list view, Exposure helps you either spontaneously or methodically choose your next photo destination.
 
-You can find user documentation [here](http://getexposure.github.io/product/user.html), and developer documentation below.
+You can find user documentation [here](http://getexposure.github.io/product/index.html), and developer documentation below.
+
+Additionally, you can view up-to-date [Software Design Specifications](https://docs.google.com/document/d/18sWdtOYFfbUSAQKPTqaiaJ1Nb6MXersM-5ZnIk4cGmY/edit?usp=sharing) and [Software Requirements Specifications](https://docs.google.com/document/d/1nNvZxgk5k2VMcxixJDl_mAD0NAWXg_9bimPEH4NHPy4/edit?usp=sharing).
 
 ## Developer Documentation
 
@@ -42,6 +44,12 @@ Once you have Exposure’s source code, follow these instructions in Android Stu
 - Select the “Nexus 5 API 23” Android Virtual Device
 - Voila, Exposure should start up in the Android Emulator with a map view
 
+### Design Patterns
+
+Exposure uses two design patterns. First, it uses a Factory pattern. Within MapsActivity, `onMapReady()` uses a CameraUpdateFactory to get a CameraUpdate object with the correct properties (e.g. center position and zoom levels) to initialize a Google Maps Fragment.
+
+Another design pattern Exposure uses is the Builder pattern. With many of the model classes such as Location, they build a mutable object, thus allowing information to be added to the model. However, once finished building, the Location model is an immutable object.
+
 ### Test
 
 To test the Exposure DatabaseManager, we implemented several unit tests to assure that the manager was correctly sending and receiving the expected information to and from the RESTful web application. Standard valid input was prepared and used to create http requests. These http requests were sent to the RESTful web application. If a valid expected object were returned, the test would pass, and would fail otherwise. If we send an invalid request, the test would pass if we received the expected response.
@@ -74,3 +82,13 @@ We will handle bug reporting using GitHub’s built-in issues feature. The list 
 The procedure for reporting a bug will be detailed to make finding the source of the issue as easy as possible. The finding user will describe in detail what they were doing at the time the bug occurred, what the undesired behavior was (screen freeze, long wait, app crash, etc.), and will include any error information (stack traces, exception info, etc.) if possible.
 
 Developers on our team will be responsible for reviewing the list of open bugs periodically, and those that pertain to the modules in the app that they are responsible for (i.e. Google Maps API, Facebook SDK, SQL backend, etc.) will fix the bug in a timely manner and push up the modified code accordingly after rebuilding and testing the fix.
+
+# Releases
+
+## Base Feature Release (1.0)
+
+Functional features include:
+
+- Users, Photos, Locations, Comments, and Categories can be created, added, and queried from the database via a web service.
+- Locations can be viewed from both a map.
+- Users may log in with Facebook and view their profile.
