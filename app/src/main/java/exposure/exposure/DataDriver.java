@@ -6,7 +6,10 @@ import android.support.v4.app.FragmentActivity;
 
 import java.io.File;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Example class that demonstrates the use of DatabaseManager
@@ -30,12 +33,7 @@ public class DataDriver extends FragmentActivity {
         man = new DatabaseManager();
         System.out.println("DatabaseManager initiated!");
 
-
-
-        File newPNG = new File("/Users/Tyler/Desktop/testimage.jpg"); // MUST SPECIFY A VALID PHOTO
-
-
-
+        File newPNG = new File("../../../res/mipmap-hdpi/ic_launcher.png");
 
         System.out.println("Allowing networking on main thread (this causes lock-ups so don't do this)");
         // Ignoring the NetworkOnMainThreadException.
@@ -79,12 +77,14 @@ public class DataDriver extends FragmentActivity {
         System.out.println();
         System.out.println("Inserting new location with no ID specified");
         Category cat = new Category(userID, Category.WALKING_ID);
-        WebLocation newLoc = new WebLocation(10,10,20,4,"Quad", "There are nice trees here!");
+        Set<Category> cats = new HashSet<>();
+        cats.add(cat);
+        Location newLoc = new Location(10,10,20,4,"Quad", "There are nice trees here!", cats, new ArrayList<Comment>());
         displayLocation(newLoc);
         long retLocID = man.insert(newLoc);
         System.out.println("Returned Location ID is: " + retLocID);
         if (retLocID <= 0) { throw new AssertionError(); }
-        WebLocation retLoc = newLoc.addID(retLocID);
+        Location retLoc = newLoc.addID(retLocID);
 
         // test insert comment
         System.out.println();
@@ -98,11 +98,12 @@ public class DataDriver extends FragmentActivity {
         // test update location
         System.out.println();
         System.out.println("Updating location that was just inserted with ID = " + retLocID);
-        WebLocation updatedLocation = new WebLocation(retLocID, retLoc.getLat(), retLoc.getLon(), retLoc.getTotalRating() + 10,
-                retLoc.getNumOfRatings(), retLoc.getName(), retLoc.getDesc());
+        Location updatedLocation = new Location(retLocID, retLoc.getLat(), retLoc.getLon(), retLoc.getTotalRating() + 10,
+                retLoc.getNumOfRatings(), retLoc.getName(), retLoc.getDesc(), retLoc.getCategories(), retLoc.getComments());
         boolean goodLocRes = man.update(updatedLocation);
         if (!goodLocRes) { throw new AssertionError(); }
         System.out.println("Location updated with rating + 10");
+
         // test get location
         System.out.println();
         System.out.println("Retrieving updated location with ID = " + retLocID);
@@ -159,16 +160,6 @@ public class DataDriver extends FragmentActivity {
 
         System.out.println("Thanks for using the DatabaseManager Demo!");
         System.exit(0);
-    }
-
-    private void displayLocation(WebLocation loc) {
-        System.out.println(loc.getName());
-        System.out.println(loc.getDesc());
-        System.out.println();
-        System.out.println("\tLocation ID: " + loc.getID());
-        System.out.println("\tlatitude and longitude: " + loc.getLat() + ", " + loc.getLon());
-        System.out.println("\tRating: " + (loc.getTotalRating() / loc.getNumOfRatings()));
-        System.out.println();
     }
 
     private void displayLocation(Location loc) {

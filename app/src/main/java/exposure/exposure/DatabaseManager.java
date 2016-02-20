@@ -18,10 +18,9 @@ import org.springframework.web.client.RestTemplate;
 public class DatabaseManager {
     private RestTemplate restTemplate;
 
-	//public static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
-    public static final String WEB_SERVICE = "http://exposureweb.cloudapp.net/RESTfulProject/REST/WebService/";
+    private static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
 
-    public static final long NULL_ID = -1;
+    private static final long NULL_ID = -1;
 
     /*
      * class invariant,
@@ -298,7 +297,7 @@ public class DatabaseManager {
      *
      * specfield id : long  // uniquely identifies this location for database interactions
      */
-    public static class WebLocation {
+    private static class WebLocation {
 
         private final long id;
         private final float lat;
