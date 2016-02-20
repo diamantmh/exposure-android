@@ -18,7 +18,8 @@ import org.springframework.web.client.RestTemplate;
 public class DatabaseManager {
     private RestTemplate restTemplate;
 
-	public static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
+	//public static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
+    public static final String WEB_SERVICE = "http://exposureweb.cloudapp.net/RESTfulProject/REST/WebService/";
 
     public static final long NULL_ID = -1;
 
@@ -55,7 +56,7 @@ public class DatabaseManager {
      * @param loc the Location with the desired data
      * @return true iff the location entry matching the given ID was updated
       */
-    public boolean update(Location loc) {
+    public boolean update(WebLocation loc) {
         final String url = WEB_SERVICE + "updateLocation";
         return restTemplate.postForObject(url, loc, Boolean.class);
     }
@@ -86,7 +87,7 @@ public class DatabaseManager {
      * @return the ID of the created location. Returns -1 if the location
      * entry was not successfully created
      */
-    public long insert(Location loc) {
+    public long insert(WebLocation loc) {
         final String url = WEB_SERVICE + "insertLocation";
         return restTemplate.postForObject(url, loc, Long.class);
     }
