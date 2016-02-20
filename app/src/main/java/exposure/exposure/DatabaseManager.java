@@ -87,8 +87,10 @@ public class DatabaseManager {
      * entry was not successfully created
      */
     public long insert(Location loc) {
+        WebLocation wLoc = new WebLocation(loc.getLat(),loc.getLon(),loc.getTotalRating(),
+                loc.getNumOfRatings(),loc.getName(),loc.getDesc());
         final String url = WEB_SERVICE + "insertLocation";
-        return restTemplate.postForObject(url, loc, Long.class);
+        return restTemplate.postForObject(url, wLoc, Long.class);
     }
 
     /**
@@ -136,6 +138,20 @@ public class DatabaseManager {
     public long insert(Comment comment) {
         final String url = WEB_SERVICE + "insertComment";
         return restTemplate.postForObject(url, comment, Long.class);
+    }
+
+    /**
+     * Returns true if and only if the new entry was successfully entered into
+     * in the database. Makes a new entry in the database for the given
+     * Category associated with the location id in the given category.
+     *
+     * @param category the category to be inserted into the database
+     * @return true if and only if the category is registered into the
+     * database.
+     */
+    public long insert(Category category) {
+        final String url = WEB_SERVICE + "insertCategory";
+        return restTemplate.postForObject(url, category, Long.class);
     }
 
     /**
