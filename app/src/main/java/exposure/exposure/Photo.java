@@ -75,6 +75,16 @@ public final class Photo {
     public Photo(long authorID, long locID, String source, Date date, Time time, File file) {
         this(NULL_ID, authorID, locID, source, date, time, file);
     }
+    
+    public Photo() {
+        id = NULL_ID;
+        authorID = NULL_ID;
+        locID = NULL_ID;
+        source = "";
+        date = new Date(0);
+        time = new Time(0);
+        file = new File(DEFAULT_PICTURE);
+    }
 
     // Only used for Json mapping
     public Photo() {

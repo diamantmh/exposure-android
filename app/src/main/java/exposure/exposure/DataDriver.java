@@ -41,11 +41,11 @@ public class DataDriver extends FragmentActivity {
         StrictMode.setThreadPolicy(policy);
 
         System.out.println("Trying out some functionality...");
-
+/*
         // test insert user
         System.out.println();
         System.out.println("Inserting a valid user,");
-        User newUser = new User("Hope", "pray", "believe that this will work");
+        User newUser = new User("HEY I'M TEMMIE", "pls work", "I'm a brand new user with id 20 maybe??");
         displayUser(newUser);
         long userID = man.insert(newUser);
         System.out.println("ID = " + userID);
@@ -56,39 +56,46 @@ public class DataDriver extends FragmentActivity {
 
         // test update user
         System.out.println();
-        System.out.println("Updating user that was just inserted with ID = " + userID);
-        boolean goodRes = man.update(new User(userID, "updated username", "updated link", "The about me section is different now!"));
+        System.out.println("Updating user that was just inserted with ID = " + 47);
+        boolean goodRes = man.update(new User(47, "agent47", "updated link", "The about me section is different now! updateUser works!!!!!!!"));
         if (!goodRes) { throw new AssertionError(); }
         System.out.println("User updated");
 
         // test get user
         System.out.println();
-        System.out.println("Retrieving updated user with ID = " + userID);
-        User retrievedUser = man.getUser(userID);
+
+        System.out.println("Retrieving updated user with ID = " + 47);
+        User retrievedUser = man.getUser(47);
+
         if (retrievedUser == null) { throw new AssertionError(); }
         System.out.println("Updated user:");
         displayUser(retrievedUser);
 
-        /*
+        // test remove user
+        System.out.println();
+        System.out.println("Removing user with id = " + 4);
+        boolean remResGood = man.removeUser(4);
+        if (!remResGood) { throw new AssertionError(); }
+        System.out.println("User removed");
+
         // location tests
         // test insert location
         System.out.println();
         System.out.println("Inserting new location with no ID specified");
-        Category cat = new Category(Category.WALKING_ID);
-        Set<Category> cats = new HashSet<>();
-        cats.add(cat);
-        Location newLoc = new Location(10,10,20,4,"Quad", "There are nice trees here!", cats, new ArrayList<Comment>());
+        Category[] cats = new Category[1];
+        cats[0] = new Category(Category.WALKING_ID);;
+        Location newLoc = new Location(10,10,20,4,"Quad", "There are nice trees here!", cats, new Comment[0]);
         displayLocation(newLoc);
         long retLocID = man.insert(newLoc);
         System.out.println("Returned ID is: " + retLocID);
         if (retLocID <= 0) { throw new AssertionError(); }
         Location retLoc = newLoc.addID(retLocID);
-        */
 
+        */
         // test insert comment
         System.out.println();
         System.out.println("Inserting new comment with no ID specified");
-        Comment newCom = new Comment(retUser.getID(), retLoc.getID(), "This is a comment.", new Date(100000), new Time(100000));
+        Comment newCom = new Comment(1, 1, "This is a comment!", new Date(100000), new Time(100000));
         long comID = man.insert(newCom);
         if (comID <= 0) { throw new AssertionError(); }
         Comment retCom = newCom.addID(comID);
@@ -168,7 +175,7 @@ public class DataDriver extends FragmentActivity {
     private void displayLocation(Location loc) {
         System.out.println(loc.getName());
         System.out.println(loc.getDesc());
-        if (!loc.getCategories().isEmpty()) {
+        if (loc.getCategories().length != 0) {
             System.out.println("Categories: ");
             for (Category cat : loc.getCategories()) {
                 System.out.print(cat.getContent() + " ");
@@ -178,7 +185,7 @@ public class DataDriver extends FragmentActivity {
         System.out.println("\tLocation ID: " + loc.getID());
         System.out.println("\tlatitude and longitude: " + loc.getLat() + ", " + loc.getLon());
         System.out.println("\tRating: " + loc.getRating());
-        if (!loc.getComments().isEmpty()) {
+        if (loc.getComments().length != 0) {
             System.out.println("\tComments: ");
             for (Comment com : loc.getComments()) {
                 System.out.println("\t\t" + com.getContent() + " ");

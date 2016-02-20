@@ -16,8 +16,8 @@ public class Location {
     private final int numOfRatings;
     private final String name;
     private final String desc;
-    private Set<Category> categories;
-    private List<Comment> comments;
+    private Category[] categories;
+    private Comment[] comments;
 
     private static final long NULL_ID = -1;
 
@@ -48,7 +48,7 @@ public class Location {
      */
     public Location(long id, float lat, float lon, int totalRating,
                     int numOfRatings, String name, String desc,
-                    Iterable<Category> categories, Iterable<Comment> comments) {
+                    Category[] categories, Comment[] comments) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -58,14 +58,14 @@ public class Location {
         this.desc = desc;
 
         // safe deep copy in
-        this.categories = new HashSet<>();
-        for (Category cat: categories) {
-            this.categories.add(cat);
+        this.categories = new Category[categories.length];
+        for (int i = 0; i < categories.length; i++) {
+            this.categories[i] = categories[i];
         }
         //safe deep copy in
-        this.comments = new ArrayList<>();
-        for (Comment comment : comments) {
-            this.comments.add(comment);
+        this.comments = new Comment[comments.length];
+        for (int i = 0; i < comments.length; i++) {
+            this.comments[i] = comments[i];
         }
     }
 
@@ -86,7 +86,7 @@ public class Location {
      */
     public Location(float lat, float lon, int totalRating,
                     int numOfRatings, String name, String desc,
-                    Iterable<Category> categories, List<Comment> comments) {
+                    Category[] categories, Comment[] comments) {
         this(NULL_ID, lat, lon, totalRating, numOfRatings, name, desc, categories, comments);
     }
 
@@ -98,8 +98,8 @@ public class Location {
         numOfRatings = 0;
         name = "";
         desc = "";
-        categories = new HashSet<>();
-        comments = new ArrayList<>();
+        categories = new Category[0];
+        comments = new Comment[0];
     }
 
     /**
@@ -191,33 +191,32 @@ public class Location {
     }
 
     /**
-     * Returns a Set of all the categories, or tags, associated with this
+     * Returns a array of all the categories, or tags, associated with this
      * Location.
      *
-     * @return a Set of all categories, or tags, associated with this
+     * @return a array of all categories, or tags, associated with this
      * Location
      */
-    public Set<Category> getCategories () {
-        Set<Category> retSet = new HashSet<>();
-        // safe deep copy out
-        for (Category cat: categories) {
-            retSet.add(cat);
+    public Category[] getCategories () {
+        Category[] cats = new Category[categories.length];
+        for (int i = 0; i < categories.length; i++) {
+            cats[i] = categories[i];
         }
-        return retSet;
+        return cats;
     }
 
     /**
-     * Returns a List of all comments posted to this Location.
+     * Returns a array of all comments posted to this Location.
      *
-     * @return a List of all comments posted to this Location
+     * @return a array of all comments posted to this Location
      */
-    public List<Comment> getComments() {
-        List<Comment> commentsList = new ArrayList<>();
-        // safe deep copy out
-        for (Comment comment : comments) {
-            commentsList.add(comment);
+    public Comment[] getComments() {
+        //safe deep copy out
+        Comment[] coms = new Comment[comments.length];
+        for (int i = 0; i < comments.length; i++) {
+            coms[i] = comments[i];
         }
-        return commentsList;
+        return coms;
     }
 
     /**

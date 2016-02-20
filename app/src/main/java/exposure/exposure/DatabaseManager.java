@@ -229,4 +229,45 @@ public class DatabaseManager {
         final String url = WEB_SERVICE + "getLocationPhotos?id=" + id;
         return restTemplate.getForObject(url, Photo[].class);
     }
+
+    /**
+     * Returns all locations within the given square radius. Returns null if
+     * there are no results.
+     *
+     * @param originLat latitude of the center of the square
+     * @param originLon longitude of the center of the square
+     * @param radiusLat distance from the center to the top and bottom sides of
+     *                  the square
+     * @param radiusLon distance from the center to the left and right sides
+     *                  of the square
+     * @return an array of Location within the given square radius or null if
+     * there are no results
+     */
+    public Location[] getLocationsInRadius(float originLat, float originLon, float radiusLat, float radiusLon) {
+        float lat1 = originLat - radiusLat;
+        float lat2 = originLat + radiusLat;
+        float lon1 = originLon - radiusLon;
+        float lon2 = originLon + radiusLon;
+
+        return getLocationsInRange(lat1,lat2,lon1,lon2);
+    }
+
+    /**
+     * Returns all locations within the given rectangular range. Returns null
+     * if there are no results.
+     *
+     * requires lat1 < lat2 and lon1 < lon2
+     *
+     * @param lat1 latitude of the bottom side of the rectangle range
+     * @param lat2 latitude of the top side of the rectangle range
+     * @param lon1 longitude of the left side of the rectangle range
+     * @param lon2 longitude of the right side of the rectangle range
+     * @return an array of Location within the given square radius of null if
+     * there are no results
+     */
+    public Location[] getLocationsInRange(float lat1, float lat2, float lon1, float lon2) {
+        final String url = WEB_SERVICE + "getLocationsInRange?lat1=" + lat1 + "&lat2=" + lat2
+                + "&lon1=" + lon1 + "&lon2=" + lon2;
+        return restTemplate.getForObject(url, Location[].class);
+    }
 }
