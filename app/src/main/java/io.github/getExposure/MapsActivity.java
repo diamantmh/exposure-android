@@ -83,12 +83,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final static double CSE_LATITUDE = 47.6532295;
     private final static double CSE_LONGITUDE = -122.306897;
     private GoogleMap mMap;
-    //public final static String EXTRA_MESSAGE = "io.github.getExposure.BLURB";
-    private int currentFilter = 0; // Current filter to select which pins to display
+    private int currentFilter = 0; // Current filter to select which pins to display, to be implemented
+                                   // in v1.0
 
-    private Location mLastLocation;
+    //private Location mLastLocation;
 
-    /*
+    /* Variables used in developing 1.0
+    public final static String EXTRA_MESSAGE = "io.github.getExposure.BLURB";
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int REQUEST_CHECK_SETTINGS = -1;
     ImageButton toListView;
@@ -133,10 +134,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new SpinnerSelectListener());
-
-        //Custom options, options implemented through xml
-        //Other way is through MapView class or MapFragment
+    }
         /*
+        Custom options, options implemented through xml
+        Other way is through MapView class or MapFragment
+
         GoogleMapOptions options = new GoogleMapOptions();
         options.mapType(GoogleMap.MAP_TYPE_NORMAL)
                 .zoomControlsEnabled(true).compassEnabled(true);
@@ -158,8 +160,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getCurrentLocationSettingsAndRequestChangeIfNecessary();
         */
 
-    }
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -170,8 +170,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * installed Google Play services and returned to the app.
      *
      * @param googleMap the GoogleMap to be manipulated
-     * @modifies mMap
-     * @effect sets the initial location of the map
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -199,14 +197,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     /**
-     * Adds all of the pins that can be seen on the screen.
+     * Adds all of the pins that can be seen on the screen (at its location).
      * This method is a callback and is called when the "Apply Filter" button is pressed
-     * @param view
-     * @modifies mMap
-     * @effect adds all of the locations from the database to pins that can be seen on the screen
+     * @param view the view
      */
     public void addPins(View view) {
-        List locations = new ArrayList<Location>();
+        List locations = new ArrayList<>();
         Random r = new Random();
         for (int i = 0; i < 10; i++) {
             LatLng tmp = (new LatLng(r.nextInt(181)- 90, r.nextInt(361) - 180));
@@ -243,12 +239,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Callback called when the user clicks the "search" button.
-     * It moves the map to the location (only latitude and longitude at the moment) inputted
-     * in the search bar
-     * @param view
-     * @modifies mMap
-     * @effect centers map perspective around the latitude/longitude coordinates given in the
-     *         app's text box
+     * It centers map perspective around the latitude/longitude coordinates given in the
+     * app's text box
+     * @param view passed in for drawing/event handling
      */
     public void search(View view) {
         /*
@@ -283,7 +276,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Callback called when the user clicks the "ListView" button
      * Switches the activity from the MapsActivity to ListActivity
-     * @param view
+     * @param view passed in for drawing/event handling
      */
     public void launchListView(View view) {
         Intent listViewIntent = new Intent(getApplicationContext(), ListActivity.class);
@@ -293,7 +286,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Callback called when the user clicks the "Profile" button
      * Switches the activity from the MapsActivity to ProfileViewActivity
-     * @param view
+     * @param view passed in for drawing/event handling
      */
     public void launchProfileView(View view) {
         Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
@@ -303,7 +296,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Callback called when the user clicks the "Post" button
      * Switches the activity from the MapsActivity to PostActivity
-     * @param view
+     * @param view passed in for drawing/event handling
      */
     public void launchPostView(View view) {
         Intent postViewIntent = new Intent(getApplicationContext(), PostActivity.class);
@@ -318,7 +311,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /**
          * Callback called when the marker is pressed
          * Switches the activity from MapsActivity to PostActivity
-         * @param marker
+         * @param marker the marker to be modified with the clicking functionality
          */
         //TODO: currently just goes back to list view
         @Override
@@ -342,7 +335,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /**
          * Sets the filter, to be applied when "Apply Filter" is pressed
          * @param parent the AdapterView
-         * @param view the view
+         * @param view passed in for drawing/event handling
          * @param pos the pos of the item in the spinner
          * @param id the id of the selection
          */
@@ -356,7 +349,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         /**
          * Does nothing, since the filter's options have not been selected
-         * @param parent
+         * @param parent the parent passed in
          */
         public void onNothingSelected(AdapterView<?> parent) {
             // Another interface callback

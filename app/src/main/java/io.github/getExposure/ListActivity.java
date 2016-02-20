@@ -33,7 +33,7 @@ public class ListActivity extends AppCompatActivity {
     /**
      * Callback called when the user clicks the "Map" button
      * Switches the activity to MapsActivity
-     * @param view
+     * @param view passed in for drawing/event handling
      */
     public void launchMapView(View view) {
         Intent mapViewIntent = new Intent(getApplicationContext(), MapsActivity.class);
@@ -43,7 +43,7 @@ public class ListActivity extends AppCompatActivity {
     /**
      * Callback called when the user clicks the "Profile" button
      * Switches the activity to ProfileViewActivity
-     * @param view
+     * @param view passed in for drawing/event handling
      */
     public void launchProfileView(View view) {
         Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
@@ -53,7 +53,7 @@ public class ListActivity extends AppCompatActivity {
     /**
      * Callback called when the user clicks the "Post" button
      * Switches the activity to PostActivity
-     * @param view
+     * @param view passed in for drawing/event handling
      */
     public void launchPostView(View view) {
         Intent postViewIntent = new Intent(getApplicationContext(), PostActivity.class);
