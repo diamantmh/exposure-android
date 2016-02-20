@@ -8,8 +8,14 @@ import android.graphics.RectF;
 import android.view.View;
 
 /**
- * Created by Michael on 2/7/2016.
+ * Basic class to create a custom info window for pins on the map.
+ * Most of the methods are callbacks and are used to draw the components
+ * on the info window.
+ *
+ * Author: Michael Shintaku
  */
+
+//TODO: Most of the implementation, currently not being used
 public class MapsInfoWindowView extends View {
 
     private Picture picture;

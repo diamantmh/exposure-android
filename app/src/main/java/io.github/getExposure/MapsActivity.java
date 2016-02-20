@@ -1,28 +1,47 @@
 package io.github.getExposure;
 
-import android.Manifest;
-import android.content.Context;
+
+import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentSender;
-import android.content.pm.PackageManager;
-
-import com.google.android.gms.location.LocationListener;
-
-import android.location.LocationManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.util.Log;
+
 
 import android.location.Location;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+/*
+import android.widget.ImageButton;
+import android.widget.Button;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.app.ActivityCompat;
+import android.net.Uri;
+import android.location.LocationManager;
+import com.google.android.gms.location.LocationListener;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.content.Context;
+import android.Manifest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -37,45 +56,47 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import java.text.BreakIterator;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Random;
 
-// doesn't save state of activity, changing screen orientation/language can break it
+*/
+/*
+MapsActivity is the activity class responsible for the "map view" of Exposure.
+It allows users to browse pins based on the location of queries and the location given
+by their devices' GPS.
+
+Author: Michael Shintaku
+
+ */
+
+//TODO: save state of activity, changing screen orientation/language can break it
+//TODO: get current phone location
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback/*,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener */{
-    private static final int REQUEST_CHECK_SETTINGS = -1;
 
-    //not quite sure what this does yet, but can't be -1, probably not negative
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-
-    //ImageButton toListView;
-    //ImageButton toProfileView;
-
+    //Latitude/longitude of the Paul G Allen Center
+    private final static double CSE_LATITUDE = 47.6532295;
+    private final static double CSE_LONGITUDE = -122.306897;
     private GoogleMap mMap;
-    private GoogleApiClient mGoogleApiClient;
+    //public final static String EXTRA_MESSAGE = "io.github.getExposure.BLURB";
+    private int currentFilter = 0; // Current filter to select which pins to display
 
+    private Location mLastLocation;
+
+    /*
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static final int REQUEST_CHECK_SETTINGS = -1;
+    ImageButton toListView;
+    ImageButton toProfileView;
+    private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private boolean hasLocationPermissions;
     public static final String TAG = MapsActivity.class.getSimpleName();
-
-
-    public final static String EXTRA_MESSAGE = "io.github.getExposure.BLURB";
     private boolean mRequestingLocationUpdates = true; // permission whether to request location updates
-    private Location mLastLocation;
+
     private BreakIterator mLatitudeText;
     private BreakIterator mLongitudeText;
     private static Location mCurrentLocation;
@@ -83,7 +104,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private BreakIterator mLongitudeTextView;
     private BreakIterator mLatitudeTextView;
     private BreakIterator mLastUpdateTimeTextView;
+    */
 
+    /**
+     * Method called when MapsActivity is active
+     * initializes the mapFragment, spinner, and Facebook sdk
+     * @param savedInstanceState passed in Bundle to create the activity off of
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +121,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // Add the spinner
+        Spinner spinner = (Spinner) findViewById(R.id.Filters_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.maps_filter_spinner, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new SpinnerSelectListener());
 
         //Custom options, options implemented through xml
         //Other way is through MapView class or MapFragment
@@ -103,22 +140,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .zoomControlsEnabled(true).compassEnabled(true);
         */
 
-
-
         // Create an instance of GoogleAPIClient.
-        /*//
+        /*
         System.out.println("GoogleAPICLient initialized");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-       // */
-        //checkLocationPermission();
-        // create location request
-        ///createLocationRequest();
-        //getCurrentLocationSettingsAndRequestChangeIfNecessary();
-
+        */
+        /*
+        checkLocationPermission();
+        create location request
+        createLocationRequest();
+        getCurrentLocationSettingsAndRequestChangeIfNecessary();
+        */
 
     }
 
@@ -130,11 +166,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
+     *
+     * @param googleMap the GoogleMap to be manipulated
+     * @modifies mMap
+     * @effect sets the initial location of the map
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         System.out.println("onMapReady() called");
         mMap = googleMap;
+        /*
+        get current location
         LatLng curr;
         if (mLastLocation != null) {
             System.out.println("Found a current location");
@@ -143,19 +185,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LatLng seattle = new LatLng(47, -122);
             curr = seattle;
         }
-        mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
+        */
 
-        // Add a marker in Sydney and move the camera
-        //LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(curr).title("Marker at Seattle"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(10));
+        LatLng cse = new LatLng(CSE_LATITUDE, CSE_LONGITUDE);
+        mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
+        // Add a marker near seattle and move the camera
+        mMap.addMarker(new MarkerOptions().position(cse).title("Marker near CSE building"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(cse));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
     }
 
 
     /**
-     * Adds random 10 markers per button press
+     * Adds all of the pins that can be seen on the screen.
+     * This method is a callback and is called when the "Apply Filter" button is pressed
      * @param view
+     * @modifies mMap
+     * @effect adds all of the locations from the database to pins that can be seen on the screen
      */
     public void addPins(View view) {
         List locations = new ArrayList<Location>();
@@ -193,46 +239,132 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         */
     }
 
-
-    /** Called when the user clicks the Search button */
-    //TODO: implement searching thing
-
+    /**
+     * Callback called when the user clicks the "search" button.
+     * It moves the map to the location (only latitude and longitude at the moment) inputted
+     * in the search bar
+     * @param view
+     * @modifies mMap
+     * @effect centers map perspective around the latitude/longitude coordinates given in the
+     *         app's text box
+     */
     public void search(View view) {
-        // DO something
+        /*
         Intent intent = new Intent(this, SearchActivity.class);
-        EditText editText = (EditText) findViewById(R.id.search_exposure);
+        EditText editText = (EditText) findViewById(R.id.searchView);
         String message = editText.getText().toString();
         intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
+        startActivity(mapIntent);
+        */
+        EditText editText = (EditText) findViewById(R.id.search_exposure);
+        String searchText = editText.getText().toString();
+        System.out.println("Searchtext: " + searchText);
+        String[] LatAndLong = searchText.split(",");
+        System.out.println("LatAndLong length: " + LatAndLong.length);
+        for (String s : LatAndLong) {
+            System.out.print("element: \n");
+        }
+        if (LatAndLong.length != 2) {
+            System.out.println("error");
+        }
+        double lat = Double.parseDouble(LatAndLong[0]);
+        double lng = Double.parseDouble(LatAndLong[1]);
+        LatLng query = new LatLng(lat, lng);
+        mMap.addMarker(new MarkerOptions().position(query).title("(" + lat + ", " + lng + ")"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(query));
+
     }
 
     // Called when the user clicks the map/list button
+
+    /**
+     * Callback called when the user clicks the "ListView" button
+     * Switches the activity from the MapsActivity to ListActivity
+     * @param view
+     */
     public void launchListView(View view) {
         Intent listViewIntent = new Intent(getApplicationContext(), ListActivity.class);
         startActivity(listViewIntent);
     }
 
-    // Called when the user clicks the profile button
+    /**
+     * Callback called when the user clicks the "Profile" button
+     * Switches the activity from the MapsActivity to ProfileViewActivity
+     * @param view
+     */
     public void launchProfileView(View view) {
         Intent profileViewIntent = new Intent(getApplicationContext(), ProfileViewActivity.class);
         startActivity(profileViewIntent);
     }
 
-    // Called when the user clicks the post button
+    /**
+     * Callback called when the user clicks the "Post" button
+     * Switches the activity from the MapsActivity to PostActivity
+     * @param view
+     */
     //TODO: currently just goes back to map view
     public void launchPostView(View view) {
-        /*
-        Intent intent = new Intent(this, ProfileViewActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, message);
-        EditText editText = (EditText) findViewById(R.id.);
-        String message = editText.getText().toString();
-        */
         Intent postViewIntent = new Intent(getApplicationContext(), MapsActivity.class);
         startActivity(postViewIntent);
     }
 
     /**
-     * Centeres map around location
+     * Internal listener class for MapsInfoWindowClicks
+     * Class used for it's callback method that's called when a marker's info window is clicked
+     */
+    private class MapsInfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener {
+        /**
+         * Callback called when the marker is pressed
+         * Switches the activity from MapsActivity to PostActivity
+         * @param marker
+         */
+        //TODO: currently just goes back to list view
+        @Override
+        public void onInfoWindowClick(Marker marker) {
+            String input = "Info window clicked";
+            System.out.println("info window clicked");
+            CharSequence str =  input.subSequence(0, input.length());
+            Toast.makeText(MapsActivity.this, str, Toast.LENGTH_SHORT).show();
+            // change this to post view
+            Intent listViewIntent = new Intent(getApplicationContext(), ListActivity.class);
+            startActivity(listViewIntent);
+        }
+    }
+
+    /**
+     * Internal listener class for Spinners
+     * Acts when a spinner's option is selected
+     */
+    private class SpinnerSelectListener extends Activity implements AdapterView.OnItemSelectedListener {
+
+        /**
+         * Sets the filter, to be applied when "Apply Filter" is pressed
+         * @param parent the AdapterView
+         * @param view the view
+         * @param pos the pos of the item in the spinner
+         * @param id the id of the selection
+         */
+        public void onItemSelected(AdapterView<?> parent, View view,
+                                   int pos, long id) {
+            // An item was selected. You can retrieve the selected item using
+            // parent.getItemAtPosition(pos)
+            currentFilter = pos;
+            System.out.println(parent.getItemAtPosition(pos)); // for debugging
+        }
+
+        /**
+         * Does nothing, since the filter's options have not been selected
+         * @param parent
+         */
+        public void onNothingSelected(AdapterView<?> parent) {
+            // Another interface callback
+            System.out.println("Nothing selected"); // for debugging
+        }
+    }
+
+    /**
+     * Centers map around location
      * @param location
      */
     /*
@@ -242,54 +374,52 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
         System.out.println("new loc: Lat: " + location.getLatitude() + " Long: " + location.getLongitude());
     }
-    */
 
-    /*
-        protected void getCurrentLocationSettingsAndRequestChangeIfNecessary() {
-            System.out.println("getCurrentLocationSettings() called");
-            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                    .addLocationRequest(mLocationRequest);
-            PendingResult<LocationSettingsResult> result =
-                    LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,
-                            builder.build());
-            //location settings in the locationSettingsResult
+    protected void getCurrentLocationSettingsAndRequestChangeIfNecessary() {
+        System.out.println("getCurrentLocationSettings() called");
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,
+                        builder.build());
+        //location settings in the locationSettingsResult
 
-            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-                @Override
-                public void onResult(LocationSettingsResult result) {
-                    final Status status = result.getStatus();
-                    //final LocationSettingsStates =
-                    result.getLocationSettingsStates();
-                    switch (status.getStatusCode()) {
-                        case LocationSettingsStatusCodes.SUCCESS:
-                            // All location settings are satisfied. The client can
-                            // initialize location requests here.
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                //final LocationSettingsStates =
+                result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can
+                        // initialize location requests here.
 
-                            break;
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            // Location settings are not satisfied, but this can be fixed
-                            // by showing the user a dialog.
-                            try {
-                                // Show the dialog by calling startResolutionForResult(),
-                                // and check the result in onActivityResult().
-                                status.startResolutionForResult(
-                                        MapsActivity.this,
-                                        REQUEST_CHECK_SETTINGS);
-                            } catch (IntentSender.SendIntentException e) {
-                                // Ignore the error.
-                            }
-                            break;
-                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            // Location settings are not satisfied. However, we have no way
-                            // to fix the settings so we won't show the dialog.
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied, but this can be fixed
+                        // by showing the user a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    MapsActivity.this,
+                                    REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way
+                        // to fix the settings so we won't show the dialog.
 
-                            break;
-                    }
+                        break;
                 }
-            });
-        }
-    */
-    /*
+            }
+        });
+    }
+
+
     //create location request
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -329,8 +459,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-    */
-/*
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -357,7 +487,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // permissions this app might request
         }
     }
-*/
+
 
     /**
      * What to do onStart()
@@ -368,7 +498,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mGoogleApiClient.connect();
         super.onStart();
     }
-*/
+
     /**
      * What to do onStop()
      */
@@ -378,8 +508,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mGoogleApiClient.disconnect();
         super.onStop();
     }
-*/
-    /*
+
+
     protected void myRequestLocationUpdates() {
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -401,8 +531,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
-    */
-    /*
+
+
     protected void startLocationUpdates() {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -418,8 +548,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
     }
-*/
-    /*
+
+
     //TODO: what happens when user doesn't give location?
     @Override
     public void onConnected(Bundle connectionHint) {
@@ -438,26 +568,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mGoogleApiClient, mLocationRequest, this);
             //System.out.println("result is: " + result.toString());
         }
-*/
 
-/*
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            System.out.println("permission granted");
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-            if (mLastLocation == null) {
-                System.out.println("mLastLocation == null");
-                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
-                        mLocationRequest, this);
-                //handleNewLocation(mLastLocation);
-            } else {
-                handleNewLocation(mLastLocation);
-            }
-        }
-*/
-        /*
         // Assume thisActivity is the current activity
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -472,69 +583,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 handleNewLocation(mLastLocation);
             }
         }
-        */
-        /*
+
+
         if (mGoogleApiClient == null) {
             System.out.println("mGoogleApiClient is null");
         }
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
-        }
-        // Assume thisActivity is the current activity
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        // == PackageManager.PERMISSION_GRANTED or .PERMISSION_DENIED
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            System.out.println("Permission granted");
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-            if (mLastLocation != null) {
-                System.out.println("Found last locatioN");
-                mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-                mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-                LatLng curr = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(curr).title("Marker at current location, or Sydney"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
-            } else {
-                System.out.println("permission granted, but did not find last location");
-            }
-        } else { // permission denied
-            System.out.println("Permission denied");
-        }
-        */
-        /*
-        try {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-            if (mLastLocation != null) {
-                System.out.println("Found last locatioN");
-                mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-                mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-                /*
-                LatLng curr = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(curr).title("Marker at current location, or Sydney"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
-                */
-                // does this work?
-                // mCurrentLocation = mLastLocation;
-            /*} else { // user doesn't want to give location
-                System.out.println("current location not available");
-                LatLng rando = new LatLng(100, 151);
 
-                // Add a marker in rando and move the camera
-               // mMap.addMarker(new MarkerOptions().position(rando).title("Marker at rando location"));
-               // mMap.moveCamera(CameraUpdateFactory.newLatLng(rando));
-            }
-        } catch (SecurityException s) {
-            // pretty sure this happens whne there's no permissions?
-            // not sure if it's different than prior else statement
-            // user doesn't want to give location
-            System.out.println("SecurityException: " + s.toString());
-        }
-
-    }
-    */
-/*
     @Override
     public void onLocationChanged(Location location) {
         System.out.println("onlocationchanged called");
@@ -576,9 +632,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.i(TAG, "Location services suspended");
         // do something
     }
-*/
 
-/*
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -594,19 +648,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
     */
-
-    private class MapsInfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                String input = "Info window clicked";
-                System.out.println("info window clicked");
-                CharSequence str =  input.subSequence(0, input.length());
-                Toast.makeText(MapsActivity.this, str, Toast.LENGTH_SHORT).show();
-                // change this to post view
-                Intent listViewIntent = new Intent(getApplicationContext(), ListActivity.class);
-                startActivity(listViewIntent);
-            }
-    }
 }
 
 
