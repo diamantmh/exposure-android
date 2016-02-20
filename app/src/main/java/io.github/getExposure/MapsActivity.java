@@ -3,6 +3,7 @@ package io.github.getExposure;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Point;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,10 +23,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +61,6 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.Projection;
 import java.text.BreakIterator;
 import java.text.DateFormat;
 import java.util.Date;
@@ -202,6 +205,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param view the view
      */
     public void addPins(View view) {
+        /*
+        Testing methods
         List locations = new ArrayList<>();
         Random r = new Random();
         for (int i = 0; i < 10; i++) {
@@ -213,28 +218,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet("(Lat, Long): (" + tmp.latitude + ", " + tmp.longitude + ") " +
                             "click to view photos"));
         }
+        */
 
-        /*
         DatabaseManager db = new DatabaseManager();
         // need to get all ID's from db
-        List collectionOfAllIDs = new ArrayList<String>();
-        List locations = new ArrayList<Location>();
-        for (String id: collectionOfAllIDs) {
-            Location temp = db.getLocation(id);
-            if (temp.getLatitude() ... && temp.getLongitude() ...) {
-                locations.add(temp);
-            }
-        }
-
-        for (Location t : locations) {
-            LatLng temp = new LatLng(t.getLatitude(), t.getLongitude());
+        VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
+        LatLngBounds bounds = visibleRegion.latLngBounds;
+        LatLng ne = bounds.northeast;
+        LatLng sw = bounds.southwest;
+        LatLng center = bounds.getCenter();
+        float originLat = (float) center.latitude;
+        float originLon = (float) center.longitude;
+        float radiusLat = (float) (ne.latitude - sw.latitude);
+        float radiusLon = (float) (ne.longitude - sw.longitude);
+        Location[] locationsInRadius = db.getLocationsInRadius(originLat, originLon, radiusLat, radiusLon);
+        for (Location t : locationsInRadius) {
+            double tLat = t.getLat();
+            double tLon = t.getLon();
+            LatLng temp = new LatLng(tLat, tLon);
+            String name = t.getName();
             // t.toString() should be the location t's name
-            mMap.addMarker(new MarkerOptions().position(temp).title(t.toString()));
+            mMap.addMarker(new MarkerOptions().position(temp).title(name));
         }
-        LatLng seattle = new LatLng(47, 122);
-        mMap.addMarker(new MarkerOptions().position(seattle).title("Marker at Seeattle"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(seattle));
-        */
     }
 
     /**
