@@ -34,6 +34,8 @@ import com.google.android.gms.maps.model.VisibleRegion;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import exposure.exposure.DatabaseManager;
 /*
 import android.widget.ImageButton;
 import android.widget.Button;
@@ -231,8 +233,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         float originLon = (float) center.longitude;
         float radiusLat = (float) (ne.latitude - sw.latitude);
         float radiusLon = (float) (ne.longitude - sw.longitude);
-        Location[] locationsInRadius = db.getLocationsInRadius(originLat, originLon, radiusLat, radiusLon);
-        for (Location t : locationsInRadius) {
+        exposure.exposure.Location[] locationsInRadius = db.getLocationsInRadius(originLat, originLon, radiusLat, radiusLon);
+        for (exposure.exposure.Location t : locationsInRadius) {
             double tLat = t.getLat();
             double tLon = t.getLon();
             LatLng temp = new LatLng(tLat, tLon);
