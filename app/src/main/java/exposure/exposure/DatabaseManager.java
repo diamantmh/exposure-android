@@ -56,8 +56,10 @@ public class DatabaseManager {
      * @return true iff the location entry matching the given ID was updated
       */
     public boolean update(Location loc) {
+        WebLocation wLoc = new WebLocation(loc.getLat(),loc.getLon(),loc.getTotalRating(),
+                loc.getNumOfRatings(),loc.getName(),loc.getDesc());
         final String url = WEB_SERVICE + "updateLocation";
-        return restTemplate.postForObject(url, loc, Boolean.class);
+        return restTemplate.postForObject(url, wLoc, Boolean.class);
     }
 
     /**
