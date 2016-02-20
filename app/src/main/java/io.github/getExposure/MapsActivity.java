@@ -9,10 +9,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.util.Log;
 
 
-import android.location.Location;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -24,12 +22,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
+
+import exposure.exposure.DatabaseManager;
+import exposure.exposure.ExposureLocation;
 /*
 import android.widget.ImageButton;
 import android.widget.Button;
@@ -57,7 +58,6 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.Projection;
 import java.text.BreakIterator;
 import java.text.DateFormat;
 import java.util.Date;
@@ -202,7 +202,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param view the view
      */
     public void addPins(View view) {
-        List locations = new ArrayList<>();
+
+        //Testing methods
         Random r = new Random();
         for (int i = 0; i < 10; i++) {
             LatLng tmp = (new LatLng(r.nextInt(181)- 90, r.nextInt(361) - 180));
@@ -213,27 +214,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet("(Lat, Long): (" + tmp.latitude + ", " + tmp.longitude + ") " +
                             "click to view photos"));
         }
-
         /*
+
         DatabaseManager db = new DatabaseManager();
         // need to get all ID's from db
-        List collectionOfAllIDs = new ArrayList<String>();
-        List locations = new ArrayList<Location>();
-        for (String id: collectionOfAllIDs) {
-            Location temp = db.getLocation(id);
-            if (temp.getLatitude() ... && temp.getLongitude() ...) {
-                locations.add(temp);
-            }
-        }
-
-        for (Location t : locations) {
-            LatLng temp = new LatLng(t.getLatitude(), t.getLongitude());
+        VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
+        LatLngBounds bounds = visibleRegion.latLngBounds;
+        LatLng ne = bounds.northeast;
+        LatLng sw = bounds.southwest;
+        LatLng center = bounds.getCenter();
+        float originLat = (float) center.latitude;
+        float originLon = (float) center.longitude;
+        float radiusLat = (float) (ne.latitude - sw.latitude);
+        float radiusLon = (float) (ne.longitude - sw.longitude);
+        ExposureLocation[] locationsInRadius = db.getLocationsInRadius(originLat, originLon, radiusLat, radiusLon);
+        for (ExposureLocation t : locationsInRadius) {
+            double tLat = t.getLat();
+            double tLon = t.getLon();
+            LatLng temp = new LatLng(tLat, tLon);
+            String name = t.getName();
             // t.toString() should be the location t's name
-            mMap.addMarker(new MarkerOptions().position(temp).title(t.toString()));
+            mMap.addMarker(new MarkerOptions().position(temp).title(name));
         }
-        LatLng seattle = new LatLng(47, 122);
-        mMap.addMarker(new MarkerOptions().position(seattle).title("Marker at Seeattle"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(seattle));
         */
     }
 
@@ -272,36 +274,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // Called when the user clicks the map/list button
-
     /**
      * Callback called when the user clicks the "ListView" button
-     * Switches the activity from the MapsActivity to ListActivity
+     * Switches the activity to ListActivity
      * @param view passed in for drawing/event handling
      */
     public void launchListView(View view) {
-        Intent listViewIntent = new Intent(getApplicationContext(), ListActivity.class);
+        Intent listViewIntent = new Intent(view.getContext(), ListActivity.class);
         startActivity(listViewIntent);
     }
 
     /**
      * Callback called when the user clicks the "Profile" button
-     * Switches the activity from the MapsActivity to ProfileViewActivity
+     * Switches the activity to ProfileViewActivity
      * @param view passed in for drawing/event handling
      */
     public void launchProfileView(View view) {
-        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
+        Intent profileViewIntent = new Intent(view.getContext(), ProfileActivity.class);
         startActivity(profileViewIntent);
     }
 
     /**
      * Callback called when the user clicks the "Post" button
-     * Switches the activity from the MapsActivity to PostActivity
+     * Switches the activity to PostActivity
      * @param view passed in for drawing/event handling
      */
     public void launchPostView(View view) {
-        Intent postViewIntent = new Intent(getApplicationContext(), PostActivity.class);
+        Intent postViewIntent = new Intent(view.getContext(), PostActivity.class);
         startActivity(postViewIntent);
     }
+
 
     /**
      * Internal listener class for MapsInfoWindowClicks

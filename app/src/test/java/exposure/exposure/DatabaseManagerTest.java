@@ -1,7 +1,5 @@
 package exposure.exposure;
 
-import android.provider.ContactsContract;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Before;
@@ -14,8 +12,6 @@ import java.sql.Time;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import exposure.exposure.Photo;
 
 import static org.junit.Assert.*;
 
@@ -32,17 +28,17 @@ public class DatabaseManagerTest {
     private static DatabaseManager man;
 
     // data objects
-    private static Location newLoc;
-    private static Location retLoc;
+    private static ExposureLocation newLoc;
+    private static ExposureLocation retLoc;
     private static User newUser;
     private static User retUser;
-    private static Photo newPhoto;
-    private static Photo retPhoto;
+    private static ExposurePhoto newPhoto;
+    private static ExposurePhoto retPhoto;
     private static Category cat1;
     private static Category cat2;
     private static Comment newCom;
     private static Comment retCom;
-    private static Photo[] photoArr;
+    private static ExposurePhoto[] photoArr;
 
     /**
      * Sets up all the test data objects that mock RestTemplate will use
@@ -59,11 +55,11 @@ public class DatabaseManagerTest {
         List<Comment> comments = new ArrayList<>();
         comments.add(retCom);
 
-        newLoc = new Location(5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // no ID so it's new
-        retLoc = new Location(1,5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // has ID
+        newLoc = new ExposureLocation(5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // no ID so it's new
+        retLoc = new ExposureLocation(1,5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // has ID
 
-        newPhoto = new Photo(1,1,"link",new Date(1000000),new Time(1000000),new File("https://avatars2.githubusercontent.com/u/16708552?v=3&s=200")); // no ID so it's new
-        retPhoto = new Photo(1,1,1,"link",new Date(1000000),new Time(1000000),new File("https://avatars2.githubusercontent.com/u/16708552?v=3&s=200")); // has ID
+        newPhoto = new ExposurePhoto(1,1,"link",new Date(1000000),new Time(1000000),new File("https://avatars2.githubusercontent.com/u/16708552?v=3&s=200")); // no ID so it's new
+        retPhoto = new ExposurePhoto(1,1,1,"link",new Date(1000000),new Time(1000000),new File("https://avatars2.githubusercontent.com/u/16708552?v=3&s=200")); // has ID
 
         newUser = new User("swammer","link","Hi, I like photography!");
         retUser = new User(1,"swammer","link","Hi, I like photography!");
@@ -71,7 +67,7 @@ public class DatabaseManagerTest {
         newCom = new Comment(1,1,"I don't like this place at all, it stinks and is ugly.",new Date(1000000),new Time(1000000));
         retCom = new Comment(1,1,1,"I don't like this place at all, it stinks and is ugly.", new Date(1000000),new Time(1000000));
 
-        photoArr = new Photo[1];
+        photoArr = new ExposurePhoto[1];
         photoArr[0] = retPhoto;
     }
 
@@ -135,21 +131,21 @@ public class DatabaseManagerTest {
                 .thenReturn(null);
 
         // get location web service behavior
-        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 1, Location.class))
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 1, ExposureLocation.class))
                 .thenReturn(retLoc);
-        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 99, Location.class))
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 99, ExposureLocation.class))
                 .thenReturn(null);
 
         // get user photos web service behavior
-        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUserPhotos?id=" + 1, Photo[].class))
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUserPhotos?id=" + 1, ExposurePhoto[].class))
                 .thenReturn(photoArr);
-        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUserPhotos?id=" + 99, Photo[].class))
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUserPhotos?id=" + 99, ExposurePhoto[].class))
                 .thenReturn(null);
 
         // get location photos web service behavior
-        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocationPhotos?id=" + 1, Photo[].class))
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocationPhotos?id=" + 1, ExposurePhoto[].class))
                 .thenReturn(photoArr);
-        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocationPhotos?id=" + 99, Photo[].class))
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getLocationPhotos?id=" + 99, ExposurePhoto[].class))
                 .thenReturn(null);
 
         // make a new DatabaseManager that has a mocked RestTemplate inside
@@ -320,55 +316,55 @@ public class DatabaseManagerTest {
 
     @Test
     public void testGetExistingLocation() throws Exception {
-        Location actual = man.getLocation((long) 1);
-        Location expected = retLoc;
+        ExposureLocation actual = man.getLocation((long) 1);
+        ExposureLocation expected = retLoc;
 
         assertEquals("Should return location matching the given ID", expected, actual);
-        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 1, Location.class);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 1, ExposureLocation.class);
     }
 
     @Test
     public void testGetBogusLocation() throws Exception {
-        Location actual = man.getLocation((long) 99);
-        Location expected = null;
+        ExposureLocation actual = man.getLocation((long) 99);
+        ExposureLocation expected = null;
 
         assertEquals("Should return null when passed ID that does not match an existing location", expected, actual);
-        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 99, Location.class);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getLocation?id=" + 99, ExposureLocation.class);
     }
 
     @Test
     public void testGetExistingUserPhotos() throws Exception {
-        Photo[] actual = man.getUserPhotos((long) 1);
-        Photo[] expected = photoArr;
+        ExposurePhoto[] actual = man.getUserPhotos((long) 1);
+        ExposurePhoto[] expected = photoArr;
 
         assertArrayEquals("Should return an array of user photos", expected, actual);
-        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUserPhotos?id=" + 1, Photo[].class);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUserPhotos?id=" + 1, ExposurePhoto[].class);
     }
 
     @Test
     public void testGetBogusUserPhotos() throws Exception {
-        Photo[] actual = man.getUserPhotos((long) 99);
-        Photo[] expected = null;
+        ExposurePhoto[] actual = man.getUserPhotos((long) 99);
+        ExposurePhoto[] expected = null;
 
         assertArrayEquals("Should return an empty array", expected, actual);
-        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUserPhotos?id=" + 99, Photo[].class);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUserPhotos?id=" + 99, ExposurePhoto[].class);
     }
 
     @Test
     public void testGetExistingLocationPhotos() throws Exception {
-        Photo[] actual = man.getLocationPhotos((long) 1);
-        Photo[] expected = photoArr;
+        ExposurePhoto[] actual = man.getLocationPhotos((long) 1);
+        ExposurePhoto[] expected = photoArr;
 
         assertArrayEquals("Should return an array of location photos", expected, actual);
-        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getLocationPhotos?id=" + 1, Photo[].class);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getLocationPhotos?id=" + 1, ExposurePhoto[].class);
     }
 
     @Test
     public void testGetBogusLocationPhotos() throws Exception {
-        Photo[] actual = man.getLocationPhotos((long) 99);
-        Photo[] expected = null;
+        ExposurePhoto[] actual = man.getLocationPhotos((long) 99);
+        ExposurePhoto[] expected = null;
 
         assertArrayEquals("Should return an empty array", expected, actual);
-        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getLocationPhotos?id=" + 99, Photo[].class);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getLocationPhotos?id=" + 99, ExposurePhoto[].class);
     }
 }

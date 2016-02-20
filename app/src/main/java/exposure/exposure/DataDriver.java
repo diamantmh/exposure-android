@@ -46,19 +46,19 @@ public class DataDriver extends FragmentActivity {
         // test insert user
         System.out.println();
         System.out.println("Inserting a valid user,");
-        User newUser = new User("HEY I'M GOKU", "GOKU LINK", "MY POWER LEVEL IS OVER 9000!!!!!!!!");
+        ExposureUser newUser = new ExposureUser("HEY I'M GOKU", "GOKU LINK", "MY POWER LEVEL IS OVER 9000!!!!!!!!");
         displayUser(newUser);
         long userID = man.insert(newUser);
         System.out.println("ID = " + userID);
         if (userID <= 0) { throw new AssertionError(); }
         System.out.println("User has been inserted");
-        User retUser = newUser.addID(userID);
+        ExposureUser retUser = newUser.addID(userID);
         displayUser(retUser);
 
         // test update user
         System.out.println();
         System.out.println("Updating user that was just inserted with ID = " + userID);
-        boolean goodRes = man.update(new User(userID, "GOGITA", "SUPERSAYAN LINK", "HUUUUUUGE MUSCLES"));
+        boolean goodRes = man.update(new ExposureUser(userID, "GOGITA", "SUPERSAYAN LINK", "HUUUUUUGE MUSCLES"));
         if (!goodRes) { throw new AssertionError(); }
         System.out.println("User updated");
 
@@ -66,7 +66,7 @@ public class DataDriver extends FragmentActivity {
         System.out.println();
 
         System.out.println("Retrieving updated user with ID = " + userID);
-        User retrievedUser = man.getUser(userID);
+        ExposureUser retrievedUser = man.getUser(userID);
 
         if (retrievedUser == null) { throw new AssertionError(); }
         System.out.println("Got User:");
@@ -107,7 +107,7 @@ public class DataDriver extends FragmentActivity {
         // test get location
         System.out.println();
         System.out.println("Retrieving updated location with ID = " + retLocID);
-        Location retrievedLocation = man.getLocation(retLocID);
+        ExposureLocation retrievedLocation = man.getLocation(retLocID);
         if (retrievedLocation == null) { throw new AssertionError(); }
         System.out.println("Got location:");
         displayLocation(retrievedLocation);
@@ -116,17 +116,17 @@ public class DataDriver extends FragmentActivity {
         System.out.println();
         System.out.println("Inserting new photo with no ID specified");
         System.out.println("Creating a photo...");
-        Photo newPhoto = new Photo(userID,retLocID,"",new Date(999),new Time(888), newPNG);
+        ExposurePhoto newPhoto = new ExposurePhoto(userID,retLocID,"",new Date(999),new Time(888), newPNG);
         long photoID = man.insert(newPhoto);
         System.out.println("PhotoID: " + photoID);
         if (photoID <= 0) { throw new AssertionError(); }
-        Photo retPhoto = newPhoto.addID(photoID);
+        ExposurePhoto retPhoto = newPhoto.addID(photoID);
         System.out.println("Returned ID is: " + photoID);
 
         // test get user photos
         System.out.println();
         System.out.println("Retrieving user photos from user with id = " + userID);
-        Photo[] userPhotos = man.getUserPhotos(userID);
+        ExposurePhoto[] userPhotos = man.getUserPhotos(userID);
         if (userPhotos == null) {
             System.out.println("There are no returned photos! The return array is null.");
         } else {
@@ -137,7 +137,7 @@ public class DataDriver extends FragmentActivity {
         // test get location photos
         System.out.println();
         System.out.println("Retrieving location photos from location with id = " + retLocID);
-        Photo[] locPhotos = man.getLocationPhotos(retLocID);
+        ExposurePhoto[] locPhotos = man.getLocationPhotos(retLocID);
         if (locPhotos == null) {
             System.out.println("There are no returned photos! The return array is null.");
         } else {
@@ -162,7 +162,7 @@ public class DataDriver extends FragmentActivity {
         System.exit(0);
     }
 
-    private void displayLocation(Location loc) {
+    private void displayLocation(ExposureLocation loc) {
         System.out.println(loc.getName());
         System.out.println(loc.getDesc());
         System.out.println();
@@ -183,7 +183,7 @@ public class DataDriver extends FragmentActivity {
         System.out.println();
     }
 
-    private void displayUser(User user) {
+    private void displayUser(ExposureUser user) {
         System.out.println("\tUser ID: " + user.getID());
         System.out.println("\tUsername: " + user.getUsername());
         System.out.println("\tAbout me:");

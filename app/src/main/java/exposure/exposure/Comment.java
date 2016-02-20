@@ -31,8 +31,8 @@ public class Comment {
      *
      * Requires date and time to be not null
      *
-     * Should not be used when adding a new comment to a Location. You should
-     * omit the ID in this case, add it to Location, then update Location using
+     * Should not be used when adding a new comment to a ExposureLocation. You should
+     * omit the ID in this case, add it to ExposureLocation, then update ExposureLocation using
      * DatabaseManager. Only use this constructor when you have an ID provided
      * by DatabaseManager.
      *
@@ -55,7 +55,7 @@ public class Comment {
      * Constructs a Comment with the given parameters.
      *
      * The ID parameter is omitted. This constructor should be used when adding
-     * a new comment to a Location. Once you have a Location with new comments
+     * a new comment to a ExposureLocation. Once you have a ExposureLocation with new comments
      * in them, you must update that location using DatabaseManager for the
      * changes to be saved.
      *
@@ -90,12 +90,12 @@ public class Comment {
     }
 
     /**
-     * Returns the unique identifier of the User that originally posted this
+     * Returns the unique identifier of the ExposureUser that originally posted this
      * Comment.
      *
      * The returned ID can be used to interact with DatabaseManager.
      *
-     * @return the unique identifier of the User that posted this photo
+     * @return the unique identifier of the ExposureUser that posted this photo
      */
     public long getAuthorID() {
         return authorID;
@@ -107,7 +107,7 @@ public class Comment {
      *
      * The returned ID can be used to interact with DatabaseManager.
      *
-     * @return the unique identifier of this Location
+     * @return the unique identifier of this ExposureLocation
      */
     public long getLocID() {
         return locID;

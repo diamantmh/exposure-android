@@ -52,11 +52,11 @@ public class DatabaseManager {
      *
      * Requires that loc to be an existing location (a location returned by DatabaseManager).
      *
-     * @param loc the Location with the desired data
+     * @param loc the ExposureLocation with the desired data
      * @return true iff the location entry matching the given ID was updated
       */
 
-    public boolean update(Location loc) {
+    public boolean update(ExposureLocation loc) {
         WebLocation wLoc = new WebLocation(loc.getLat(),loc.getLon(),loc.getTotalRating(),
                 loc.getNumOfRatings(),loc.getName(),loc.getDesc());
         final String url = WEB_SERVICE + "updateLocation";
@@ -69,27 +69,27 @@ public class DatabaseManager {
      *
      * Requires that user to be an existing user (a user returned by DatabaseManager).
      *
-     * @param user the User with the desired data
+     * @param user the ExposureUser with the desired data
      * @return true iff the user entry matching the given ID was updated
      */
-    public boolean update(User user) {
+    public boolean update(ExposureUser user) {
         final String url = WEB_SERVICE + "updateUser";
         return restTemplate.postForObject(url, user, Boolean.class);
     }
 
     /**
      * Returns the ID of the new entry in the database. Makes a new entry in the
-     * database for the given Location. Returns -1 if the entry was not
+     * database for the given ExposureLocation. Returns -1 if the entry was not
      * created.
      *
      * Requires that loc to be a new location (no ID specified when constructed).
      *
-     * @param loc the Location with the desired data to be saved as a new
+     * @param loc the ExposureLocation with the desired data to be saved as a new
      *              entry in the database
      * @return the ID of the created location. Returns -1 if the location
      * entry was not successfully created
      */
-    public long insert(Location loc) {
+    public long insert(ExposureLocation loc) {
         WebLocation wLoc = new WebLocation(loc.getLat(),loc.getLon(),loc.getTotalRating(),
                 loc.getNumOfRatings(),loc.getName(),loc.getDesc());
         final String url = WEB_SERVICE + "insertLocation";
@@ -98,32 +98,32 @@ public class DatabaseManager {
 
     /**
      * Returns the ID of the new entry in the database. Makes a new entry in the
-     * database for the given Photo. Returns -1 if the entry was not created.
+     * database for the given ExposurePhoto. Returns -1 if the entry was not created.
      *
      * Requires that photo to be a new photo (no ID specified when constructed).
      *
-     * @param photo the Photo with the desired data to be saved as a new entry
+     * @param photo the ExposurePhoto with the desired data to be saved as a new entry
      *              in the database
      * @return the ID of the created photo entry. Returns -1 if the photo entry
      * was not successfully created
      */
-    public long insert(Photo photo) {
+    public long insert(ExposurePhoto photo) {
         final String url = WEB_SERVICE + "insertPhoto";
         return restTemplate.postForObject(url, photo, Long.class);
     }
 
     /**
      * Returns the ID of the new entry in the database. Makes a new entry in the
-     * database for the given User. Returns -1 if the entry was not created.
+     * database for the given ExposureUser. Returns -1 if the entry was not created.
      *
      * Requires that user to be a new user (no ID specified when constructed).
      *
-     * @param user the User with the desired data to be saved as a new entry
+     * @param user the ExposureUser with the desired data to be saved as a new entry
      *              in the database
      * @return the ID of the created user entry. Returns -1 if the user entry
      * was not successfully created
      */
-    public long insert(User user) {
+    public long insert(ExposureUser user) {
         final String url = WEB_SERVICE + "insertUser";
         return restTemplate.postForObject(url, user, Long.class);
     }
@@ -188,33 +188,33 @@ public class DatabaseManager {
     }
 
     /**
-     * Returns a User object that matches the given id. Returns null if there
+     * Returns a ExposureUser object that matches the given id. Returns null if there
      * is no user with the given id.
      *
      * Requires that id is a valid user ID provided by DatabaseManager.
      *
      * @param id the ID of the desired user
-     * @return the User that matches the given id or null if no there is no
+     * @return the ExposureUser that matches the given id or null if no there is no
      * user with this ID
      */
-    public User getUser(long id) {
+    public ExposureUser getUser(long id) {
         final String url = WEB_SERVICE + "getUser?id=" + id;
-        return restTemplate.getForObject(url, User.class);
+        return restTemplate.getForObject(url, ExposureUser.class);
     }
 
     /**
-     * Returns a Location object that matches the given id. Returns null if
+     * Returns a ExposureLocation object that matches the given id. Returns null if
      * there is no location with the given id.
      *
      * Requires that id is a valid location ID provided by DatabaseManager.
      *
      * @param id the ID of the desired location
-     * @return the Location that matches the given id or null if there is no
+     * @return the ExposureLocation that matches the given id or null if there is no
      * location with this ID
      */
-    public Location getLocation(long id) {
+    public ExposureLocation getLocation(long id) {
         final String url = WEB_SERVICE + "getLocation?id=" + id;
-        return restTemplate.getForObject(url, Location.class);
+        return restTemplate.getForObject(url, ExposureLocation.class);
     }
 
     /**
@@ -228,9 +228,9 @@ public class DatabaseManager {
      * @return an array of Photos posted by the user matching the given id or
      * null if there are no results.
      */
-    public Photo[] getUserPhotos(long id) {
+    public ExposurePhoto[] getUserPhotos(long id) {
         final String url = WEB_SERVICE + "getUserPhotos?id=" + id;
-        return restTemplate.getForObject(url, Photo[].class);
+        return restTemplate.getForObject(url, ExposurePhoto[].class);
     }
 
     /**
@@ -244,9 +244,9 @@ public class DatabaseManager {
      * @return an array of Photos posted to the location matching the given id
      * or null if there are no results.
      */
-    public Photo[] getLocationPhotos(long id) {
+    public ExposurePhoto[] getLocationPhotos(long id) {
         final String url = WEB_SERVICE + "getLocationPhotos?id=" + id;
-        return restTemplate.getForObject(url, Photo[].class);
+        return restTemplate.getForObject(url, ExposurePhoto[].class);
     }
 
     /**
@@ -259,16 +259,16 @@ public class DatabaseManager {
      *                  the square
      * @param radiusLon distance from the center to the left and right sides
      *                  of the square
-     * @return an array of Location within the given square radius or null if
+     * @return an array of ExposureLocation within the given square radius or null if
      * there are no results
      */
-    public Location[] getLocationsInRadius(float originLat, float originLon, float radiusLat, float radiusLon) {
+    public ExposureLocation[] getLocationsInRadius(float originLat, float originLon, float radiusLat, float radiusLon) {
         float lat1 = originLat - radiusLat;
         float lat2 = originLat + radiusLat;
         float lon1 = originLon - radiusLon;
         float lon2 = originLon + radiusLon;
 
-        return getLocationsInRange(lat1,lat2,lon1,lon2);
+        return getLocationsInRange(lat1, lat2, lon1, lon2);
     }
 
     /**
@@ -281,13 +281,23 @@ public class DatabaseManager {
      * @param lat2 latitude of the top side of the rectangle range
      * @param lon1 longitude of the left side of the rectangle range
      * @param lon2 longitude of the right side of the rectangle range
-     * @return an array of Location within the given square radius of null if
+     * @return an array of ExposureLocation within the given square radius of null if
      * there are no results
      */
-    public Location[] getLocationsInRange(float lat1, float lat2, float lon1, float lon2) {
+    public ExposureLocation[] getLocationsInRange(float lat1, float lat2, float lon1, float lon2) {
         final String url = WEB_SERVICE + "getLocationsInRange?lat1=" + lat1 + "&lat2=" + lat2
                 + "&lon1=" + lon1 + "&lon2=" + lon2;
-        return restTemplate.getForObject(url, Location[].class);
+        return restTemplate.getForObject(url, ExposureLocation[].class);
+    }
+
+    //TODO: Method added to pass compiler checks
+    public long insert(WebLocation newLoc) {
+        return 0;
+    }
+
+    //TODO: Method added to pass compiler checks
+    public boolean update(WebLocation updatedLocation) {
+        return false;
     }
 
     /**
@@ -318,9 +328,9 @@ public class DatabaseManager {
          */
 
         /**
-         * Constructs a Location with the specified parameters.
+         * Constructs a ExposureLocation with the specified parameters.
          *
-         * Should not be used when inserting a new Location using DatabaseManager.
+         * Should not be used when inserting a new ExposureLocation using DatabaseManager.
          * You should omit the ID in this case. Only use this constructor when you
          * have an ID provided by DatabaseManager.
          *
@@ -344,10 +354,10 @@ public class DatabaseManager {
         }
 
         /**
-         * Constructs a Location with the specified parameters.
+         * Constructs a ExposureLocation with the specified parameters.
          *
          * The ID parameter is omitted. This constructor should be used when using
-         * DatabaseManager to insert a new Location into the database.
+         * DatabaseManager to insert a new ExposureLocation into the database.
          *
          * @param lat latitude of this location
          * @param lon longitude of this location
@@ -372,11 +382,11 @@ public class DatabaseManager {
         }
 
         /**
-         * Returns the unique identifier for this Location.
+         * Returns the unique identifier for this ExposureLocation.
          *
          * The returned ID can be used to interact with DatabaseManager.
          *
-         * @return the unique identifier of this user or -1 if this Location has
+         * @return the unique identifier of this user or -1 if this ExposureLocation has
          * no ID (if ID omitted when constructed)
          */
         public long getID() {
@@ -420,10 +430,10 @@ public class DatabaseManager {
         }
 
         /**
-         * Returns a new Location with the updated rating.
+         * Returns a new ExposureLocation with the updated rating.
          *
          * @param newRating the new review to add to this location
-         * @return a new Location with the updated rating
+         * @return a new ExposureLocation with the updated rating
          */
         public WebLocation addRating(int newRating) {
             return new WebLocation(id, lat, lon, totalRating + newRating,
@@ -431,31 +441,31 @@ public class DatabaseManager {
         }
 
         /**
-         * Returns the name of this Location.
+         * Returns the name of this ExposureLocation.
          *
-         * @return the name of this Location
+         * @return the name of this ExposureLocation
          */
         public String getName() {
             return name;
         }
 
         /**
-         * Return the description of this Location
+         * Return the description of this ExposureLocation
          *
-         * @return the description of this Location
+         * @return the description of this ExposureLocation
          */
         public String getDesc() {
             return desc;
         }
 
         /**
-         * Returns a Location with the given id
+         * Returns a ExposureLocation with the given id
          *
          * This method is a more convenient way to inject an ID into the object
          * without having to construct a new one yourself. Only use this method
          * if you have been provided a valid ID from DatabaseManager.
          *
-         * @return a Location with the given id
+         * @return a ExposureLocation with the given id
          */
         public WebLocation addID(long id) {
             return new WebLocation(id,lat,lon,totalRating,numOfRatings,name,desc);
