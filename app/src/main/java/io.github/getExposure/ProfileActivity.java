@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.widget.ProfilePictureView;
 
@@ -17,8 +16,6 @@ public class ProfileActivity extends AppCompatActivity {
     private ProfilePictureView picview;
     private TextView profilename;
     private Button loginViewSwitcher;
-    ImageButton toMapView;
-    ImageButton toListView;
 
 
     @Override
@@ -48,23 +45,35 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(loginViewIntent);
             }
         });
+    }
 
-        toMapView = (ImageButton) findViewById(R.id.toMapView);
+    /**
+     * Callback called when the user clicks the "Maps" button
+     * Switches the activity to MapsActivity
+     * @param view
+     */
+    public void launchMapsView(View view) {
+        Intent mapViewIntent = new Intent(getApplicationContext(), MapsActivity.class);
+        startActivity(mapViewIntent);
+    }
 
-        toMapView.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent mapViewIntent = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(mapViewIntent);
-            }
-        });
+    /**
+     * Callback called when the user clicks the "Profile" button
+     * Switches the activity to ProfileViewActivity
+     * @param view
+     */
+    public void launchProfileView(View view) {
+        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
+        startActivity(profileViewIntent);
+    }
 
-        toListView = (ImageButton) findViewById(R.id.toListView);
-
-        toListView.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent listViewIntent = new Intent(getApplicationContext(), ListActivity.class);
-                startActivity(listViewIntent);
-            }
-        });
+    /**
+     * Callback called when the user clicks the "Post" button
+     * Switches the activity to PostActivity
+     * @param view
+     */
+    public void launchPostView(View view) {
+        Intent postViewIntent = new Intent(getApplicationContext(), PostActivity.class);
+        startActivity(postViewIntent);
     }
 }

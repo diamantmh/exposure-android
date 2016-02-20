@@ -294,7 +294,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param view
      */
     public void launchProfileView(View view) {
-        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileViewActivity.class);
+        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
         startActivity(profileViewIntent);
     }
 
@@ -305,7 +305,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     //TODO: currently just goes back to map view
     public void launchPostView(View view) {
-        Intent postViewIntent = new Intent(getApplicationContext(), MapsActivity.class);
+        Intent postViewIntent = new Intent(getApplicationContext(), PostActivity.class);
         startActivity(postViewIntent);
     }
 
