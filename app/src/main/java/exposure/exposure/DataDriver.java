@@ -79,12 +79,12 @@ public class DataDriver extends FragmentActivity {
         System.out.println();
         System.out.println("Inserting new location with no ID specified");
         Category cat = new Category(userID, Category.WALKING_ID);
-        WebLocation newLoc = new WebLocation(10,10,20,4,"Quad", "There are nice trees here!");
+        DatabaseManager.WebLocation newLoc = new DatabaseManager.WebLocation(10,10,20,4,"Quad", "There are nice trees here!");
         displayLocation(newLoc);
         long retLocID = man.insert(newLoc);
         System.out.println("Returned Location ID is: " + retLocID);
         if (retLocID <= 0) { throw new AssertionError(); }
-        WebLocation retLoc = newLoc.addID(retLocID);
+        DatabaseManager.WebLocation retLoc = newLoc.addID(retLocID);
 
         // test insert comment
         System.out.println();
@@ -98,7 +98,7 @@ public class DataDriver extends FragmentActivity {
         // test update location
         System.out.println();
         System.out.println("Updating location that was just inserted with ID = " + retLocID);
-        WebLocation updatedLocation = new WebLocation(retLocID, retLoc.getLat(), retLoc.getLon(), retLoc.getTotalRating() + 10,
+        DatabaseManager.WebLocation updatedLocation = new DatabaseManager.WebLocation(retLocID, retLoc.getLat(), retLoc.getLon(), retLoc.getTotalRating() + 10,
                 retLoc.getNumOfRatings(), retLoc.getName(), retLoc.getDesc());
         boolean goodLocRes = man.update(updatedLocation);
         if (!goodLocRes) { throw new AssertionError(); }
@@ -161,7 +161,7 @@ public class DataDriver extends FragmentActivity {
         System.exit(0);
     }
 
-    private void displayLocation(WebLocation loc) {
+    private void displayLocation(DatabaseManager.WebLocation loc) {
         System.out.println(loc.getName());
         System.out.println(loc.getDesc());
         System.out.println();

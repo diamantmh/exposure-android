@@ -269,7 +269,7 @@ public class DatabaseManager {
         float lon1 = originLon - radiusLon;
         float lon2 = originLon + radiusLon;
 
-        return getLocationsInRange(lat1,lat2,lon1,lon2);
+        return getLocationsInRange(lat1, lat2, lon1, lon2);
     }
 
     /**
@@ -289,6 +289,16 @@ public class DatabaseManager {
         final String url = WEB_SERVICE + "getLocationsInRange?lat1=" + lat1 + "&lat2=" + lat2
                 + "&lon1=" + lon1 + "&lon2=" + lon2;
         return restTemplate.getForObject(url, ExposureLocation[].class);
+    }
+
+    //TODO: Method added to pass compiler checks
+    public long insert(WebLocation newLoc) {
+        return 0;
+    }
+
+    //TODO: Method added to pass compiler checks
+    public boolean update(WebLocation updatedLocation) {
+        return false;
     }
 
     /**

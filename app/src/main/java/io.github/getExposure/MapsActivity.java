@@ -27,6 +27,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
+import java.util.Random;
+
 import exposure.exposure.DatabaseManager;
 import exposure.exposure.ExposureLocation;
 /*
@@ -200,9 +202,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param view the view
      */
     public void addPins(View view) {
-        /*
-        Testing methods
-        List locations = new ArrayList<>();
+
+        //Testing methods
         Random r = new Random();
         for (int i = 0; i < 10; i++) {
             LatLng tmp = (new LatLng(r.nextInt(181)- 90, r.nextInt(361) - 180));
@@ -213,7 +214,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet("(Lat, Long): (" + tmp.latitude + ", " + tmp.longitude + ") " +
                             "click to view photos"));
         }
-        */
+        /*
 
         DatabaseManager db = new DatabaseManager();
         // need to get all ID's from db
@@ -235,6 +236,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // t.toString() should be the location t's name
             mMap.addMarker(new MarkerOptions().position(temp).title(name));
         }
+        */
     }
 
     /**
@@ -272,36 +274,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // Called when the user clicks the map/list button
-
     /**
      * Callback called when the user clicks the "ListView" button
-     * Switches the activity from the MapsActivity to ListActivity
+     * Switches the activity to ListActivity
      * @param view passed in for drawing/event handling
      */
     public void launchListView(View view) {
-        Intent listViewIntent = new Intent(getApplicationContext(), ListActivity.class);
+        Intent listViewIntent = new Intent(view.getContext(), ListActivity.class);
         startActivity(listViewIntent);
     }
 
     /**
      * Callback called when the user clicks the "Profile" button
-     * Switches the activity from the MapsActivity to ProfileViewActivity
+     * Switches the activity to ProfileViewActivity
      * @param view passed in for drawing/event handling
      */
     public void launchProfileView(View view) {
-        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
+        Intent profileViewIntent = new Intent(view.getContext(), ProfileActivity.class);
         startActivity(profileViewIntent);
     }
 
     /**
      * Callback called when the user clicks the "Post" button
-     * Switches the activity from the MapsActivity to PostActivity
+     * Switches the activity to PostActivity
      * @param view passed in for drawing/event handling
      */
     public void launchPostView(View view) {
-        Intent postViewIntent = new Intent(getApplicationContext(), PostActivity.class);
+        Intent postViewIntent = new Intent(view.getContext(), PostActivity.class);
         startActivity(postViewIntent);
     }
+
 
     /**
      * Internal listener class for MapsInfoWindowClicks

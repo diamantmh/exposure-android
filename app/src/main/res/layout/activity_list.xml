@@ -5,19 +5,6 @@
     android:orientation="vertical"
     tools:context="exposure.getExposure.ListActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentStart="false"
-        android:layout_toStartOf="@+id/profilename"
-        android:id="@+id/layout"
-        android:weightSum="1"
-        android:background="#0099cc"
-        android:layout_above="@+id/mapToolBar">
-
-    </LinearLayout>
-
     <!-- 3 buttons at the bottom -->
     <LinearLayout
         android:id="@+id/mapToolBar"
