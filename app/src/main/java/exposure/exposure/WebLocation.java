@@ -1,13 +1,11 @@
-package dto;
+package exposure.exposure;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Location is an immutable representation of a location on the map.
  *
  * specfield id : long  // uniquely identifies this location for database interactions
  */
-@XmlRootElement
 public class WebLocation {
 
     private final long id;
@@ -42,8 +40,6 @@ public class WebLocation {
      * @param numOfRatings the total number of reviews this location has received
      * @param name name of location
      * @param desc description of this location
-     * @param categories all the tags associated with this location
-     * @param comments list of comments posted to this location
      */
     public WebLocation(long id, float lat, float lon, int totalRating,
                     int numOfRatings, String name, String desc) {
@@ -68,8 +64,6 @@ public class WebLocation {
      * @param numOfRatings the total number of reviews this location has received
      * @param name name of location
      * @param desc description of this location
-     * @param categories all the tags associated with this location
-     * @param comments list of comments posted to this location
      */
     public WebLocation(float lat, float lon, int totalRating,
                     int numOfRatings, String name, String desc) {
