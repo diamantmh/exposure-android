@@ -30,8 +30,8 @@ public class DatabaseManagerTest {
     // data objects
     private static ExposureLocation newLoc;
     private static ExposureLocation retLoc;
-    private static User newUser;
-    private static User retUser;
+    private static ExposureUser newUser;
+    private static ExposureUser retUser;
     private static ExposurePhoto newPhoto;
     private static ExposurePhoto retPhoto;
     private static Category cat1;
@@ -45,8 +45,8 @@ public class DatabaseManagerTest {
      */
     @BeforeClass
     public static void initializeDataObjects() {
-        cat1 = new Category(Category.DRIVING_ID);
-        cat2 = new Category(Category.SUMMER_ID);
+        cat1 = new Category(1, Category.DRIVING_ID);
+        cat2 = new Category(2, Category.SUMMER_ID);
 
         Set<Category> cats = new HashSet<>();
         cats.add(cat1);
@@ -61,8 +61,8 @@ public class DatabaseManagerTest {
         newPhoto = new ExposurePhoto(1,1,"link",new Date(1000000),new Time(1000000),new File("https://avatars2.githubusercontent.com/u/16708552?v=3&s=200")); // no ID so it's new
         retPhoto = new ExposurePhoto(1,1,1,"link",new Date(1000000),new Time(1000000),new File("https://avatars2.githubusercontent.com/u/16708552?v=3&s=200")); // has ID
 
-        newUser = new User("swammer","link","Hi, I like photography!");
-        retUser = new User(1,"swammer","link","Hi, I like photography!");
+        newUser = new ExposureUser("swammer","link","Hi, I like photography!");
+        retUser = new ExposureUser(1,"swammer","link","Hi, I like photography!");
 
         newCom = new Comment(1,1,"I don't like this place at all, it stinks and is ugly.",new Date(1000000),new Time(1000000));
         retCom = new Comment(1,1,1,"I don't like this place at all, it stinks and is ugly.", new Date(1000000),new Time(1000000));
@@ -125,9 +125,9 @@ public class DatabaseManagerTest {
                 .thenReturn(false);
 
         // get user web service behavior
-        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 1, User.class))
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 1, ExposureUser.class))
                 .thenReturn(retUser);
-        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 99, User.class))
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 99, ExposureUser.class))
                 .thenReturn(null);
 
         // get location web service behavior
@@ -298,20 +298,20 @@ public class DatabaseManagerTest {
 
     @Test
     public void testGetExistingUser() throws Exception {
-        User actual = man.getUser((long) 1);
-        User expected = retUser;
+        ExposureUser actual = man.getUser((long) 1);
+        ExposureUser expected = retUser;
 
         assertEquals("Should return user matching the given ID", expected, actual);
-        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 1, User.class);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 1, ExposureUser.class);
     }
 
     @Test
     public void testGetBogusUser() throws Exception {
-        User actual = man.getUser((long) 99);
-        User expected = null;
+        ExposureUser actual = man.getUser((long) 99);
+        ExposureUser expected = null;
 
         assertEquals("Should return null when passed ID that does not match an existing user", expected, actual);
-        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 99, User.class);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 99, ExposureUser.class);
     }
 
     @Test
