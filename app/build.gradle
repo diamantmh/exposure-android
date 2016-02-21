@@ -10,7 +10,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
-        // testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -33,7 +33,6 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/license.txt'
         exclude 'META-INF/notice.txt'
-        //exclude 'META-INF/DEPENDENCIES'
     }
 
     testOptions {
