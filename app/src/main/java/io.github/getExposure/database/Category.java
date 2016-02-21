@@ -28,6 +28,7 @@ public class Category {
 
     /**
      * Constructs a Category
+     * @param locID the unique identifier for this Category
      * @param categoryID the id of the content tag for this category (obtain through
      *           static constants eg Category.WALKING_ID)
      */

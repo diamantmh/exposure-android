@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 public class DatabaseManager {
     private RestTemplate restTemplate;
 
-    private static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
+    protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
 
     private static final long NULL_ID = -1;
 
