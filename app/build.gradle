@@ -35,6 +35,13 @@ android {
         exclude 'META-INF/notice.txt'
         //exclude 'META-INF/DEPENDENCIES'
     }
+
+    testOptions {
+        unitTests.all {
+            // All the usual Gradle options.
+            jvmArgs '-XX:MaxPermSize=256m'
+        }
+    }
 }
 
 repositories { mavenCentral() } // For Facebook SDK usage
