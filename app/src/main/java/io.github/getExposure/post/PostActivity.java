@@ -20,17 +20,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.Profile;
+
 import java.io.File;
 import java.io.IOException;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 
 import io.github.getExposure.R;
+import io.github.getExposure.database.Category;
+import io.github.getExposure.database.Comment;
+import io.github.getExposure.database.DatabaseManager;
+import io.github.getExposure.database.ExposureLocation;
+import io.github.getExposure.database.ExposurePhoto;
 
 public class PostActivity extends AppCompatActivity {
-    private TextView categories;
     private ImageView photo;
+    private EditText name;
+    private EditText latitude;
+    private EditText longitude;
     private EditText description;
+    private TextView categories;
     static final int REQUEST_IMAGE_CAPTURE = 2;
     private String mCurrentPhotoPath;
     private String[] permissions;
@@ -40,6 +53,9 @@ public class PostActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_view);
+        name = (EditText) findViewById(R.id.name);
+        latitude = (EditText) findViewById(R.id.latitude);
+        longitude = (EditText) findViewById(R.id.longitude);
 
         categories = (TextView) findViewById(R.id.categories);
 
@@ -90,6 +106,30 @@ public class PostActivity extends AppCompatActivity {
             postViewIntent.putExtra("photo", mCurrentPhotoPath);
         }
 
+        if(name.getText().toString().equals("") && !flag) {
+            Toast toast = Toast.makeText(getApplicationContext(), "name your location first!", Toast.LENGTH_SHORT);
+            toast.show();
+            flag = true;
+        } else {
+            postViewIntent.putExtra("name", name.getText().toString());
+        }
+
+        if(latitude.getText().toString().equals("") && !flag) {
+            Toast toast = Toast.makeText(getApplicationContext(), "need latitude first!", Toast.LENGTH_SHORT);
+            toast.show();
+            flag = true;
+        } else {
+            postViewIntent.putExtra("latitude", latitude.getText().toString());
+        }
+
+        if(longitude.getText().toString().equals("") && !flag) {
+            Toast toast = Toast.makeText(getApplicationContext(), "need longitude first!", Toast.LENGTH_SHORT);
+            toast.show();
+            flag = true;
+        } else {
+            postViewIntent.putExtra("longitude", longitude.getText().toString());
+        }
+
         if(description.getText().toString().equals("") && !flag) {
             Toast toast = Toast.makeText(getApplicationContext(), "you need to enter a description first!", Toast.LENGTH_SHORT);
             toast.show();
@@ -105,13 +145,29 @@ public class PostActivity extends AppCompatActivity {
         } else {
             postViewIntent.putExtra("categories", categories.getText().toString());
         }
+
         if(!flag) {
+            /*
+            Profile thing = Profile.getCurrentProfile();
+            final Long id = Long.parseLong(thing.getId());
+
+            final ExposurePhoto p = new ExposurePhoto(long authorID, long locID, mCurrentPath, Date date, Time time, File file);
+            */
+            final ExposureLocation loc = new ExposureLocation(Float.parseFloat(latitude.getText().toString()),
+                    Float.parseFloat(longitude.getText().toString()), 0, 0, name.getText().toString(),
+                    description.getText().toString(), new HashSet<Category>(), new ArrayList<Comment>());
+            final DatabaseManager m = new DatabaseManager();
+            new Thread(new Runnable() {
+                public void run() {
+                    long result = m.insert(loc);
+                    //Log.d("BUENO", result);
+                }
+            }).start();
             startActivity(postViewIntent);
         }
     }
 
     private void selectImage() {
-
         final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(PostActivity.this);
@@ -184,9 +240,6 @@ public class PostActivity extends AppCompatActivity {
                 }
                 newValue = newValue.substring(0, newValue.length() - 2);
                 categories.setText(newValue);
-            }
-            if (resultCode == AppCompatActivity.RESULT_CANCELED) {
-                //Write your code if there's no result
             }
         } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bitmap myBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);

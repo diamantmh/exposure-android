@@ -25,10 +25,34 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:id="@+id/name"
+            android:hint="What is your location called?"
+            android:layout_below="@id/photo"
+            android:layout_centerHorizontal="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/latitude"
+            android:hint="Latitude"
+            android:inputType="numberDecimal"
+            android:layout_below="@id/name"
+            android:layout_alignParentRight="true" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/longitude"
+            android:hint="Longitude"
+            android:inputType="numberDecimal"
+            android:layout_below="@id/name"
+            android:layout_alignParentLeft="true" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:id="@+id/description"
             android:hint="Description..."
-            android:layout_below="@id/photo"
+            android:layout_below="@id/latitude"
             android:layout_centerHorizontal="true" />
 
         <TextView
