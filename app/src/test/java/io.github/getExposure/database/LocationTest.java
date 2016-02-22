@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
  */
 public class LocationTest {
+/*
     private static final double EPSI = .00001;
 
     @Test
@@ -57,7 +58,7 @@ public class LocationTest {
 
         assertEquals("Should return the updated average rating", expected, actual, EPSI);
     }
-
+*/
     @Test
     public void testCategorySetImmutability() throws Exception {
         List<Comment> comments = new ArrayList<>();
