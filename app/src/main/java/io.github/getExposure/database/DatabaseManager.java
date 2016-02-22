@@ -290,19 +290,9 @@ public class DatabaseManager {
         return restTemplate.getForObject(url, ExposureLocation[].class);
     }
 
-    //TODO: Method added to pass compiler checks
-    public long insert(WebLocation newLoc) {
-        return 0;
-    }
-
-    //TODO: Method added to pass compiler checks
-    public boolean update(WebLocation updatedLocation) {
-        return false;
-    }
-
     /**
      * WebLocation is an immutable representation of a location on the map. This
-     * class can be used for sending data to the web service and should only be used
+     * class can be used for sending data to the web service and is only be used
      * internally by Databasemanager.
      *
      * specfield id : long  // uniquely identifies this location for database interactions
