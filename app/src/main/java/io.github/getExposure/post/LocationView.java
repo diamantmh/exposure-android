@@ -12,6 +12,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import io.github.getExposure.R;
 import io.github.getExposure.maps.MapsActivity;
 
@@ -33,8 +38,9 @@ public class LocationView extends AppCompatActivity {
         String photoPath = extras.getString("photo");
 
         photo = (ImageView) findViewById(R.id.photo);
-        Bitmap imageBitmap = BitmapFactory.decodeFile(photoPath);
-        photo.setImageBitmap(imageBitmap);
+        //Bitmap imageBitmap = BitmapFactory.decodeFile(photoPath);
+        //photo.setImageBitmap(imageBitmap);
+        photo.setImageResource(R.drawable.newresdefault); // temp hack for demo
 
         name = (TextView) findViewById(R.id.name);
         name.setText(extras.getString("name"));

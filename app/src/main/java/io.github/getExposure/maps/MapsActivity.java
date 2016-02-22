@@ -22,12 +22,18 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 
+import java.io.File;
 import java.util.Random;
 
 import io.github.getExposure.ListActivity;
+import io.github.getExposure.database.DatabaseManager;
+import io.github.getExposure.database.ExposureLocation;
+import io.github.getExposure.post.LocationView;
 import io.github.getExposure.post.PostActivity;
 import io.github.getExposure.profile.ProfileActivity;
 import io.github.getExposure.R;
@@ -82,6 +88,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Latitude/longitude of the Paul G Allen Center
     private final static double CSE_LATITUDE = 47.6532295;
     private final static double CSE_LONGITUDE = -122.306897;
+    //Latitude/longitude of Drumheller fountain
+    private final static double DRUMHELLER_LATITUDE = 47.653808;
+    private final static double DRUMHELLER_LONGITUDE = -122.307832;
     private GoogleMap mMap;
     private int currentFilter = 0; // Current filter to select which pins to display, to be implemented
                                    // in v1.0
@@ -187,12 +196,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         */
 
-        LatLng cse = new LatLng(CSE_LATITUDE, CSE_LONGITUDE);
+        LatLng drum = new LatLng(DRUMHELLER_LATITUDE, DRUMHELLER_LONGITUDE);
         mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
         // Add a marker near seattle and move the camera
-        mMap.addMarker(new MarkerOptions().position(cse).title("Marker near CSE building"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(cse));
+        //mMap.addMarker(new MarkerOptions().position(drum).title("Drumheller Fountain"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(drum));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+
     }
 
 
@@ -203,6 +213,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     public void addPins(View view) {
 
+
+        /*
         //Testing methods
         Random r = new Random();
         for (int i = 0; i < 10; i++) {
@@ -210,12 +222,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String user = ""; // user who "founded" the location
             int number = -1; // number of photos at the same location
             //mMap.setInfoWindowAdapter(new MapsInfoWindow(this, "hihi"));
-            mMap.addMarker(new MarkerOptions().position(tmp).title("Random pin #" + i)
+            mMap.addMarker(new MarkerOptions().position(tmp).title("Pin #" + i)
                     .snippet("(Lat, Long): (" + tmp.latitude + ", " + tmp.longitude + ") " +
-                            "click to view photos"));
+                            "click to view location"));
         }
+*/
+        // temp functionality for dmeo
+        LatLng drum = new LatLng(DRUMHELLER_LATITUDE, DRUMHELLER_LONGITUDE);
+        mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
+        // Add a marker near seattle and move the camera
+        mMap.addMarker(new MarkerOptions().position(drum).title("Drumheller Fountain"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(drum));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
         /*
-
         DatabaseManager db = new DatabaseManager();
         // need to get all ID's from db
         VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
@@ -227,8 +246,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         float originLon = (float) center.longitude;
         float radiusLat = (float) (ne.latitude - sw.latitude);
         float radiusLon = (float) (ne.longitude - sw.longitude);
+        System.out.println("origin lat/lon: " + originLat + ", " + originLon + " radius lat/lon: " +
+            radiusLat + ", " + radiusLon);
         ExposureLocation[] locationsInRadius = db.getLocationsInRadius(originLat, originLon, radiusLat, radiusLon);
+        System.out.println("Size of locations inradius: " + locationsInRadius.length);
         for (ExposureLocation t : locationsInRadius) {
+            System.out.println("In loop");
             double tLat = t.getLat();
             double tLon = t.getLon();
             LatLng temp = new LatLng(tLat, tLon);
@@ -318,13 +341,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //TODO: currently just goes back to list view
         @Override
         public void onInfoWindowClick(Marker marker) {
-            String input = "Info window clicked";
-            System.out.println("info window clicked");
+            String input = "Pin clicked";
+            System.out.println("Pin clicked");
             CharSequence str =  input.subSequence(0, input.length());
             Toast.makeText(MapsActivity.this, str, Toast.LENGTH_SHORT).show();
             // change this to post view
-            Intent listViewIntent = new Intent(getApplicationContext(), ListActivity.class);
-            startActivity(listViewIntent);
+            Intent locationViewIntent = new Intent(getApplicationContext(), LocationView.class);
+            locationViewIntent.putExtra("photo", "");
+            locationViewIntent.putExtra("name", "Drumheller Fountain");
+            locationViewIntent.putExtra("description", "Fountain of dreams.");
+            locationViewIntent.putExtra("categories", "Sunny, Summer");
+            startActivity(locationViewIntent);
         }
     }
 
