@@ -52,6 +52,13 @@ public class DatabaseManager {
      *
      * Requires that loc to be an existing location (a location returned by DatabaseManager).
      *
+     * Also inserts any unregistered categories inside loc. A category is
+     * unregistered if the locID was omitted when constructed. Additional
+     * categories can be registered in the database using insert(Category category)
+     *
+     * Comments inside loc will not be inserted into the database and must be
+     * inserted separately using insert(Comment comment)
+     *
      * @param loc the ExposureLocation with the desired data
      * @return true iff the location entry matching the given ID was updated
       */
@@ -59,8 +66,20 @@ public class DatabaseManager {
     public boolean update(ExposureLocation loc) {
         WebLocation wLoc = new WebLocation(loc.getLat(),loc.getLon(),loc.getTotalRating(),
                 loc.getNumOfRatings(),loc.getName(),loc.getDesc());
+
+        // register location in database
         final String url = WEB_SERVICE + "updateLocation";
-        return restTemplate.postForObject(url, wLoc, Boolean.class);
+        boolean result = restTemplate.postForObject(url, wLoc, Boolean.class);
+
+        // register any unregistered categories in loc
+        for (Category cat : loc.getCategories()) {
+            if (cat.getId() == Category.NULL_ID) {
+                Category registeredCat = new Category(loc.getID(),cat.getId());
+                insert(registeredCat);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -84,6 +103,13 @@ public class DatabaseManager {
      *
      * Requires that loc to be a new location (no ID specified when constructed).
      *
+     * Also inserts any unregistered categories inside loc. A category is
+     * unregistered if the locID was omitted when constructed. Additional
+     * categories can be registered in the database using insert(Category category)
+     *
+     * Comments inside loc will not be inserted into the database and must be
+     * inserted separately using insert(Comment comment)
+     *
      * @param loc the ExposureLocation with the desired data to be saved as a new
      *              entry in the database
      * @return the ID of the created location. Returns -1 if the location
@@ -92,8 +118,20 @@ public class DatabaseManager {
     public long insert(ExposureLocation loc) {
         WebLocation wLoc = new WebLocation(loc.getLat(),loc.getLon(),loc.getTotalRating(),
                 loc.getNumOfRatings(),loc.getName(),loc.getDesc());
+
+        // register location in database
         final String url = WEB_SERVICE + "insertLocation";
-        return restTemplate.postForObject(url, wLoc, Long.class);
+        long locID = restTemplate.postForObject(url, wLoc, Long.class);
+
+        // register any unregistered categories in loc
+        for (Category cat : loc.getCategories()) {
+            if (cat.getId() == Category.NULL_ID) {
+                Category registeredCat = new Category(locID,cat.getId());
+                insert(registeredCat);
+            }
+        }
+
+        return locID;
     }
 
     /**

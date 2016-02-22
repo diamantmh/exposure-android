@@ -11,7 +11,7 @@ public class Category {
     private final long locID;
     private final String content;
 
-    public static final long NULL_ID = -1;
+    protected static final long NULL_ID = -1;
 
     private static final String[] tags = {"summer","fall","winter","spring",
             "driving","walking","hiking"};
