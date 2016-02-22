@@ -152,9 +152,9 @@ public class DatabaseManager {
      * @return true if and only if the category is registered into the
      * database.
      */
-    public long insert(Category category) {
+    public boolean insert(Category category) {
         final String url = WEB_SERVICE + "insertCategory";
-        return restTemplate.postForObject(url, category, Long.class);
+        return restTemplate.postForObject(url, category, Boolean.class);
     }
 
     /**
