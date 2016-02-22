@@ -45,15 +45,17 @@ public class DatabaseManagerTest {
      */
     @BeforeClass
     public static void initializeDataObjects() {
-        cat1 = new Category(1, Category.DRIVING_ID);
-        cat2 = new Category(2, Category.SUMMER_ID);
+        List<Comment> comments = new ArrayList<>();
+        comments.add(retCom);
+
+        long dummyLocID = 1;
+
+        cat1 = new Category(dummyLocID, Category.DRIVING_ID);
+        cat2 = new Category(dummyLocID, Category.SUMMER_ID);
 
         Set<Category> cats = new HashSet<>();
         cats.add(cat1);
         cats.add(cat2);
-
-        List<Comment> comments = new ArrayList<>();
-        comments.add(retCom);
 
         newLoc = new ExposureLocation(5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // no ID so it's new
         retLoc = new ExposureLocation(1,5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // has ID
@@ -77,9 +79,7 @@ public class DatabaseManagerTest {
         mockedRest = mock(RestTemplate.class);
 
         // update location web service behavior
-        when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "updateLocation",newLoc,Boolean.class))
-                .thenReturn(false);
-        when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "updateLocation",retLoc,Boolean.class))
+        when(mockedRest.postForObject(eq(DatabaseManager.WEB_SERVICE + "updateLocation"),anyObject(),eq(Boolean.class)))
                 .thenReturn(true);
 
         // update user web service behavior
@@ -89,10 +89,8 @@ public class DatabaseManagerTest {
                 .thenReturn(true);
 
         // insert location web service behavior
-        when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "insertLocation", newLoc, Long.class))
+        when(mockedRest.postForObject(eq(DatabaseManager.WEB_SERVICE + "insertLocation"), anyObject(), eq(Long.class)))
                 .thenReturn((long) 1);
-        when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "insertLocation", retLoc, Long.class))
-                .thenReturn((long) -1);
 
         // insert photo web service behavior
         when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "insertPhoto", newPhoto, Long.class))
@@ -111,6 +109,10 @@ public class DatabaseManagerTest {
                 .thenReturn((long) 1);
         when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "insertComment", retCom, Long.class))
                 .thenReturn((long) -1);
+
+        // insert category web service behavior
+        when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "insertCategory", cat1, Boolean.class))
+                .thenReturn(true);
 
         // remove user web service behavior
         when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "removeUser", (long) 1, Boolean.class))
@@ -153,21 +155,12 @@ public class DatabaseManagerTest {
     }
 
     @Test
-    public void testUpdateNewLocation() throws Exception {
-        boolean actual = man.update(newLoc);
-        boolean expected = false; // you can't update a location with no ID
-
-        assertEquals("Should return false when passed a location with no ID", expected, actual);
-        verify(mockedRest).postForObject(DatabaseManager.WEB_SERVICE + "updateLocation", newLoc, Boolean.class);
-    }
-
-    @Test
     public void testUpdateReturnedLocation() throws Exception {
         boolean actual = man.update(retLoc);
         boolean expected = true;
 
         assertEquals("Should return true when passed a location with an ID", expected, actual);
-        verify(mockedRest).postForObject(DatabaseManager.WEB_SERVICE + "updateLocation", retLoc, Boolean.class);
+        verify(mockedRest).postForObject(eq(DatabaseManager.WEB_SERVICE + "updateLocation"), anyObject(), eq(Boolean.class));
     }
 
     @Test
@@ -194,16 +187,7 @@ public class DatabaseManagerTest {
         long expected = 1;
 
         assertEquals("Should return the ID of the newly created location", expected, actual);
-        verify(mockedRest).postForObject(DatabaseManager.WEB_SERVICE + "insertLocation", newLoc, Long.class);
-    }
-
-    @Test
-    public void testInsertReturnedLocation() throws Exception {
-        long actual = man.insert(retLoc);
-        long expected = -1;
-
-        assertEquals("Should return -1 because location already exists (already has ID)", expected, actual);
-        verify(mockedRest).postForObject(DatabaseManager.WEB_SERVICE + "insertLocation", retLoc, Long.class);
+        verify(mockedRest).postForObject(eq(DatabaseManager.WEB_SERVICE + "insertLocation"), anyObject(), eq(Long.class));
     }
 
     @Test
@@ -258,6 +242,15 @@ public class DatabaseManagerTest {
 
         assertEquals("Should return -1 because comment already exists (already has ID)", expected, actual);
         verify(mockedRest).postForObject(DatabaseManager.WEB_SERVICE + "insertComment", retCom, Long.class);
+    }
+
+    @Test
+    public void testInsertCategory() {
+        boolean actual = man.insert(cat1);
+        boolean expected = true;
+
+        assertEquals("Should return true when the Category is inserted.", expected, actual);
+        verify(mockedRest).postForObject(DatabaseManager.WEB_SERVICE + "insertCategory", cat1, Boolean.class);
     }
 
     @Test
