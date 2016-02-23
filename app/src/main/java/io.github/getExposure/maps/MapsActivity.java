@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.VisibleRegion;
 import java.io.File;
 import java.util.Random;
 
+import io.github.getExposure.ExposureFragmentActivity;
 import io.github.getExposure.ListActivity;
 import io.github.getExposure.database.DatabaseManager;
 import io.github.getExposure.database.ExposureLocation;
@@ -82,7 +83,7 @@ import java.util.Date;
 
 //TODO: save state of activity, changing screen orientation/language can break it
 //TODO: get current phone location
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback/*,
+public class MapsActivity extends ExposureFragmentActivity implements OnMapReadyCallback/*,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener */{
 
     //Latitude/longitude of the Paul G Allen Center
@@ -295,38 +296,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(query));
 
     }
-
-    // Called when the user clicks the map/list button
-    /**
-     * Callback called when the user clicks the "ListView" button
-     * Switches the activity to ListActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchListView(View view) {
-        Intent listViewIntent = new Intent(view.getContext(), ListActivity.class);
-        startActivity(listViewIntent);
-    }
-
-    /**
-     * Callback called when the user clicks the "Profile" button
-     * Switches the activity to ProfileViewActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchProfileView(View view) {
-        Intent profileViewIntent = new Intent(view.getContext(), ProfileActivity.class);
-        startActivity(profileViewIntent);
-    }
-
-    /**
-     * Callback called when the user clicks the "Post" button
-     * Switches the activity to PostActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchPostView(View view) {
-        Intent postViewIntent = new Intent(view.getContext(), PostActivity.class);
-        startActivity(postViewIntent);
-    }
-
 
     /**
      * Internal listener class for MapsInfoWindowClicks

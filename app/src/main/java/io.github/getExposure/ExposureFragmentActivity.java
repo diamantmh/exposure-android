@@ -1,16 +1,18 @@
 package io.github.getExposure;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
+import io.github.getExposure.maps.MapsActivity;
 import io.github.getExposure.post.PostActivity;
 import io.github.getExposure.profile.ProfileActivity;
 
 /**
- * Created by Michael on 2/19/2016.
+ * Class to abstract button functionality for view switcher
+ * Created by Michael on 2/22/2016.
  */
-public class ViewLauncher extends AppCompatActivity {
+public class ExposureFragmentActivity extends FragmentActivity {
 
     // Called when the user clicks the map/list button
 
@@ -20,9 +22,8 @@ public class ViewLauncher extends AppCompatActivity {
      * @param view passed in for drawing/event handling
      */
     public void launchMapView(View view) {
-        Intent listViewIntent = new Intent(view.getContext(), ListActivity.class);
-
-        startActivity(listViewIntent);
+        Intent mapViewIntent = new Intent(view.getContext(), MapsActivity.class);
+        startActivity(mapViewIntent);
     }
 
     /**
@@ -54,6 +55,5 @@ public class ViewLauncher extends AppCompatActivity {
         Intent postViewIntent = new Intent(view.getContext(), PostActivity.class);
         startActivity(postViewIntent);
     }
-
 
 }

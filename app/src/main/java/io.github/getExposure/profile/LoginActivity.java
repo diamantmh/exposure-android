@@ -14,11 +14,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
+import io.github.getExposure.ExposureFragmentActivity;
 import io.github.getExposure.post.PostActivity;
 import io.github.getExposure.R;
 import io.github.getExposure.maps.MapsActivity;
 
-public class LoginActivity extends FragmentActivity {
+public class LoginActivity extends ExposureFragmentActivity {
     private static final String STATE_SELECTED_FRAGMENT_INDEX = "selected_fragment_index";
     public static final String FRAGMENT_TAG = "fragment_tag";
     private FragmentManager mFragmentManager;
@@ -37,35 +38,5 @@ public class LoginActivity extends FragmentActivity {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         transaction.replace(android.R.id.content, new LoginFragment(), FRAGMENT_TAG);
         transaction.commit();
-    }
-
-    /**
-     * Callback called when the user clicks the "Map" button
-     * Switches the activity to MapsActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchMapView(View view) {
-        Intent mapViewIntent = new Intent(getApplicationContext(), MapsActivity.class);
-        startActivity(mapViewIntent);
-    }
-
-    /**
-     * Callback called when the user clicks the "Profile" button
-     * Switches the activity to ProfileViewActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchProfileView(View view) {
-        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
-        startActivity(profileViewIntent);
-    }
-
-    /**
-     * Callback called when the user clicks the "Post" button
-     * Switches the activity to PostActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchPostView(View view) {
-        Intent postViewIntent = new Intent(getApplicationContext(), PostActivity.class);
-        startActivity(postViewIntent);
     }
 }

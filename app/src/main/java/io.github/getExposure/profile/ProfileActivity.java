@@ -10,11 +10,12 @@ import android.widget.TextView;
 import com.facebook.Profile;
 import com.facebook.login.widget.ProfilePictureView;
 
+import io.github.getExposure.ExposureFragmentActivity;
 import io.github.getExposure.post.PostActivity;
 import io.github.getExposure.R;
 import io.github.getExposure.maps.MapsActivity;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends ExposureFragmentActivity {
     private Profile profile;
     private ProfilePictureView picview;
     private TextView profilename;
@@ -48,35 +49,5 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(loginViewIntent);
             }
         });
-    }
-
-    /**
-     * Callback called when the user clicks the "Maps" button
-     * Switches the activity to MapsActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchMapsView(View view) {
-        Intent mapViewIntent = new Intent(getApplicationContext(), MapsActivity.class);
-        startActivity(mapViewIntent);
-    }
-
-    /**
-     * Callback called when the user clicks the "Profile" button
-     * Switches the activity to ProfileViewActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchProfileView(View view) {
-        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
-        startActivity(profileViewIntent);
-    }
-
-    /**
-     * Callback called when the user clicks the "Post" button
-     * Switches the activity to PostActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchPostView(View view) {
-        Intent postViewIntent = new Intent(getApplicationContext(), PostActivity.class);
-        startActivity(postViewIntent);
     }
 }
