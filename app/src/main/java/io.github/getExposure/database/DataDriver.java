@@ -33,8 +33,6 @@ public class DataDriver extends FragmentActivity {
         man = new DatabaseManager();
         System.out.println("DatabaseManager initiated!");
 
-        File newPNG = new File("../../../res/mipmap-hdpi/ic_launcher.png");
-
         System.out.println("Allowing networking on main thread (this causes lock-ups so don't do this)");
         // Ignoring the NetworkOnMainThreadException.
         // Exposure shouldn't do this, but instead use an AsyncTask
@@ -42,6 +40,8 @@ public class DataDriver extends FragmentActivity {
         StrictMode.setThreadPolicy(policy);
 
         System.out.println("Trying out some functionality...");
+
+        File newPNG = man.downLoadImage();
 
         // test insert user
         System.out.println();
