@@ -530,10 +530,14 @@ public class DatabaseManager {
 
         public static File DownloadFromUrl(String imageURL, String fileName) {  //this is the downloader method
             File file = null;
+            System.out.println("Downloading From Url");
             try {
                 URL url = new URL(imageURL); //you can write here any link
+                System.out.println("Opening File");
                 file = new File(PATH + fileName);
+                System.out.println("Creating new File");
                 file.createNewFile();
+                System.out.println("Created new File");
 
                 long startTime = System.currentTimeMillis();
                 Log.d("ImageManager", "download begining");
@@ -560,9 +564,10 @@ public class DatabaseManager {
                 while((current = bis.read(data,0,data.length)) != -1){
                     buffer.write(data, 0, current);
                 }
-
+                System.out.println("Create File OutputStream");
                         /* Convert the Bytes read to a String. */
                 FileOutputStream fos = new FileOutputStream(file);
+                System.out.println("Write to Buffer");
                 fos.write(buffer.toByteArray());
                 fos.close();
                 Log.d("ImageManager", "download ready in"
