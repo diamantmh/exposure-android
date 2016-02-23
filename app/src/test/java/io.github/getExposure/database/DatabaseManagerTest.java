@@ -30,8 +30,8 @@ public class DatabaseManagerTest {
     // data objects
     private static ExposureLocation newLoc;
     private static ExposureLocation retLoc;
-    private static User newUser;
-    private static User retUser;
+    private static ExposureUser newUser;
+    private static ExposureUser retUser;
     private static ExposurePhoto newPhoto;
     private static ExposurePhoto retPhoto;
     private static Category cat1;
@@ -45,15 +45,17 @@ public class DatabaseManagerTest {
      */
     @BeforeClass
     public static void initializeDataObjects() {
-        cat1 = new Category(Category.DRIVING_ID);
-        cat2 = new Category(Category.SUMMER_ID);
+        List<Comment> comments = new ArrayList<>();
+        comments.add(retCom);
+
+        long dummyLocID = 1;
+
+        cat1 = new Category(dummyLocID, Category.DRIVING_ID);
+        cat2 = new Category(dummyLocID, Category.SUMMER_ID);
 
         Set<Category> cats = new HashSet<>();
         cats.add(cat1);
         cats.add(cat2);
-
-        List<Comment> comments = new ArrayList<>();
-        comments.add(retCom);
 
         newLoc = new ExposureLocation(5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // no ID so it's new
         retLoc = new ExposureLocation(1,5,5,5,25,"Dumpster","It's really stinky here.",cats,comments); // has ID
@@ -61,8 +63,8 @@ public class DatabaseManagerTest {
         newPhoto = new ExposurePhoto(1,1,"link",new Date(1000000),new Time(1000000),new File("https://avatars2.githubusercontent.com/u/16708552?v=3&s=200")); // no ID so it's new
         retPhoto = new ExposurePhoto(1,1,1,"link",new Date(1000000),new Time(1000000),new File("https://avatars2.githubusercontent.com/u/16708552?v=3&s=200")); // has ID
 
-        newUser = new User("swammer","link","Hi, I like photography!");
-        retUser = new User(1,"swammer","link","Hi, I like photography!");
+        newUser = new ExposureUser("swammer","link","Hi, I like photography!");
+        retUser = new ExposureUser(1,"swammer","link","Hi, I like photography!");
 
         newCom = new Comment(1,1,"I don't like this place at all, it stinks and is ugly.",new Date(1000000),new Time(1000000));
         retCom = new Comment(1,1,1,"I don't like this place at all, it stinks and is ugly.", new Date(1000000),new Time(1000000));
@@ -77,9 +79,7 @@ public class DatabaseManagerTest {
         mockedRest = mock(RestTemplate.class);
 
         // update location web service behavior
-        when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "updateLocation",newLoc,Boolean.class))
-                .thenReturn(false);
-        when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "updateLocation",retLoc,Boolean.class))
+        when(mockedRest.postForObject(eq(DatabaseManager.WEB_SERVICE + "updateLocation"),anyObject(),eq(Boolean.class)))
                 .thenReturn(true);
 
         // update user web service behavior
@@ -89,10 +89,8 @@ public class DatabaseManagerTest {
                 .thenReturn(true);
 
         // insert location web service behavior
-        when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "insertLocation", newLoc, Long.class))
+        when(mockedRest.postForObject(eq(DatabaseManager.WEB_SERVICE + "insertLocation"), anyObject(), eq(Long.class)))
                 .thenReturn((long) 1);
-        when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "insertLocation", retLoc, Long.class))
-                .thenReturn((long) -1);
 
         // insert photo web service behavior
         when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "insertPhoto", newPhoto, Long.class))
@@ -112,6 +110,10 @@ public class DatabaseManagerTest {
         when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "insertComment", retCom, Long.class))
                 .thenReturn((long) -1);
 
+        // insert category web service behavior
+        when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "insertCategory", cat1, Boolean.class))
+                .thenReturn(true);
+
         // remove user web service behavior
         when(mockedRest.postForObject(DatabaseManager.WEB_SERVICE + "removeUser", (long) 1, Boolean.class))
                 .thenReturn(true);
@@ -125,9 +127,9 @@ public class DatabaseManagerTest {
                 .thenReturn(false);
 
         // get user web service behavior
-        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 1, User.class))
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 1, ExposureUser.class))
                 .thenReturn(retUser);
-        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 99, User.class))
+        when(mockedRest.getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 99, ExposureUser.class))
                 .thenReturn(null);
 
         // get location web service behavior
@@ -153,21 +155,12 @@ public class DatabaseManagerTest {
     }
 
     @Test
-    public void testUpdateNewLocation() throws Exception {
-        boolean actual = man.update(newLoc);
-        boolean expected = false; // you can't update a location with no ID
-
-        assertEquals("Should return false when passed a location with no ID", expected, actual);
-        verify(mockedRest).postForObject(DatabaseManager.WEB_SERVICE + "updateLocation", newLoc, Boolean.class);
-    }
-
-    @Test
     public void testUpdateReturnedLocation() throws Exception {
         boolean actual = man.update(retLoc);
         boolean expected = true;
 
         assertEquals("Should return true when passed a location with an ID", expected, actual);
-        verify(mockedRest).postForObject(DatabaseManager.WEB_SERVICE + "updateLocation", retLoc, Boolean.class);
+        verify(mockedRest).postForObject(eq(DatabaseManager.WEB_SERVICE + "updateLocation"), anyObject(), eq(Boolean.class));
     }
 
     @Test
@@ -194,16 +187,7 @@ public class DatabaseManagerTest {
         long expected = 1;
 
         assertEquals("Should return the ID of the newly created location", expected, actual);
-        verify(mockedRest).postForObject(DatabaseManager.WEB_SERVICE + "insertLocation", newLoc, Long.class);
-    }
-
-    @Test
-    public void testInsertReturnedLocation() throws Exception {
-        long actual = man.insert(retLoc);
-        long expected = -1;
-
-        assertEquals("Should return -1 because location already exists (already has ID)", expected, actual);
-        verify(mockedRest).postForObject(DatabaseManager.WEB_SERVICE + "insertLocation", retLoc, Long.class);
+        verify(mockedRest).postForObject(eq(DatabaseManager.WEB_SERVICE + "insertLocation"), anyObject(), eq(Long.class));
     }
 
     @Test
@@ -261,6 +245,15 @@ public class DatabaseManagerTest {
     }
 
     @Test
+    public void testInsertCategory() {
+        boolean actual = man.insert(cat1);
+        boolean expected = true;
+
+        assertEquals("Should return true when the Category is inserted.", expected, actual);
+        verify(mockedRest).postForObject(DatabaseManager.WEB_SERVICE + "insertCategory", cat1, Boolean.class);
+    }
+
+    @Test
     public void testRemoveExistingUser() throws Exception {
         boolean actual = man.removeUser((long) 1);
         boolean expected = true;
@@ -298,20 +291,20 @@ public class DatabaseManagerTest {
 
     @Test
     public void testGetExistingUser() throws Exception {
-        User actual = man.getUser((long) 1);
-        User expected = retUser;
+        ExposureUser actual = man.getUser((long) 1);
+        ExposureUser expected = retUser;
 
         assertEquals("Should return user matching the given ID", expected, actual);
-        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 1, User.class);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 1, ExposureUser.class);
     }
 
     @Test
     public void testGetBogusUser() throws Exception {
-        User actual = man.getUser((long) 99);
-        User expected = null;
+        ExposureUser actual = man.getUser((long) 99);
+        ExposureUser expected = null;
 
         assertEquals("Should return null when passed ID that does not match an existing user", expected, actual);
-        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 99, User.class);
+        verify(mockedRest).getForObject(DatabaseManager.WEB_SERVICE + "getUser?id=" + 99, ExposureUser.class);
     }
 
     @Test

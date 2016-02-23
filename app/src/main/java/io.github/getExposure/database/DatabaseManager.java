@@ -3,6 +3,18 @@ package io.github.getExposure.database;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+// Image Downloader Import
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.io.ByteArrayOutputStream;
+import android.util.Log;
+//
+
 /**
  * DatabaseManager is an abstraction that handles interactions with the
  * database. DatabaseManager can provide data from, add data to, and update
@@ -18,7 +30,8 @@ import org.springframework.web.client.RestTemplate;
 public class DatabaseManager {
     private RestTemplate restTemplate;
 
-    private static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
+    protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
+    protected static final String PATH = "/data/data/";  //Downloaded Image Files in this directory
 
     private static final long NULL_ID = -1;
 
@@ -52,6 +65,13 @@ public class DatabaseManager {
      *
      * Requires that loc to be an existing location (a location returned by DatabaseManager).
      *
+     * Also inserts any unregistered categories inside loc. A category is
+     * unregistered if the locID was omitted when constructed. Additional
+     * categories can be registered in the database using insert(Category category)
+     *
+     * Comments inside loc will not be inserted into the database and must be
+     * inserted separately using insert(Comment comment)
+     *
      * @param loc the ExposureLocation with the desired data
      * @return true iff the location entry matching the given ID was updated
       */
@@ -59,8 +79,20 @@ public class DatabaseManager {
     public boolean update(ExposureLocation loc) {
         WebLocation wLoc = new WebLocation(loc.getLat(),loc.getLon(),loc.getTotalRating(),
                 loc.getNumOfRatings(),loc.getName(),loc.getDesc());
+
+        // register location in database
         final String url = WEB_SERVICE + "updateLocation";
-        return restTemplate.postForObject(url, wLoc, Boolean.class);
+        boolean result = restTemplate.postForObject(url, wLoc, Boolean.class);
+
+        // register any unregistered categories in loc
+        for (Category cat : loc.getCategories()) {
+            if (cat.getId() == Category.NULL_ID) {
+                Category registeredCat = new Category(loc.getID(),cat.getId());
+                insert(registeredCat);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -84,6 +116,13 @@ public class DatabaseManager {
      *
      * Requires that loc to be a new location (no ID specified when constructed).
      *
+     * Also inserts any unregistered categories inside loc. A category is
+     * unregistered if the locID was omitted when constructed. Additional
+     * categories can be registered in the database using insert(Category category)
+     *
+     * Comments inside loc will not be inserted into the database and must be
+     * inserted separately using insert(Comment comment)
+     *
      * @param loc the ExposureLocation with the desired data to be saved as a new
      *              entry in the database
      * @return the ID of the created location. Returns -1 if the location
@@ -92,8 +131,20 @@ public class DatabaseManager {
     public long insert(ExposureLocation loc) {
         WebLocation wLoc = new WebLocation(loc.getLat(),loc.getLon(),loc.getTotalRating(),
                 loc.getNumOfRatings(),loc.getName(),loc.getDesc());
+
+        // register location in database
         final String url = WEB_SERVICE + "insertLocation";
-        return restTemplate.postForObject(url, wLoc, Long.class);
+        long locID = restTemplate.postForObject(url, wLoc, Long.class);
+
+        // register any unregistered categories in loc
+        for (Category cat : loc.getCategories()) {
+            if (cat.getId() == Category.NULL_ID) {
+                Category registeredCat = new Category(locID,cat.getId());
+                insert(registeredCat);
+            }
+        }
+
+        return locID;
     }
 
     /**
@@ -152,9 +203,9 @@ public class DatabaseManager {
      * @return true if and only if the category is registered into the
      * database.
      */
-    public long insert(Category category) {
+    public boolean insert(Category category) {
         final String url = WEB_SERVICE + "insertCategory";
-        return restTemplate.postForObject(url, category, Long.class);
+        return restTemplate.postForObject(url, category, Boolean.class);
     }
 
     /**
@@ -290,19 +341,17 @@ public class DatabaseManager {
         return restTemplate.getForObject(url, ExposureLocation[].class);
     }
 
-    //TODO: Method added to pass compiler checks
-    public long insert(WebLocation newLoc) {
-        return 0;
-    }
-
-    //TODO: Method added to pass compiler checks
-    public boolean update(WebLocation updatedLocation) {
-        return false;
+    /**
+     * Returns a downloaded image File from using a random url
+     * @return File containing an image
+     */
+    public File downLoadImage() {
+        return ImageManager.DownloadFromUrl("https://exposurestorage.blob.core.windows.net/exposurecontainer/10", "TestImage");
     }
 
     /**
      * WebLocation is an immutable representation of a location on the map. This
-     * class can be used for sending data to the web service and should only be used
+     * class can be used for sending data to the web service and is only be used
      * internally by Databasemanager.
      *
      * specfield id : long  // uniquely identifies this location for database interactions
@@ -469,6 +518,68 @@ public class DatabaseManager {
          */
         public WebLocation addID(long id) {
             return new WebLocation(id,lat,lon,totalRating,numOfRatings,name,desc);
+        }
+    }
+
+
+
+    private static class ImageManager {
+
+        //private final String PATH = "/data/data/com.exposure.imagedownloader/";  //put the downloaded file here
+
+
+        public static File DownloadFromUrl(String imageURL, String fileName) {  //this is the downloader method
+            File file = null;
+            System.out.println("Downloading From Url");
+            try {
+                URL url = new URL(imageURL); //you can write here any link
+                System.out.println("Opening File");
+                file = new File(PATH + fileName);
+                System.out.println("Creating new File");
+                file.createNewFile();
+                System.out.println("Created new File");
+
+                long startTime = System.currentTimeMillis();
+                Log.d("ImageManager", "download begining");
+                Log.d("ImageManager", "download url:" + url);
+                Log.d("ImageManager", "downloaded file name:" + fileName);
+                        /* Open a connection to that URL. */
+                URLConnection ucon = url.openConnection();
+
+                        /*
+                         * Define InputStreams to read from the URLConnection.
+                         */
+                InputStream is = ucon.getInputStream();
+                BufferedInputStream bis = new BufferedInputStream(is);
+
+                        /*
+                         * Read bytes to the Buffer until there is nothing more to read(-1).
+                         */
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+                //We create an array of bytes
+                byte[] data = new byte[50];
+                int current = 0;
+
+                while((current = bis.read(data,0,data.length)) != -1){
+                    buffer.write(data, 0, current);
+                }
+                System.out.println("Create File OutputStream");
+                        /* Convert the Bytes read to a String. */
+                FileOutputStream fos = new FileOutputStream(file);
+                System.out.println("Write to Buffer");
+                fos.write(buffer.toByteArray());
+                fos.close();
+                Log.d("ImageManager", "download ready in"
+                        + ((System.currentTimeMillis() - startTime) / 1000)
+                        + " sec");
+
+            } catch (IOException e) {
+                Log.d("ImageManager", "Error: " + e);
+            }
+
+            return file;
+
         }
     }
 }
