@@ -1,10 +1,14 @@
 package io.github.getExposure.maps;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -98,10 +102,12 @@ public class MapsActivity extends ExposureFragmentActivity implements OnMapReady
 
     //private Location mLastLocation;
 
+    private int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;// = 1;
+    private int REQUEST_CHECK_SETTINGS;// = -1;
+    private int MY_LOCATION_REQUEST_CODE;
     /*  Variables used in developing 1.0
     public final static String EXTRA_MESSAGE = "io.github.getExposure.BLURB";
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private static final int REQUEST_CHECK_SETTINGS = -1;
+
     ImageButton toListView;
     ImageButton toProfileView;
     private GoogleApiClient mGoogleApiClient;
@@ -197,6 +203,7 @@ public class MapsActivity extends ExposureFragmentActivity implements OnMapReady
         }
         */
 
+        checkLocationPermission();
         LatLng drum = new LatLng(DRUMHELLER_LATITUDE, DRUMHELLER_LONGITUDE);
         mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
         // Add a marker near seattle and move the camera
@@ -262,6 +269,32 @@ public class MapsActivity extends ExposureFragmentActivity implements OnMapReady
         }
         */
     }
+
+    public void checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+            System.out.println("thanksfor lettingmetracku");
+        } else {
+            System.out.println("why dafuck u not allow me to TRACK u");
+            // Show rationale and request permission.
+        }
+    }
+
+    /*
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == MY_LOCATION_REQUEST_CODE) {
+            if (permissions.length == 1 &&
+                    permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+            } else {
+                // Permission was denied. Display an error message.
+            }
+        }
+
+    */
 
     /**
      * Callback called when the user clicks the "search" button.
@@ -419,7 +452,8 @@ public class MapsActivity extends ExposureFragmentActivity implements OnMapReady
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
-
+*/
+    /*
     // checks permission for accessing location, and requests if necessary
     protected void checkLocationPermission() {
         System.out.println("checkLocationPermission() called");
@@ -479,7 +513,7 @@ public class MapsActivity extends ExposureFragmentActivity implements OnMapReady
             // permissions this app might request
         }
     }
-
+*/
 
     /**
      * What to do onStart()
