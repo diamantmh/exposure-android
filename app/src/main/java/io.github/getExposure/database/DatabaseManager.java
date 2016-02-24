@@ -12,7 +12,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.io.ByteArrayOutputStream;
+
+import android.content.Context;
 import android.util.Log;
+import android.os.Environment;
+import android.content.Context;
 //
 
 /**
@@ -31,7 +35,9 @@ public class DatabaseManager {
     private RestTemplate restTemplate;
 
     protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
-    protected static final String PATH = "/data/data/";  //Downloaded Image Files in this directory
+    protected static final String DIR_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "data";  //Downloaded Image Files in this directory
+    protected Context CONTEXT;
+
 
     private static final long NULL_ID = -1;
 
@@ -43,8 +49,8 @@ public class DatabaseManager {
     /**
      * Constructs a DatabaseManager.
      */
-    public DatabaseManager() {
-        this(new RestTemplate());
+    public DatabaseManager(Context c) {
+        this(new RestTemplate(), c);
     }
 
     /**
@@ -54,9 +60,10 @@ public class DatabaseManager {
      * or it can be used for testing purposes (providing a mocked
      * RestTemplate)
      */
-    public DatabaseManager(RestTemplate rt) {
+    public DatabaseManager(RestTemplate rt, Context c) {
         restTemplate = rt;
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        CONTEXT = c;
     }
 
     /**
@@ -346,7 +353,7 @@ public class DatabaseManager {
      * @return File containing an image
      */
     public File downLoadImage() {
-        return ImageManager.DownloadFromUrl("https://exposurestorage.blob.core.windows.net/exposurecontainer/10", "TestImage");
+        return ImageManager.DownloadFromUrl("https://exposurestorage.blob.core.windows.net/exposurecontainer/10", "TestImage", CONTEXT);
     }
 
     /**
@@ -525,19 +532,50 @@ public class DatabaseManager {
 
     private static class ImageManager {
 
-        //private final String PATH = "/data/data/com.exposure.imagedownloader/";  //put the downloaded file here
-
-
-        public static File DownloadFromUrl(String imageURL, String fileName) {  //this is the downloader method
+        public static File DownloadFromUrl(String imageURL, String fileName, Context context) {  //this is the downloader method
             File file = null;
+            File dir;
+
+            boolean mExternalStorageAvailable = false;
+            boolean mExternalStorageWriteable = false;
+            String state = Environment.getExternalStorageState();
+
+            if (Environment.MEDIA_MOUNTED.equals(state)) {
+                // We can read and write the media
+                mExternalStorageAvailable = mExternalStorageWriteable = true;
+                System.out.println("We can read and write");
+            } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+                // We can only read the media
+                mExternalStorageAvailable = true;
+                mExternalStorageWriteable = false;
+                System.out.println("We can only read");
+            } else {
+                // Something else is wrong. It may be one of many other states, but all we need
+                //  to know is we can neither read nor write
+                System.out.println("HOLY SHIT HUSTON WE FOUND THE PROBLEM");
+                mExternalStorageAvailable = mExternalStorageWriteable = false;
+            }
+            System.out.println();
+
             System.out.println("Downloading From Url");
             try {
                 URL url = new URL(imageURL); //you can write here any link
-                System.out.println("Opening File");
-                file = new File(PATH + fileName);
+                System.out.println("Creating Directory");
+                dir = new File(DIR_PATH);
+
+                String name = "testName";
+                file = new File(context.getCacheDir(), name);
+
+                System.out.println();
+
                 System.out.println("Creating new File");
-                file.createNewFile();
+                if (file.createNewFile())
+                    System.out.println("FILE WAS SUCCESSFULLY CREATED!");
+                else
+                    System.out.println("\nERROR WHEN CREATING FILE\n");
                 System.out.println("Created new File");
+
+                System.out.println();
 
                 long startTime = System.currentTimeMillis();
                 Log.d("ImageManager", "download begining");

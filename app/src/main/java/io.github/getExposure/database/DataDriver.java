@@ -30,7 +30,7 @@ public class DataDriver extends FragmentActivity {
         System.out.println("-----------------");
         System.out.println();
         System.out.println("Instantiating DatabaseManager...");
-        man = new DatabaseManager();
+        man = new DatabaseManager(this);
         System.out.println("DatabaseManager initiated!");
 
         System.out.println("Allowing networking on main thread (this causes lock-ups so don't do this)");
