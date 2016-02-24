@@ -57,15 +57,12 @@ public class DataDriver extends FragmentActivity {
         System.out.println();
         System.out.println("Inserting a valid user,");
         // generate fake fb user ID
-        long mockFbId = (long)Math.floor(Math.random() * 100000000);
-        ExposureUser newUser = new ExposureUser(mockFbId, "HEY I'M GOKU", "GOKU LINK", "MY POWER LEVEL IS OVER 9000!!!!!!!!");
+        long userID = (long)Math.floor(Math.random() * 100000000);
+        ExposureUser newUser = new ExposureUser(userID, "HEY I'M GOKU", "GOKU LINK", "MY POWER LEVEL IS OVER 9000!!!!!!!!");
         displayUser(newUser);
-        long userID = man.insert(newUser);
-        System.out.println("ID = " + userID);
-        if (userID <= 0) { throw new AssertionError(); }
+        boolean insertUserRes = man.insert(newUser);
+        if (!insertUserRes) { throw new AssertionError(); }
         System.out.println("User has been inserted");
-        ExposureUser retUser = newUser.addID(userID);
-        displayUser(retUser);
 
         // test update user
         System.out.println();
