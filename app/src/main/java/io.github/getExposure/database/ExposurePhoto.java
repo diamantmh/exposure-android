@@ -19,7 +19,6 @@ public final class ExposurePhoto {
     private final File file;
 
     private static final long NULL_ID = -1;
-    private static final String DEFAULT_PICTURE = "https://avatars2.githubusercontent.com/u/16708552?v=3&s=200";
 
     /*
      * class invariant,
@@ -31,9 +30,8 @@ public final class ExposurePhoto {
     /**
      * Constructs a ExposurePhoto with the specified parameters.
      *
-     * Should not be used when inserting a new ExposurePhoto using DatabaseManager. You
-     * should omit the ID in this case. Only use this constructor when you have
-     * an ID provided by DatabaseManager.
+     * Should not be used when inserting a new ExposurePhoto using DatabaseManager.
+     * Only use this constructor when you have an ID provided by DatabaseManager.
      *
      * Parameters date and time must not be null. You must fill in the date and
      * time at instantiation. Behavior not specified if file is null.
@@ -45,6 +43,7 @@ public final class ExposurePhoto {
      * @param source source link of photo
      * @param date date photo was taken
      * @param time time photo was taken
+     * @param file the file that stores this photo
      */
     public ExposurePhoto(long id, long authorID, long locID, String source, Date date, Time time, File file) {
         this.id = id;
@@ -53,7 +52,7 @@ public final class ExposurePhoto {
         this.source = (source == null) ? "" : source;
         this.date = (date == null) ? new Date(0) : new Date(date.getTime());
         this.time = (time == null) ? new Time(0) : new Time(time.getTime());
-        this.file = (file == null) ? new File(DEFAULT_PICTURE) : file;
+        this.file = file;
     }
 
     /**
@@ -71,19 +70,17 @@ public final class ExposurePhoto {
      * @param source source link of photo
      * @param date date photo was taken
      * @param time time photo was taken
+     * @param file the file that stores the photo
      */
     public ExposurePhoto(long authorID, long locID, String source, Date date, Time time, File file) {
         this(NULL_ID, authorID, locID, source, date, time, file);
     }
-    
+
+    /**
+     * Default constructor required for JSON decoding.
+     */
     public ExposurePhoto() {
-        id = NULL_ID;
-        authorID = NULL_ID;
-        locID = NULL_ID;
-        source = "";
-        date = new Date(0);
-        time = new Time(0);
-        file = new File(DEFAULT_PICTURE);
+        this(NULL_ID, NULL_ID,NULL_ID,"",new Date(0),new Time(0), null);
     }
 
     /**
@@ -168,6 +165,6 @@ public final class ExposurePhoto {
      * @return a ExposurePhoto with the given id
      */
     public ExposurePhoto addID(long id) {
-        return new ExposurePhoto(id,locID,source,new Date(date.getTime()),new Time(time.getTime()), file);
+        return new ExposurePhoto(id,authorID,locID,source,new Date(date.getTime()),new Time(time.getTime()),file);
     }
 }
