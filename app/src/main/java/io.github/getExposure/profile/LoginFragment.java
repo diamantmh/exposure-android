@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -28,20 +27,23 @@ import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
 
 import io.github.getExposure.R;
+import io.github.getExposure.database.DatabaseManager;
+import io.github.getExposure.database.ExposureUser;
 
 
 public class LoginFragment extends Fragment {
     private static String LOGGED_OUT_TEXT = "Login with Facebook to post and review photos and locations!";
+
+    @SuppressWarnings("all")
     private static String ERROR_TEXT = "Something went wrong. Please try again.";
+
+    private DatabaseManager db;
 
     // The main TextView that displays text
     private TextView message;
 
     // The user profile object
     private Profile profile;
-
-    // The button that allows the user to switch to Profile View after logging in
-    private Button profileViewSwitcher;
 
     // The view that displays the user's profile picture
     private ProfilePictureView profilepicture;
@@ -60,7 +62,7 @@ public class LoginFragment extends Fragment {
         @Override
         public void onSuccess(LoginResult loginResult) {
             // The user successfully logs in
-            AccessToken accessToken = loginResult.getAccessToken();
+            // AccessToken accessToken = loginResult.getAccessToken();
         }
 
         /*
@@ -92,6 +94,7 @@ public class LoginFragment extends Fragment {
         mCallbackManager = CallbackManager.Factory.create();
         profile = Profile.getCurrentProfile();
 
+        db = new DatabaseManager();
         setupTokenTracker();
         setupProfileTracker();
 
@@ -111,7 +114,6 @@ public class LoginFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         setupProfilePicture(view);
-        setupButton(view);
         setupLoginButton(view);
         setupMessageText(view);
     }
@@ -122,7 +124,7 @@ public class LoginFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Profile profile = Profile.getCurrentProfile();
+        profile = Profile.getCurrentProfile();
     }
 
     /*
@@ -139,6 +141,16 @@ public class LoginFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private ExposureUser getExposureUser() {
+        long id = Long.parseLong(profile.getId());
+        ExposureUser user = db.getUser(id);
+        if (user == null) {
+            user = new ExposureUser(id, profile.getName(), profile.getProfilePictureUri(100, 100).toString(), "");
+            db.insert(user);
+        }
+        return user;
     }
 
     private void setupTokenTracker() {
@@ -158,19 +170,16 @@ public class LoginFragment extends Fragment {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                 profile = Profile.getCurrentProfile();
+                getExposureUser();
                 if (profile != null) {
                     String msg = "Welcome " + profile.getFirstName() + "!";
                     message.setText(msg);
 
                     profilepicture.setProfileId(profile.getId());
                     profilepicture.setVisibility(View.VISIBLE);
-
-                    profileViewSwitcher.setVisibility(View.VISIBLE);
                 } else {
                     message.setText(LOGGED_OUT_TEXT);
                     profilepicture.setVisibility(View.INVISIBLE);
-
-                    profileViewSwitcher.setVisibility(View.INVISIBLE);
                 }
             }
         };
@@ -184,25 +193,14 @@ public class LoginFragment extends Fragment {
             profilepicture.setVisibility(View.INVISIBLE);
     }
 
-    private void setupButton(View view) {
-        profileViewSwitcher = (Button) view.findViewById(R.id.profileview);
-        if (profile == null)
-            profileViewSwitcher.setVisibility(View.INVISIBLE);
-
-        profileViewSwitcher.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent profileViewIntent = new Intent(getContext(), ProfileActivity.class);
-                startActivity(profileViewIntent);
-            }
-        });
-    }
-
     private void setupMessageText(View view) {
         message = (TextView) view.findViewById(R.id.message);
-        if (profile != null)
-            message.setText("Currently logged in as " + profile.getName());
-        else
+        if (profile != null) {
+            String text = "Currently logged in as " + profile.getName();
+            message.setText(text);
+        } else {
             message.setText(LOGGED_OUT_TEXT);
+        }
     }
 
     /*
@@ -211,6 +209,8 @@ public class LoginFragment extends Fragment {
     private void setupLoginButton(View view) {
         LoginButton mButtonLogin = (LoginButton) view.findViewById(R.id.login_button);
         mButtonLogin.setFragment(this);
+
+        mButtonLogin.setReadPermissions("user_location");
         mButtonLogin.registerCallback(mCallbackManager, mFacebookCallback);
     }
 }

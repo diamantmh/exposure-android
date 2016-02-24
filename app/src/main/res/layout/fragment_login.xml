@@ -35,15 +35,4 @@
         android:layout_below="@+id/message"
         android:layout_centerHorizontal="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View Profile"
-        android:id="@+id/profileview"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="25dp"
-        android:layout_alignEnd="@+id/login_button"
-        android:layout_alignStart="@+id/login_button"
-        android:nestedScrollingEnabled="true" />
-
 </RelativeLayout>
