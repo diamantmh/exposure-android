@@ -43,6 +43,15 @@ public class DataDriver extends FragmentActivity {
 
         File newPNG = man.downLoadImage();
 
+        System.out.println();
+
+        if (newPNG.exists())
+            System.out.println("IMAGE FILE EXISTS");
+        else
+            System.out.println("IMAGE FILE DOES NOT EXIST");
+
+        System.out.println();
+
         // test insert user
         System.out.println();
         System.out.println("Inserting a valid user,");

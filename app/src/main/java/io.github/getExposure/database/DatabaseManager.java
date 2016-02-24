@@ -7,16 +7,19 @@ import org.springframework.web.client.RestTemplate;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.io.ByteArrayOutputStream;
+import java.sql.Time;
+import java.util.Date;
 
 import android.content.Context;
 import android.util.Log;
 import android.os.Environment;
 import android.content.Context;
+import android.util.Base64;
 //
 
 /**
@@ -34,8 +37,9 @@ import android.content.Context;
 public class DatabaseManager {
     private RestTemplate restTemplate;
 
-    protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
-    protected static final String DIR_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "data";  //Downloaded Image Files in this directory
+    //protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
+    protected static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
+
     protected Context CONTEXT;
 
 
@@ -530,6 +534,147 @@ public class DatabaseManager {
 
 
 
+    /**
+     * ExposurePhoto is an immutable representation of a photo.
+     *
+     * specfield id : long  // uniquely identifies this photo for database interactions
+     */
+    private static class WebPhoto {
+
+        private final long id;
+        private final long authorID;
+        private final long locID;
+        private final String source;
+        private final Date date;
+        private final Time time;
+        private final String file;
+
+        private static final long NULL_ID = -1;
+
+        /**
+         * Constructs a ExposurePhoto with the specified parameters.
+         *
+         * Should not be used when inserting a new ExposurePhoto using DatabaseManager. You
+         * should omit the ID in this case. Only use this constructor when you have
+         * an ID provided by DatabaseManager.
+         *
+         * Parameters date and time must not be null. You must fill in the date and
+         * time at instantiation. Behavior not specified if file is null.
+         *
+         * @param ep ExposurePhoto object to convert
+         */
+        public WebPhoto(ExposurePhoto ep) {
+            this.id = ep.getID();
+            this.authorID = ep.getAuthorID();
+            this.locID = ep.getLocID();
+            this.source = ep.getSource();
+            this.date = ep.getDate();
+            this.time = ep.getTime();
+            this.file = convertFileToString(ep.getFile());
+        }
+
+        //Convert my file to a Base64 String
+        private String convertFileToString(File file) {
+            int size = (int) file.length();
+            byte[] bytes = new byte[size];
+            try {
+                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+                buf.read(bytes, 0, bytes.length);
+                buf.close();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return Base64.encodeToString(bytes,Base64.DEFAULT);
+        }
+
+        public WebPhoto() {
+            id = NULL_ID;
+            authorID = NULL_ID;
+            locID = NULL_ID;
+            source = "";
+            date = new Date(0);
+            time = new Time(0);
+            file = "";
+        }
+
+        /**
+         * Returns the unique identifier for this photo.
+         *
+         * The returned ID can be used to interact with DatabaseManager.
+         *
+         * @return the unique identifier of this photo or -1 if this ExposurePhoto has
+         * no ID (if ID omitted when constructed)
+         */
+        public long getID() {
+            return id;
+        }
+
+        /**
+         * Returns the unique identifier of the ExposureUser that originally posted this
+         * photo.
+         *
+         * The returned ID can be used to interact with DatabaseManager.
+         *
+         * @return the unique identifier of the ExposureUser that posted this photo
+         */
+        public long getAuthorID() {
+            return authorID;
+        }
+
+        /**
+         * Returns the unique identifier of the location where this photo was
+         * taken.
+         *
+         * The returned ID can be used to interact with DatabaseManager.
+         *
+         * @return the unique identifier of the ExposureLocation where this ExposurePhoto was taken
+         */
+        public long getLocID() {
+            return locID;
+        }
+
+        /**
+         * Returns the source link to the picture as a String
+         *
+         * @return the source link to the profile picture of this user
+         */
+        public String getSource() {
+            return source;
+        }
+
+        /**
+         * Returns the Date this photo was taken.
+         *
+         * @return the Date this photo was taken.
+         */
+        public Date getDate() {
+            return new Date(date.getTime());
+        }
+
+        /**
+         * Returns the Time this photo was taken.
+         *
+         * @return the Time this photo was taken.
+         */
+        public Time getTime() {
+            return new Time(time.getTime());
+        }
+
+        /**
+         * Returns the File of this photo.
+         *
+         * @return the File of this photo.
+         */
+        public String getFile() {
+            return file;
+        }
+
+    }
+
+
+
+
     private static class ImageManager {
 
         public static File DownloadFromUrl(String imageURL, String fileName, Context context) {  //this is the downloader method
@@ -560,8 +705,6 @@ public class DatabaseManager {
             System.out.println("Downloading From Url");
             try {
                 URL url = new URL(imageURL); //you can write here any link
-                System.out.println("Creating Directory");
-                dir = new File(DIR_PATH);
 
                 String name = "testName";
                 file = new File(context.getCacheDir(), name);
@@ -608,11 +751,11 @@ public class DatabaseManager {
                 System.out.println("Write to Buffer");
                 fos.write(buffer.toByteArray());
                 fos.close();
-                Log.d("ImageManager", "download ready in"
+                Log.d("ImageManager", "download ready in "
                         + ((System.currentTimeMillis() - startTime) / 1000)
                         + " sec");
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.d("ImageManager", "Error: " + e);
             }
 
