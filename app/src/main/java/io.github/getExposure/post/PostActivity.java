@@ -44,20 +44,42 @@ public class PostActivity extends AppCompatActivity {
     private EditText longitude;
     private EditText description;
     private TextView categories;
+    private TextView logMessage;
     static final int REQUEST_IMAGE_CAPTURE = 2;
     private String mCurrentPhotoPath;
     private String[] permissions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_view);
+
         name = (EditText) findViewById(R.id.name);
         latitude = (EditText) findViewById(R.id.latitude);
         longitude = (EditText) findViewById(R.id.longitude);
-
+        description = (EditText) findViewById(R.id.description);
         categories = (TextView) findViewById(R.id.categories);
+
+        logMessage = (TextView) findViewById(R.id.notLoggedInMessage);
+
+        if (Profile.getCurrentProfile() == null) {
+            name.setVisibility(View.INVISIBLE);
+            latitude.setVisibility(View.INVISIBLE);
+            longitude.setVisibility(View.INVISIBLE);
+            categories.setVisibility(View.INVISIBLE);
+            description.setVisibility(View.INVISIBLE);
+            findViewById(R.id.submit).setVisibility(View.INVISIBLE);
+            logMessage.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        name.setVisibility(View.VISIBLE);
+        latitude.setVisibility(View.VISIBLE);
+        longitude.setVisibility(View.VISIBLE);
+        categories.setVisibility(View.VISIBLE);
+        description.setVisibility(View.VISIBLE);
+        findViewById(R.id.submit).setVisibility(View.VISIBLE);
+        logMessage.setVisibility(View.INVISIBLE);
 
         categories.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,6 +114,11 @@ public class PostActivity extends AppCompatActivity {
                 permissions,
                 5
         );
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     public void post() {
