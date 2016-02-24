@@ -38,7 +38,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_view);
 
-        db = new DatabaseManager();
+        db = new DatabaseManager(getApplicationContext());
         profile = Profile.getCurrentProfile();
 
         if (profile == null) {

@@ -94,7 +94,7 @@ public class LoginFragment extends Fragment {
         mCallbackManager = CallbackManager.Factory.create();
         profile = Profile.getCurrentProfile();
 
-        db = new DatabaseManager();
+        db = new DatabaseManager(getActivity().getApplicationContext());
         setupTokenTracker();
         setupProfileTracker();
 

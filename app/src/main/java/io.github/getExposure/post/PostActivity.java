@@ -156,7 +156,7 @@ public class PostActivity extends AppCompatActivity {
             final ExposureLocation loc = new ExposureLocation(Float.parseFloat(latitude.getText().toString()),
                     Float.parseFloat(longitude.getText().toString()), 0, 0, name.getText().toString(),
                     description.getText().toString(), new HashSet<Category>(), new ArrayList<Comment>());
-            final DatabaseManager m = new DatabaseManager();
+            final DatabaseManager m = new DatabaseManager(getApplicationContext());
             new Thread(new Runnable() {
                 public void run() {
                     long result = m.insert(loc);
