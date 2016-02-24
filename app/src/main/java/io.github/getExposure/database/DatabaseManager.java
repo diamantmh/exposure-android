@@ -1,9 +1,10 @@
 package io.github.getExposure.database;
 
+// RestTemplate Imports
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-// Image Downloader Import
+// Image Downloader Imports
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,9 +19,7 @@ import java.util.Date;
 import android.content.Context;
 import android.util.Log;
 import android.os.Environment;
-import android.content.Context;
 import android.util.Base64;
-//
 
 /**
  * DatabaseManager is an abstraction that handles interactions with the
@@ -37,11 +36,10 @@ import android.util.Base64;
 public class DatabaseManager {
     private RestTemplate restTemplate;
 
-    //protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
-    protected static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
+    protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
+    //protected static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
 
     protected Context CONTEXT;
-
 
     private static final long NULL_ID = -1;
 
@@ -51,10 +49,10 @@ public class DatabaseManager {
      */
 
     /**
-     * Constructs a DatabaseManager.
+     * Constructs a DatabaseManager with the given context con.
      */
-    public DatabaseManager(Context c) {
-        this(new RestTemplate(), c);
+    public DatabaseManager(Context con) {
+        this(new RestTemplate(), con);
     }
 
     /**
@@ -64,10 +62,10 @@ public class DatabaseManager {
      * or it can be used for testing purposes (providing a mocked
      * RestTemplate)
      */
-    public DatabaseManager(RestTemplate rt, Context c) {
+    public DatabaseManager(RestTemplate rt, Context con) {
         restTemplate = rt;
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        CONTEXT = c;
+        CONTEXT = con;
     }
 
     /**
@@ -84,7 +82,7 @@ public class DatabaseManager {
      * inserted separately using insert(Comment comment)
      *
      * @param loc the ExposureLocation with the desired data
-     * @return true iff the location entry matching the given ID was updated
+     * @return true iff the location entry matching the ID of loc was updated
       */
 
     public boolean update(ExposureLocation loc) {
@@ -95,13 +93,7 @@ public class DatabaseManager {
         final String url = WEB_SERVICE + "updateLocation";
         boolean result = restTemplate.postForObject(url, wLoc, Boolean.class);
 
-        // register any unregistered categories in loc
-        for (Category cat : loc.getCategories()) {
-            if (cat.getId() == Category.NULL_ID) {
-                Category registeredCat = new Category(loc.getID(),cat.getId());
-                insert(registeredCat);
-            }
-        }
+        registerCategoriesAndCommentsInLocation(loc);
 
         return result;
     }
@@ -110,10 +102,11 @@ public class DatabaseManager {
      * Returns true if and only if the specified user is updated. Replaces
      * the entry in the database matching the given id with the given value.
      *
-     * Requires that user to be an existing user (a user returned by DatabaseManager).
+     * Requires that user to be an existing user (a user registered by
+     * DatabaseManager).
      *
      * @param user the ExposureUser with the desired data
-     * @return true iff the user entry matching the given ID was updated
+     * @return true iff the user entry matching the ID of user was updated
      */
     public boolean update(ExposureUser user) {
         final String url = WEB_SERVICE + "updateUser";
@@ -147,20 +140,15 @@ public class DatabaseManager {
         final String url = WEB_SERVICE + "insertLocation";
         long locID = restTemplate.postForObject(url, wLoc, Long.class);
 
-        // register any unregistered categories in loc
-        for (Category cat : loc.getCategories()) {
-            if (cat.getId() == Category.NULL_ID) {
-                Category registeredCat = new Category(locID,cat.getId());
-                insert(registeredCat);
-            }
-        }
+        registerCategoriesAndCommentsInLocation(loc.addID(locID));
 
         return locID;
     }
 
     /**
      * Returns the ID of the new entry in the database. Makes a new entry in the
-     * database for the given ExposurePhoto. Returns -1 if the entry was not created.
+     * database for the given ExposurePhoto. Returns a negative number if the
+     * entry was not created.
      *
      * Requires that photo to be a new photo (no ID specified when constructed).
      *
@@ -171,23 +159,22 @@ public class DatabaseManager {
      */
     public long insert(ExposurePhoto photo) {
         final String url = WEB_SERVICE + "insertPhoto";
-        return restTemplate.postForObject(url, photo, Long.class);
+        return restTemplate.postForObject(url, new WebPhoto(photo), Long.class);
     }
 
     /**
-     * Returns the ID of the new entry in the database. Makes a new entry in the
-     * database for the given ExposureUser. Returns -1 if the entry was not created.
+     * Returns true if and only if the user was registered in the database
+     * successfully
      *
-     * Requires that user to be a new user (no ID specified when constructed).
+     * User should be constructed with the ID given by the Facebook API.
      *
      * @param user the ExposureUser with the desired data to be saved as a new entry
      *              in the database
-     * @return the ID of the created user entry. Returns -1 if the user entry
-     * was not successfully created
+     * @return true iff the user was registered in the database successfully
      */
-    public long insert(ExposureUser user) {
+    public boolean insert(ExposureUser user) {
         final String url = WEB_SERVICE + "insertUser";
-        return restTemplate.postForObject(url, user, Long.class);
+        return restTemplate.postForObject(url, user, Boolean.class);
     }
 
     /**
@@ -292,7 +279,7 @@ public class DatabaseManager {
      */
     public ExposurePhoto[] getUserPhotos(long id) {
         final String url = WEB_SERVICE + "getUserPhotos?id=" + id;
-        return restTemplate.getForObject(url, ExposurePhoto[].class);
+        return downloadPhotos(restTemplate.getForObject(url, ExposurePhoto[].class));
     }
 
     /**
@@ -308,7 +295,7 @@ public class DatabaseManager {
      */
     public ExposurePhoto[] getLocationPhotos(long id) {
         final String url = WEB_SERVICE + "getLocationPhotos?id=" + id;
-        return restTemplate.getForObject(url, ExposurePhoto[].class);
+        return downloadPhotos(restTemplate.getForObject(url, ExposurePhoto[].class));
     }
 
     /**
@@ -356,8 +343,62 @@ public class DatabaseManager {
      * Returns a downloaded image File from using a random url
      * @return File containing an image
      */
-    public File downLoadImage() {
-        return ImageManager.DownloadFromUrl("https://exposurestorage.blob.core.windows.net/exposurecontainer/10", "TestImage", CONTEXT);
+    protected File downLoadImage() {
+        return ImageManager.DownloadFromUrl("https://exposurestorage.blob.core.windows.net/exposurecontainer/10", CONTEXT);
+    }
+
+    /**
+     * Inserts any unregistered categories and comments inside loc. A category
+     * or comment is unregistered if the locID was omitted when constructed.
+     *
+     * @param loc the location to register categories for
+     */
+    private void registerCategoriesAndCommentsInLocation(ExposureLocation loc) {
+        // register any unregistered categories in loc
+        for (Category cat : loc.getCategories()) {
+            if (cat.getId() == Category.NULL_ID) { // if unregistered
+                Category registeredCat = new Category(loc.getID(),cat.getId());
+                insert(registeredCat);
+            }
+        }
+
+        // register any unregistered comments in loc. Registers with a new ID and
+        // associates it with the given location
+        for (Comment com : loc.getComments()) {
+            if (com.getId() == Comment.NULL_ID) { // if unregistered
+                Comment registeredCom = new Comment(com.getAuthorID(),loc.getID(),
+                        com.getContent(),com.getDate(),com.getTime());
+                insert(com);
+            }
+        }
+    }
+
+    /**
+     * Returns an array of downloaded photos specified by the given photo
+     * array. Returns null if photo is null.
+     * Downloads all the photos in the given array from the source urls in
+     * each ExposurePhoto in photos.
+     *
+     * @param photos array of photos to be downloaded
+     * @return an array of downloaded photos or null if there are no photos
+     * to download.
+     */
+    private ExposurePhoto[] downloadPhotos(ExposurePhoto[] photos) {
+        // if no results return null
+        if (photos == null) {
+            return null;
+        }
+
+        // download each location photo
+        ExposurePhoto[] downloadedPhotos = new ExposurePhoto[photos.length];
+        for (int i = 0; i < photos.length; i++) {
+            ExposurePhoto photo = photos[i];
+            File imgFile = ImageManager.DownloadFromUrl(photo.getSource(), CONTEXT);
+            downloadedPhotos[i] = new ExposurePhoto(photo.getID(),photo.getAuthorID(),photo.getLocID(),
+                    photo.getSource(),photo.getDate(),photo.getTime(),imgFile);
+        }
+
+        return downloadedPhotos;
     }
 
     /**
@@ -535,7 +576,9 @@ public class DatabaseManager {
 
 
     /**
-     * ExposurePhoto is an immutable representation of a photo.
+     * WebPhoto is an immutable representation of a photo. This class can be used
+     * for sending data to the web service and is only be used
+     * internally by Databasemanager.
      *
      * specfield id : long  // uniquely identifies this photo for database interactions
      */
@@ -552,14 +595,7 @@ public class DatabaseManager {
         private static final long NULL_ID = -1;
 
         /**
-         * Constructs a ExposurePhoto with the specified parameters.
-         *
-         * Should not be used when inserting a new ExposurePhoto using DatabaseManager. You
-         * should omit the ID in this case. Only use this constructor when you have
-         * an ID provided by DatabaseManager.
-         *
-         * Parameters date and time must not be null. You must fill in the date and
-         * time at instantiation. Behavior not specified if file is null.
+         * Constructs a WebPhoto with the given ExposurePhoto.
          *
          * @param ep ExposurePhoto object to convert
          */
@@ -573,7 +609,7 @@ public class DatabaseManager {
             this.file = convertFileToString(ep.getFile());
         }
 
-        //Convert my file to a Base64 String
+        // Convert my file to a Base64 String
         private String convertFileToString(File file) {
             int size = (int) file.length();
             byte[] bytes = new byte[size];
@@ -588,6 +624,9 @@ public class DatabaseManager {
             return Base64.encodeToString(bytes,Base64.DEFAULT);
         }
 
+        /**
+         * Default constructor required for JSON decoding.
+         */
         public WebPhoto() {
             id = NULL_ID;
             authorID = NULL_ID;
@@ -673,11 +712,12 @@ public class DatabaseManager {
     }
 
 
-
-
+    /**
+     * ImageManager is a utility that handles downloading images.
+     */
     private static class ImageManager {
 
-        public static File DownloadFromUrl(String imageURL, String fileName, Context context) {  //this is the downloader method
+        public static File DownloadFromUrl(String imageURL, Context context) {  //this is the downloader method
             File file = null;
             File dir;
 
@@ -723,7 +763,7 @@ public class DatabaseManager {
                 long startTime = System.currentTimeMillis();
                 Log.d("ImageManager", "download begining");
                 Log.d("ImageManager", "download url:" + url);
-                Log.d("ImageManager", "downloaded file name:" + fileName);
+                //Log.d("ImageManager", "downloaded file name:" + fileName);
                         /* Open a connection to that URL. */
                 URLConnection ucon = url.openConnection();
 
