@@ -9,6 +9,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -55,7 +56,9 @@ public class DataDriver extends FragmentActivity {
         // test insert user
         System.out.println();
         System.out.println("Inserting a valid user,");
-        ExposureUser newUser = new ExposureUser("HEY I'M GOKU", "GOKU LINK", "MY POWER LEVEL IS OVER 9000!!!!!!!!");
+        // generate fake fb user ID
+        long mockFbId = (long)Math.floor(Math.random() * 100000000);
+        ExposureUser newUser = new ExposureUser(mockFbId, "HEY I'M GOKU", "GOKU LINK", "MY POWER LEVEL IS OVER 9000!!!!!!!!");
         displayUser(newUser);
         long userID = man.insert(newUser);
         System.out.println("ID = " + userID);
