@@ -352,6 +352,15 @@ public class DatabaseManager {
     }
 
     /**
+     * Returns a downloaded image File from using a random url
+     * @param url The specified image we want to download
+     * @return File containing an image
+     */
+    protected File downLoadImage(String url) {
+        return ImageManager.DownloadFromUrl(url, CONTEXT);
+    }
+
+    /**
      * Inserts any unregistered categories and comments inside loc. A category
      * or comment is unregistered if the locID was omitted when constructed.
      *
