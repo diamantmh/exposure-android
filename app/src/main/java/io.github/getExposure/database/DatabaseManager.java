@@ -9,6 +9,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.io.PrintStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -38,7 +39,8 @@ import android.util.Base64;
 public class DatabaseManager {
     private RestTemplate restTemplate;
 
-    protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
+    protected static final String WEB_SERVICE = "http://exposureweb.cloudapp.net/RESTfulProject/REST/WebService/";
+    //protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
     //protected static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
 
     protected Context CONTEXT;
@@ -613,6 +615,31 @@ public class DatabaseManager {
 
         // Convert my file to a Base64 String
         private String convertFileToString(File file) {
+
+
+            // Test
+            File dest = new File("/Users/Tyler/Desktop/fromApp");
+
+            try {
+                dest.createNewFile();
+                FileInputStream in = new FileInputStream(file);
+                FileOutputStream out = new FileOutputStream(dest);
+
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                in.close();
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // Test end
+
+
+
             String encodedBase64 = null;
             FileInputStream fileInputStream = null;
             byte[] bytes = new byte[(int)file.length()];
@@ -628,6 +655,23 @@ public class DatabaseManager {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            // Test
+
+            try {
+                File textFile = new File("/Users/Tyler/fromApp.txt");
+                FileOutputStream stream = new FileOutputStream(textFile);
+                PrintStream p = new PrintStream(stream);
+                p.print(encodedBase64);
+                p.close();
+                stream.close();
+            }
+            catch (IOException e) {
+                Log.e("Exception", "File write failed: " + e.toString());
+            }
+            // Test end
+
+
             return encodedBase64;
         }
 
