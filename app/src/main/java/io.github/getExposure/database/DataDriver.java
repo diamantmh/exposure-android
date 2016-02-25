@@ -58,11 +58,22 @@ public class DataDriver extends FragmentActivity {
         System.out.println("Inserting a valid user,");
         // generate fake fb user ID
         long userID = (long)Math.floor(Math.random() * 100000000);
-        ExposureUser newUser = new ExposureUser(userID, "HEY I'M GOKU", "GOKU LINK", "MY POWER LEVEL IS OVER 9000!!!!!!!!");
+        System.out.println("Random UserID: " + userID);
+        ExposureUser newUser = man.getUser(userID);
+        if (newUser == null) {
+            System.out.println("Randomly chosen userID did not exist");
+            System.out.println("Inserting new user to database");
+            newUser = new ExposureUser(userID, "HEY I'M GOKU", "GOKU LINK", "MY POWER LEVEL IS OVER 9000!!!!!!!!");
+            boolean insertUserRes = man.insert(newUser);
+            if (!insertUserRes) {
+                throw new AssertionError();
+            }
+            System.out.println("User has been successfully inserted");
+        }
+        else {
+            System.out.println("Randomly chosen userID already existed");
+        }
         displayUser(newUser);
-        boolean insertUserRes = man.insert(newUser);
-        if (!insertUserRes) { throw new AssertionError(); }
-        System.out.println("User has been inserted");
 
         // test update user
         System.out.println();

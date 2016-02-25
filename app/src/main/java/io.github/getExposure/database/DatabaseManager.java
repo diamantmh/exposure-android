@@ -15,6 +15,8 @@ import java.net.URLConnection;
 import java.io.ByteArrayOutputStream;
 import java.sql.Time;
 import java.util.Date;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import android.content.Context;
 import android.util.Log;
@@ -36,8 +38,8 @@ import android.util.Base64;
 public class DatabaseManager {
     private RestTemplate restTemplate;
 
-    protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
-    //protected static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
+    //protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
+    protected static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
 
     protected Context CONTEXT;
 
@@ -611,19 +613,35 @@ public class DatabaseManager {
 
         // Convert my file to a Base64 String
         private String convertFileToString(File file) {
-            int size = (int) file.length();
-            byte[] bytes = new byte[size];
+            String encodedBase64 = null;
+            FileInputStream fileInputStream = null;
+            byte[] bytes = new byte[(int)file.length()];
             try {
-                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-                buf.read(bytes, 0, bytes.length);
-                buf.close();
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
+                fileInputStream = new FileInputStream(file);
+                fileInputStream.read(bytes);
+                fileInputStream.close();
+
+                String encodedString = Base64.encodeToString(bytes, Base64.DEFAULT);
+                return encodedString;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            return Base64.encodeToString(bytes,Base64.DEFAULT);
+            return encodedBase64;
         }
 
+        /**
+         * Encodes the byte array into base64 string
+         *
+         * @param imageByteArray - byte array
+         * @return String a {@link java.lang.String}
+         */
+        /*
+        public static String encodeImage(byte[] imageByteArray) {
+            return Base64.encodeBase64URLSafeString(imageByteArray);
+        }
+*/
         /**
          * Default constructor required for JSON decoding.
          */
@@ -755,7 +773,11 @@ public class DatabaseManager {
                 if (file.createNewFile())
                     System.out.println("FILE WAS SUCCESSFULLY CREATED!");
                 else
-                    System.out.println("\nERROR WHEN CREATING FILE\n");
+                    if (file.exists())
+                        System.out.println("FILE ALREADY EXISTS");
+                    else
+                        System.out.println("\nERROR WHEN CREATING FILE\n");
+
                 System.out.println("Created new File");
 
                 System.out.println();
