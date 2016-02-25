@@ -51,18 +51,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         db = new DatabaseManager(getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
-        profile = Profile.getCurrentProfile();
-        boolean isLoggedIn;
-        if (profile == null)
-            isLoggedIn = false;
-        else
-            isLoggedIn = true;
-
-        setupProfilePicture(isLoggedIn);
-        setupName(isLoggedIn);
-        setupCity(isLoggedIn);
-        setupAddedText(isLoggedIn);
-        setupLoginMessage(isLoggedIn);
+        updateActivity();
 
         setupTokenTracker();
         setupProfileTracker();
@@ -77,17 +66,7 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        profile = Profile.getCurrentProfile();
-        boolean isLoggedIn;
-        if (profile == null)
-            isLoggedIn = false;
-        else
-            isLoggedIn = true;
-
-        setupProfilePicture(isLoggedIn);
-        setupName(isLoggedIn);
-        setupCity(isLoggedIn);
-        setupAddedText(isLoggedIn);
+        updateActivity();
     }
 
     /*
@@ -115,6 +94,25 @@ public class ProfileActivity extends AppCompatActivity {
             picview.setVisibility(View.VISIBLE);
             picview.setProfileId(profile.getId());
         }
+    }
+
+    private void updateActivity() {
+        profile = Profile.getCurrentProfile();
+        boolean isLoggedIn;
+        if (profile == null)
+            isLoggedIn = false;
+        else
+            isLoggedIn = true;
+
+        setupProfilePicture(isLoggedIn);
+        setupName(isLoggedIn);
+        setupCity(isLoggedIn);
+        setupAddedText(isLoggedIn);
+        setupLoginMessage(isLoggedIn);
+        if (isLoggedIn)
+            findViewById(R.id.notLoggedInMessage).setVisibility(View.INVISIBLE);
+        else
+            findViewById(R.id.notLoggedInMessage).setVisibility(View.VISIBLE);
     }
 
     private void setupName(boolean isLoggedIn) {
@@ -233,15 +231,46 @@ public class ProfileActivity extends AppCompatActivity {
     };
 
     private ExposureUser getExposureUser() {
+        System.out.println("LOLOLOLOLOL");
         long id = Long.parseLong(profile.getId());
-        ExposureUser user = db.getUser(id);
-        if (user == null) {
-            user = new ExposureUser(id, profile.getName(), profile.getProfilePictureUri(100, 100).toString(), "");
+        new GetUserTask().execute(id);
+        return null;
+    }
 
-            if (!db.insert(user))
-                System.out.println("Something went horribly wrong!!!!");
+    private class GetUserTask extends AsyncTask<Long, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Long... ids) {
+            ExposureUser user = db.getUser(ids[0]);
+            if (user != null) {
+                System.out.println(user.getID());
+                System.out.println(profile.getId());
+                return false;
+            } else return true;
         }
-        return user;
+
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                System.out.println("User not there");
+                new InsertUserTask().execute();
+            } else {
+                System.out.println("User already there");
+            }
+        }
+    }
+
+    private class InsertUserTask extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            return db.insert(new ExposureUser(Long.parseLong(profile.getId()), profile.getName(), profile.getProfilePictureUri(100, 100).toString(), ""));
+        }
+
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                System.out.println("User added!");
+            } else {
+                System.out.println("User not added.");
+            }
+        }
     }
 
     private void setupTokenTracker() {
@@ -260,8 +289,9 @@ public class ProfileActivity extends AppCompatActivity {
         mProfileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                profile = Profile.getCurrentProfile();
-                getExposureUser();
+                updateActivity();
+                if (profile != null)
+                    getExposureUser();
             }
         };
     }
