@@ -616,7 +616,7 @@ public class DatabaseManager {
         // Convert my file to a Base64 String
         private String convertFileToString(File file) {
 
-
+            /*
             // Test
             File dest = new File("/Users/Tyler/Desktop/fromApp");
 
@@ -637,7 +637,7 @@ public class DatabaseManager {
                 e.printStackTrace();
             }
             // Test end
-
+            */
 
 
             String encodedBase64 = null;
@@ -655,6 +655,7 @@ public class DatabaseManager {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            /*
 
             // Test
 
@@ -670,6 +671,7 @@ public class DatabaseManager {
                 Log.e("Exception", "File write failed: " + e.toString());
             }
             // Test end
+            */
 
 
             return encodedBase64;
