@@ -13,8 +13,8 @@ public class Category {
 
     protected static final long NULL_ID = -1;
 
-    private static final String[] tags = {"summer","fall","winter","spring","driving","walking","hiking",
-                                        "out doors","scenic","landscape", "mountains", "water", "forest"};
+    private static final String[] tags = {"summer","fall","winter","spring",
+            "driving","walking","hiking"};
     public static final long SUMMER_ID = 1;
     public static final long FALL_ID = 2;
     public static final long WINTER_ID = 3;
@@ -22,56 +22,11 @@ public class Category {
     public static final long DRIVING_ID = 5;
     public static final long WALKING_ID = 6;
     public static final long HIKING_ID = 7;
-    public static final long OUT_DOORS_ID = 8;
-    public static final long SCENIC_ID = 9;
-    public static final long LANDSCAPE_ID = 10;
-    public static final long MOUNTAINS_ID = 11;
-    public static final long WATER_ID = 12;
-    public static final long FOREST_ID = 13;
-
 
     /*
      * class invariant,
      * content != null
      */
-
-    /**
-     * Constructs a Category from the given string. Given category string
-     * must match one of the standard categories in Category.tags[]
-     *
-     * Register this Category cat with this location by calling
-     * DatabaseManager.insert(cat).
-     *
-     * @param locID the unique identifier for the location this category is
-     *              associated with
-     * @param category the string representing the content of the category
-     * @throws IllegalArgumentException if given category is not recognized
-     */
-    public Category(long locID, String category) {
-        for (int i = 0; i < tags.length; i++) {
-            if (category.toLowerCase().equals(tags[i])) {
-                this.id = i + 1;
-                this.locID = NULL_ID;
-                this.content = tags[i];
-                return;
-            }
-        }
-        this.id = NULL_ID;
-        this.locID = NULL_ID;
-        this.content = "invalid category string";
-        throw new IllegalArgumentException("Invalid category string. Check Category.tags");
-    }
-
-    /**
-     * Constructs a Category from the given string. Given category string
-     * must match one of the standard categories in Category.tags[]
-     *
-     * @param category the string representing the content of the category
-     * @throws IllegalArgumentException if given category is not recognized
-     */
-    public Category(String category) {
-        this(NULL_ID, category);
-    }
 
     /**
      * Constructs a Category associated to the location that matches the given

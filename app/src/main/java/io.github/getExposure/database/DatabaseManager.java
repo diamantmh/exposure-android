@@ -410,12 +410,12 @@ public class DatabaseManager {
         if (photos == null) {
             return null;
         }
-
+        //abcd
         // download each location photo
         ExposurePhoto[] downloadedPhotos = new ExposurePhoto[photos.length];
         for (int i = 0; i < photos.length; i++) {
             ExposurePhoto photo = photos[i];
-            File imgFile = ImageManager.DownloadFromUrl(photo.getSource(), CONTEXT);
+            File imgFile = ImageManager.DownloadFromUrl(photo.getSource(), String.valueOf(photos[i].getID()), CONTEXT);
             downloadedPhotos[i] = new ExposurePhoto(photo.getID(),photo.getAuthorID(),photo.getLocID(),
                     photo.getSource(),photo.getDate(),photo.getTime(),imgFile);
         }
