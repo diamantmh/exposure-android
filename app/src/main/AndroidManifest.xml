@@ -98,18 +98,8 @@
             android:theme="@style/AppTheme.CustomPOP">
         </activity>
         <activity
-            android:name=".database.DataDriverTestInsert"
-            android:label="DataDriverTestInsert"
-            android:theme="@style/AppTheme.CustomPOP">
-        </activity>
-        <activity
-            android:name=".database.DataDriverTestGet"
-            android:label="DataDriverTestGet"
-            android:theme="@style/AppTheme.CustomPOP">
-        </activity>
-        <activity
-            android:name=".database.DataDriverTestRemove"
-            android:label="DataDriverTestRemove"
+            android:name=".database.DataDriverTest2"
+            android:label="DataDriverTest2"
             android:theme="@style/AppTheme.CustomPOP">
         </activity>
 
