@@ -13,15 +13,19 @@ public class Category {
 
     protected static final long NULL_ID = -1;
 
-    private static final String[] tags = {"summer","fall","winter","spring",
-            "driving","walking","hiking"};
+    private static final String[] tags = {"summer","fall","winter","spring","out doors","scenic",
+                                            "landscape", "mountains", "water", "forest"};
     public static final long SUMMER_ID = 1;
     public static final long FALL_ID = 2;
     public static final long WINTER_ID = 3;
     public static final long SPRING_ID = 4;
-    public static final long DRIVING_ID = 5;
-    public static final long WALKING_ID = 6;
-    public static final long HIKING_ID = 7;
+    public static final long OUT_DOORS_ID = 5;
+    public static final long SCENIC_ID = 6;
+    public static final long LANDSCAPE_ID = 7;
+    public static final long MOUNTAINS_ID = 8;
+    public static final long WATER_ID = 9;
+    public static final long FOREST_ID = 10;
+
 
     /*
      * class invariant,
