@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * Example class that demonstrates the use of DatabaseManager
  */
-public class DataDriver2 extends FragmentActivity {
+public class DataDriverTestGet extends FragmentActivity {
 
     private static DatabaseManager man;
 
