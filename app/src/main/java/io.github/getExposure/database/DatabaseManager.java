@@ -44,6 +44,7 @@ public class DatabaseManager {
     //protected static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
 
     protected Context CONTEXT;
+    protected static final String DEFAULT_URL = "https://exposurestorage.blob.core.windows.net/exposurecontainer/10";
 
     private static final long NULL_ID = -1;
 
@@ -348,7 +349,7 @@ public class DatabaseManager {
      * @return File containing an image
      */
     protected File downLoadImage() {
-        return ImageManager.DownloadFromUrl("https://exposurestorage.blob.core.windows.net/exposurecontainer/10", CONTEXT);
+        return ImageManager.DownloadFromUrl(DEFAULT_URL, "", CONTEXT);
     }
 
     /**
@@ -357,7 +358,15 @@ public class DatabaseManager {
      * @return File containing an image
      */
     protected File downLoadImage(String url) {
-        return ImageManager.DownloadFromUrl(url, CONTEXT);
+        return ImageManager.DownloadFromUrl(url, "", CONTEXT);
+    }
+
+    /**
+     * Returns a downloaded image File from using a random url
+     * @return File containing an image
+     */
+    protected File downLoadImage(String url, String file_name) {
+        return ImageManager.DownloadFromUrl(DEFAULT_URL, file_name, CONTEXT);
     }
 
     /**
@@ -790,7 +799,11 @@ public class DatabaseManager {
      */
     private static class ImageManager {
 
-        public static File DownloadFromUrl(String imageURL, Context context) {  //this is the downloader method
+        public static File DownloadFromUrl(String imageURL, Context context) {
+            return DownloadFromUrl(imageURL, "", context);
+        }
+
+        public static File DownloadFromUrl(String imageURL, String file_name, Context context) {  //this is the downloader method
             File file = null;
             File dir;
 
@@ -801,47 +814,40 @@ public class DatabaseManager {
             if (Environment.MEDIA_MOUNTED.equals(state)) {
                 // We can read and write the media
                 mExternalStorageAvailable = mExternalStorageWriteable = true;
-                System.out.println("We can read and write");
             } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
                 // We can only read the media
                 mExternalStorageAvailable = true;
                 mExternalStorageWriteable = false;
                 System.out.println("We can only read");
+                System.exit(1);
             } else {
                 // Something else is wrong. It may be one of many other states, but all we need
                 //  to know is we can neither read nor write
                 System.out.println("HOLY SHIT HUSTON WE FOUND THE PROBLEM");
-                mExternalStorageAvailable = mExternalStorageWriteable = false;
+                System.exit(1);
             }
             System.out.println();
 
-            System.out.println("Downloading From Url");
             try {
                 URL url = new URL(imageURL); //you can write here any link
 
-                String name = "testName";
+                String name = "tempImage" + file_name;
                 file = new File(context.getCacheDir(), name);
 
                 System.out.println();
 
-                System.out.println("Creating new File");
-                if (file.createNewFile())
-                    System.out.println("FILE WAS SUCCESSFULLY CREATED!");
-                else
-                    if (file.exists())
-                        System.out.println("FILE ALREADY EXISTS");
-                    else
-                        System.out.println("\nERROR WHEN CREATING FILE\n");
-
-                System.out.println("Created new File");
-
-                System.out.println();
+                if (!file.createNewFile() && !file.exists()) {
+                    System.out.println("\nERROR WHEN CREATING FILE\n");
+                    System.exit(1);
+                }
 
                 long startTime = System.currentTimeMillis();
+                /*
                 Log.d("ImageManager", "download begining");
                 Log.d("ImageManager", "download url:" + url);
                 //Log.d("ImageManager", "downloaded file name:" + fileName);
-                        /* Open a connection to that URL. */
+                        Open a connection to that URL.
+                */
                 URLConnection ucon = url.openConnection();
 
                         /*
@@ -862,15 +868,15 @@ public class DatabaseManager {
                 while((current = bis.read(data,0,data.length)) != -1){
                     buffer.write(data, 0, current);
                 }
-                System.out.println("Create File OutputStream");
+                //System.out.println("Create File OutputStream");
                         /* Convert the Bytes read to a String. */
                 FileOutputStream fos = new FileOutputStream(file);
-                System.out.println("Write to Buffer");
+                //System.out.println("Write to Buffer");
                 fos.write(buffer.toByteArray());
                 fos.close();
-                Log.d("ImageManager", "download ready in "
-                        + ((System.currentTimeMillis() - startTime) / 1000)
-                        + " sec");
+                //Log.d("ImageManager", "download ready in "
+                //        + ((System.currentTimeMillis() - startTime) / 1000)
+                //        + " sec");
 
             } catch (Exception e) {
                 Log.d("ImageManager", "Error: " + e);
