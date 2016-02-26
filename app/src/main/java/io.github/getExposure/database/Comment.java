@@ -17,7 +17,7 @@ public class Comment {
     private final Date date;
     private final Time time;
 
-    private static final long NULL_ID = -1;
+    protected static final long NULL_ID = -1;
 
     /*
      * class invariant,

@@ -79,6 +79,15 @@ public class Category {
     }
 
     /**
+     * Returns the id of the location this Category is registered to.
+     *
+     * @return the unique identifier for the location this is registered to
+     */
+    public long getLocID() {
+        return locID;
+    }
+
+    /**
      * Returns the tag for this Category as a String.
      *
      * @return the tag for htis Category as a String

@@ -7,7 +7,7 @@
 
     <!-- 3 buttons at the bottom -->
     <LinearLayout
-        android:id="@+id/mapToolBar"
+        android:id="@+id/viewSwitchers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

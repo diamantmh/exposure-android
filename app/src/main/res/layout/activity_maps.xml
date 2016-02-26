@@ -70,11 +70,11 @@
         map:uiZoomControls="true"
         android:layout_below="@+id/button2"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/mapToolBar" />
+        android:layout_above="@+id/viewSwitchers" />
 
     <!-- 3 buttons at the bottom -->
     <LinearLayout
-        android:id="@+id/mapToolBar"
+        android:id="@+id/viewSwitchers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
