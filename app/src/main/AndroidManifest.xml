@@ -46,6 +46,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCn8ZhUZDYAydvXJUCVSjjtL9LLQNHR7J8" />
+        <service
+            android:name=".maps.FetchAddressIntentService"
+            android:exported="false"/>
 
         <activity
             android:name=".maps.MapsActivity"

@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -66,6 +68,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     private final static double DRUMHELLER_LATITUDE = 47.653808;
     private final static double DRUMHELLER_LONGITUDE = -122.307832;
     private static final int MAPS_LOCATION_REQUEST_CODE = 42;
+    public static final int SEARCH_RESULT_CODE = 39;
     private GoogleMap mMap;
     private int currentFilter = 0; // Current filter to select which pins to display, to be implemented
     private GoogleApiClient mGoogleApiClient;
@@ -74,6 +77,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     private Location mCurrentLocation;
     private String mLastUpdateTime;
     private boolean mRequestingLocationUpdates;
+    private AddressResultReceiver mResultReceiver;
     // in v1.0
 
     /**
@@ -175,28 +179,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
                 mGoogleApiClient, mLocationRequest, this);
     }
 
-    //TODO: request location updates at slower/stop location updates when unnecessary
-    // also why i cant do stoplocatinupdates rn
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //stopLocationUpdates();
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
-    }
-
-    private void stopLocationUpdates() {
-        System.out.println("stopLocationUpdates");
-        //Toast.makeText(MapsActivity.this, "stopLocationUpdates", Toast.LENGTH_SHORT).show();
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient, this);
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -309,11 +292,19 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * Callback called when the user clicks the "search" button.
      * It centers map perspective around the latitude/longitude coordinates given in the
      * app's text box
+     * @requires google api client must be connected
      * @param view passed in for drawing/event handling
      */
     public void search(View view) {
+        //should never happen
+        if (!mGoogleApiClient.isConnected()) {
+            throw new IllegalStateException("google api client needs to be connected");
+        }
+
         EditText editText = (EditText) findViewById(R.id.search_exposure);
         String searchText = editText.getText().toString();
+        Toast.makeText(MapsActivity.this, "search: " + searchText, Toast.LENGTH_SHORT).show();
+        /*
         System.out.println("Searchtext: " + searchText);
         String[] LatAndLong = searchText.split(",");
         System.out.println("LatAndLong length: " + LatAndLong.length);
@@ -328,6 +319,13 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         LatLng query = new LatLng(lat, lng);
         mMap.addMarker(new MarkerOptions().position(query).title("(" + lat + ", " + lng + ")"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(query));
+        */
+        //todo: not sure how to instantiate this/what handler actually does
+        mResultReceiver = new AddressResultReceiver(new Handler());
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.putExtra("searchText", searchText);
+        intent.putExtra("receiver", mResultReceiver);
+        startService(intent);
 
     }
 
@@ -343,6 +341,29 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         mCurrentLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
 
+    }
+
+    //TODO: request location updates at slower/stop location updates when unnecessary
+    // also why i cant do stoplocatinupdates rn
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //stopLocationUpdates();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    private void stopLocationUpdates() {
+        System.out.println("stopLocationUpdates");
+        //Toast.makeText(MapsActivity.this, "stopLocationUpdates", Toast.LENGTH_SHORT).show();
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
     }
 
     @Override
@@ -366,6 +387,21 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     }
 
 
+    /**
+     * Callback class for search functionality
+     */
+    private class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            LatLng query = resultData.getParcelable("address");
+            mMap.addMarker(new MarkerOptions().position(query).title(resultData.getString("searchText")));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(query));
+        }
+    }
 
     /**
      * Internal listener class for MapsInfoWindowClicks
