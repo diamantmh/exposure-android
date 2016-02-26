@@ -214,8 +214,8 @@ public class PostActivity extends AppCompatActivity {
             final DatabaseManager m = new DatabaseManager(getApplicationContext());
             new Thread(new Runnable() {
                 public void run() {
-                    //long result = m.insert(loc);
-                    //Log.d("BUENO", "" + result);
+                    long result = m.insert(loc);
+                    Log.d("BUENO", "" + result);
                 }
             }).start();
         startActivity(postViewIntent);
