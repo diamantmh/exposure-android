@@ -43,9 +43,12 @@ import java.text.BreakIterator;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.github.getExposure.ExposureFragmentActivity;
+import io.github.getExposure.database.Category;
 import io.github.getExposure.database.DatabaseManager;
 import io.github.getExposure.database.ExposureLocation;
 import io.github.getExposure.database.ExposurePhoto;
@@ -86,6 +89,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     private AddressResultReceiver mResultReceiver;
     private DatabaseManager db;
     private ExposureLocation[] currLocations;
+    private Map<ExposureLocation, ExposurePhoto[]> locToPhotos;
     // in v1.0
 
     /**
@@ -298,10 +302,10 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         */
     }
 
-    private void placePins(ExposureLocation[] result) {
+    private void placePins() {
         mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
-        currLocations = result;
-        new GetPhotosTask().execute(result);
+        //currLocations = result;
+        new GetPhotosTask().execute();
 
 /*
         //TODO: Do the photos part
@@ -325,16 +329,34 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
 
     }
 
-    private void actuallyPlacePins(List<ExposurePhoto[]> result) {
+    private void actuallyPlacePins() {
         int i = 0;
-        for (ExposureLocation e: currLocations) {
+        for (ExposureLocation e: locToPhotos.keySet()) {
             LatLng temp = new LatLng(e.getLat(), e.getLon());
-            mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()));
-            ExposurePhoto[] tempPhotos = result.get(i);
+            ExposurePhoto[] tempPhotos = locToPhotos.get(e);
             for (ExposurePhoto c: tempPhotos) {
                 System.out.println("link: " + c.getSource());
+                System.out.println("path: " + c.getFile().getAbsolutePath());
             }
             i++;
+            String snippet;
+            if (tempPhotos.length > 1) {
+                System.out.println("# photos: " + tempPhotos.length);
+                System.out.println("path of photo to display:" + tempPhotos[1].getFile().getAbsolutePath());
+                // attach just the first photo
+                // "1" because targeting the nonexposure storage files
+                // and the husky picture
+                snippet = e.getName() + "," + tempPhotos[1].getFile().getAbsolutePath() + "," +
+                        e.getDesc() + "," + e.getCategories();
+                // test for how categories is stored
+                for (Category c: e.getCategories()) {
+                    System.out.println("categories content: " + c.getContent());
+                }
+                mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()).snippet(snippet));
+            } else { // what to do if the location exists but no photos
+                snippet = e.getName() + "," + "bleh" + "," + e.getDesc() + "," + e.getCategories();
+            }
+            //mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()).snippet(snippet));
         }
         Toast.makeText(MapsActivity.this, "pins placed on screen.", Toast.LENGTH_SHORT).show();
     }
@@ -431,26 +453,38 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         }
 
         protected void onPostExecute(ExposureLocation[] result) {
-            placePins(result);
+            locToPhotos = new HashMap<ExposureLocation, ExposurePhoto[]>();
+            for (ExposureLocation e: result) {
+                locToPhotos.put(e, null);
+            }
+            placePins();
         }
     }
 
-    private class GetPhotosTask extends AsyncTask<ExposureLocation[], Void, List<ExposurePhoto[]>> {
+    private class GetPhotosTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
-        protected List<ExposurePhoto[]> doInBackground(ExposureLocation[]... params) {
+        protected Boolean doInBackground(Void... params) {
             // remember paramaters are: originLat, originLon, radiusLat, radiusLon
-            List<ExposurePhoto[]> result = new ArrayList<>();
-            for (ExposureLocation e: params[0]) {
-                ExposurePhoto[] tempPhoto = db.getLocationPhotos(e.getID());
-                result.add(tempPhoto);
+            if (locToPhotos == null) { // no locations
+                return false;
             }
-            return result;
+            List<ExposurePhoto[]> result = new ArrayList<>();
+            for (ExposureLocation e: locToPhotos.keySet()) {
+                ExposurePhoto[] tempPhoto = db.getLocationPhotos(e.getID());
+                locToPhotos.put(e, tempPhoto);
+            }
+            return true;
         }
 
-        protected void onPostExecute(List<ExposurePhoto[]> result) {
-            actuallyPlacePins(result);
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                actuallyPlacePins();
+            } else { // don't place pins, because no locations
+                Toast.makeText(MapsActivity.this, "No pins found", Toast.LENGTH_SHORT).show();
+            }
         }
+
     }
 
 
@@ -495,10 +529,14 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             Toast.makeText(MapsActivity.this, "Pin clicked", Toast.LENGTH_SHORT).show();
             // change this to post view
             Intent locationViewIntent = new Intent(getApplicationContext(), LocationView.class);
-            locationViewIntent.putExtra("photo", "");
-            locationViewIntent.putExtra("name", "Drumheller Fountain");
-            locationViewIntent.putExtra("description", "Fountain of dreams.");
-            locationViewIntent.putExtra("categories", "Sunny, Summer");
+            String info = marker.getSnippet();
+            String[] params = info.split(",");
+            System.out.println("params length: " + params.length);
+            locationViewIntent.putExtra("name", params[0]);
+            locationViewIntent.putExtra("photo", params[1]);
+            locationViewIntent.putExtra("description", params[2]);
+            locationViewIntent.putExtra("categories", params[3]);
+            System.out.println("phooto: " + locationViewIntent.getExtras().getString("photo"));
             startActivity(locationViewIntent);
         }
     }
