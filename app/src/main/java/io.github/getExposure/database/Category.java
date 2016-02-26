@@ -13,7 +13,7 @@ public class Category {
 
     protected static final long NULL_ID = -1;
 
-    private static final String[] tags = {"summer","fall","winter","spring",
+    public static final String[] tags = {"summer","fall","winter","spring",
             "driving","walking","hiking"};
     public static final long SUMMER_ID = 1;
     public static final long FALL_ID = 2;
@@ -29,8 +29,49 @@ public class Category {
      */
 
     /**
+     * Constructs a Category from the given string. Given category string
+     * must match one of the standard categories in Category.tags[]
+     *
+     * Register this Category cat with this location by calling
+     * DatabaseManager.insert(cat).
+     *
+     * @param locID the unique identifier for the location this category is
+     *              associated with
+     * @param category the string representing the content of the category
+     * @throws IllegalArgumentException if given category is not recognized
+     */
+    public Category(long locID, String category) {
+        for (int i = 0; i < tags.length; i++) {
+            if (category.toLowerCase().equals(tags[i])) {
+                this.id = i + 1;
+                this.locID = locID;
+                this.content = tags[i];
+                return;
+            }
+        }
+        this.id = NULL_ID;
+        this.locID = NULL_ID;
+        this.content = "invalid category string";
+        throw new IllegalArgumentException("Invalid category string. Check Category.tags");
+    }
+
+    /**
+     * Constructs a Category from the given string. Given category string
+     * must match one of the standard categories in Category.tags[]
+     *
+     * @param category the string representing the content of the category
+     * @throws IllegalArgumentException if given category is not recognized
+     */
+    public Category(String category) {
+        this(NULL_ID, category);
+    }
+
+    /**
      * Constructs a Category associated to the location that matches the given
-     * location ID and representing the category matching the given category ID
+     * location ID and representing the category matching the given category ID.
+     *
+     * Register this Category cat with this location by calling
+     * DatabaseManager.insert(cat).
      *
      * @param locID the unique identifier for the location this category is
      *              associated with
@@ -55,8 +96,9 @@ public class Category {
      * Otherwise you can register this category to a location by calling
      * insert(Category cat) in DatabaseManager. You must insert a location first
      * to obtain a valid location ID, then use that location ID to construct a
-     * category. Then you can insert the category by calling insert(Category cat)
-     * on DatabaseManager where cat has the valid location ID of loc.
+     * category using this ID. Then you can insert the category by calling
+     * insert(Category cat) on DatabaseManager where cat has the valid location
+     * ID of loc.
      *
      * @param categoryID the id of the content tag for this category (obtain through
      *           static constants eg Category.WALKING_ID)
@@ -92,4 +134,5 @@ public class Category {
         return content;
     }
 }
+
 
