@@ -2,17 +2,25 @@ package io.github.getExposure.post;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,9 +53,14 @@ public class PostActivity extends AppCompatActivity {
     private EditText description;
     private TextView categories;
     private TextView logMessage;
+
+    static final int REQUEST_GALLERY_PHOTO = 3;
     static final int REQUEST_IMAGE_CAPTURE = 2;
+    static final int GET_CATEGORIES = 1;
     private String mCurrentPhotoPath;
-    private String[] permissions;
+    private LocationManager lm;
+    private double lat;
+    private double log;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +97,7 @@ public class PostActivity extends AppCompatActivity {
         categories.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(getApplicationContext(), PopUpCategoriesView.class), 1);
+                startActivityForResult(new Intent(getApplicationContext(), PopUpCategoriesView.class), GET_CATEGORIES);
             }
         });
 
@@ -106,14 +119,28 @@ public class PostActivity extends AppCompatActivity {
                 selectImage();
             }
         });
-        permissions = new String[2];
-        permissions[0] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        permissions[1] = Manifest.permission.READ_EXTERNAL_STORAGE;
-        ActivityCompat.requestPermissions(
-                this,
-                permissions,
-                5
-        );
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 5);
+        }
+
+        lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION}, 7);
+        }
+
+        final LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                log = location.getLongitude();
+                lat = location.getLatitude();
+            }
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+            public void onProviderEnabled(String provider) {}
+            public void onProviderDisabled(String provider) {}
+        };
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
     @Override
@@ -173,6 +200,7 @@ public class PostActivity extends AppCompatActivity {
             postViewIntent.putExtra("categories", categories.getText().toString());
         }
 
+
         if(!flag) {
             /*
             Profile thing = Profile.getCurrentProfile();
@@ -186,11 +214,11 @@ public class PostActivity extends AppCompatActivity {
             final DatabaseManager m = new DatabaseManager(getApplicationContext());
             new Thread(new Runnable() {
                 public void run() {
-                    long result = m.insert(loc);
-                    //Log.d("BUENO", result);
+                    //long result = m.insert(loc);
+                    //Log.d("BUENO", "" + result);
                 }
             }).start();
-            startActivity(postViewIntent);
+        startActivity(postViewIntent);
         }
     }
 
@@ -223,8 +251,8 @@ public class PostActivity extends AppCompatActivity {
                 else if (options[item].equals("Choose from Gallery")) {
                     Intent intent = new   Intent();
                     intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), 3);
+                    intent.setAction(Intent.ACTION_PICK);
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GALLERY_PHOTO);
                 }
                 else if (options[item].equals("Cancel")) {
                     dialog.dismiss();
@@ -259,20 +287,27 @@ public class PostActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == 1) {
-            if(resultCode == AppCompatActivity.RESULT_OK) {
-                String newValue = "";
-                for(String s : data.getExtras().keySet()) {
-                    newValue += s + ", ";
-                }
-                newValue = newValue.substring(0, newValue.length() - 2);
-                categories.setText(newValue);
+        if (requestCode == GET_CATEGORIES && resultCode == RESULT_OK) {
+            String newValue = "";
+            for(String s : data.getExtras().keySet()) {
+                newValue += s + ", ";
             }
+            newValue = newValue.substring(0, newValue.length() - 2);
+            categories.setText(newValue);
         } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bitmap myBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
             photo.setImageBitmap(myBitmap);
             galleryAddPic();
-        } else if (requestCode == 3 && resultCode == RESULT_OK) {
+
+            if(lat != 0.0) {
+                latitude.setText("" + lat);
+                longitude.setText("" + log);
+            } else {
+                Toast toast = Toast.makeText(getApplicationContext(), "can't get current location", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
+        } else if (requestCode == REQUEST_GALLERY_PHOTO && resultCode == RESULT_OK) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
@@ -284,15 +319,6 @@ public class PostActivity extends AppCompatActivity {
             Bitmap imageBitmap = BitmapFactory.decodeFile(picturePath);
             photo.setImageBitmap(imageBitmap);
         }
-    }
-
-    public boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
     }
 }
 

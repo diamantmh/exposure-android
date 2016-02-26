@@ -38,9 +38,8 @@ public class LocationView extends AppCompatActivity {
         String photoPath = extras.getString("photo");
 
         photo = (ImageView) findViewById(R.id.photo);
-        //Bitmap imageBitmap = BitmapFactory.decodeFile(photoPath);
-        //photo.setImageBitmap(imageBitmap);
-        photo.setImageResource(R.drawable.newresdefault); // temp hack for demo
+        Bitmap imageBitmap = BitmapFactory.decodeFile(photoPath);
+        photo.setImageBitmap(imageBitmap);
 
         name = (TextView) findViewById(R.id.name);
         name.setText(extras.getString("name"));
