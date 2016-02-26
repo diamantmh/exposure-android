@@ -301,34 +301,40 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     private void placePins(ExposureLocation[] result) {
         mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
         currLocations = result;
+        new GetPhotosTask().execute(result);
 
-
+/*
         //TODO: Do the photos part
         for (ExposureLocation e: result) {
+
             e.getLat();
             LatLng temp = new LatLng(e.getLat(), e.getLon());
             mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()));
             /*
-            //new GetPhotosTask().execute(result);
-            ExposurePhoto[] tempPhotos = db.getLocationPhotos(e.getID());
+            new GetPhotosTask().execute(result);
+            //ExposurePhoto[] tempPhotos = db.getLocationPhotos(e.getID());
             for (ExposurePhoto c: tempPhotos) {
                 System.out.println("link: " + c.getSource());
             }
-            */
+
+
         }
-        Toast.makeText(MapsActivity.this, "pins placed on screen.", Toast.LENGTH_SHORT).show();
+        */
+        Toast.makeText(MapsActivity.this, "Loading photos for pins...", Toast.LENGTH_SHORT).show();
 
 
     }
 
-    private void actuallyPlacePins(ExposurePhoto[] result) {
+    private void actuallyPlacePins(List<ExposurePhoto[]> result) {
+        int i = 0;
         for (ExposureLocation e: currLocations) {
             LatLng temp = new LatLng(e.getLat(), e.getLon());
             mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()));
-            ExposurePhoto[] tempPhotos = result;
+            ExposurePhoto[] tempPhotos = result.get(i);
             for (ExposurePhoto c: tempPhotos) {
                 System.out.println("link: " + c.getSource());
             }
+            i++;
         }
         Toast.makeText(MapsActivity.this, "pins placed on screen.", Toast.LENGTH_SHORT).show();
     }
@@ -442,7 +448,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             return result;
         }
 
-        protected void onPostExecute(ExposurePhoto[] result) {
+        protected void onPostExecute(List<ExposurePhoto[]> result) {
             actuallyPlacePins(result);
         }
     }
