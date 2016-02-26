@@ -33,11 +33,12 @@ script:
   # - ./gradlew build connectedCheck --stacktrace
   # - ./gradlew connectedAndroidTest --stacktrace
   - ./gradlew clean
-  - ./gradlew assembleDebug
-  - ./gradlew assembleDebugAndroidTest --stacktrace
-  - adb install app/build/outputs/apk/app-debug.apk
-  - adb install app/build/outputs/apk/app-debug-androidTest-unaligned.apk
-  - adb shell am instrument -w com.google.samples.apps.topeka.test/android.support.test.runner.AndroidJUnitRunner
+  # - ./gradlew assembleDebug
+  # - ./gradlew assembleDebugAndroidTest --stacktrace
+  - ./gradlew test --stacktrace
+  # - adb install app/build/outputs/apk/app-debug.apk
+  # - adb install app/build/outputs/apk/app-debug-androidTest-unaligned.apk
+  # - adb shell am instrument -w com.google.samples.apps.topeka.test/android.support.test.runner.AndroidJUnitRunner
 # whitelist
 branches:
   only:

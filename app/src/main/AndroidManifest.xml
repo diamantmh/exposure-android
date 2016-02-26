@@ -24,6 +24,10 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
+    <!-- Used to allow downloading image from internet -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -67,10 +71,6 @@
             android:name=".profile.ProfileActivity"
             android:label="@string/title_activity_profile_view"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".profile.LoginActivity"
-            android:label="@string/title_activity_login" >
-        </activity>
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"

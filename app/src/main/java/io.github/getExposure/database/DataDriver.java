@@ -9,6 +9,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -30,10 +31,8 @@ public class DataDriver extends FragmentActivity {
         System.out.println("-----------------");
         System.out.println();
         System.out.println("Instantiating DatabaseManager...");
-        man = new DatabaseManager();
+        man = new DatabaseManager(this);
         System.out.println("DatabaseManager initiated!");
-
-        File newPNG = new File("../../../res/mipmap-hdpi/ic_launcher.png");
 
         System.out.println("Allowing networking on main thread (this causes lock-ups so don't do this)");
         // Ignoring the NetworkOnMainThreadException.
@@ -43,17 +42,38 @@ public class DataDriver extends FragmentActivity {
 
         System.out.println("Trying out some functionality...");
 
+        File newPNG = man.downLoadImage();
+
+        System.out.println();
+
+        if (newPNG.exists())
+            System.out.println("IMAGE FILE EXISTS");
+        else
+            System.out.println("IMAGE FILE DOES NOT EXIST");
+
+        System.out.println();
+
         // test insert user
         System.out.println();
         System.out.println("Inserting a valid user,");
-        ExposureUser newUser = new ExposureUser("HEY I'M GOKU", "GOKU LINK", "MY POWER LEVEL IS OVER 9000!!!!!!!!");
+        // generate fake fb user ID
+        long userID = (long)Math.floor(Math.random() * 100000000);
+        System.out.println("Random UserID: " + userID);
+        ExposureUser newUser = man.getUser(userID);
+        if (newUser == null) {
+            System.out.println("Randomly chosen userID did not exist");
+            System.out.println("Inserting new user to database");
+            newUser = new ExposureUser(userID, "HEY I'M GOKU", "GOKU LINK", "MY POWER LEVEL IS OVER 9000!!!!!!!!");
+            boolean insertUserRes = man.insert(newUser);
+            if (!insertUserRes) {
+                throw new AssertionError();
+            }
+            System.out.println("User has been successfully inserted");
+        }
+        else {
+            System.out.println("Randomly chosen userID already existed");
+        }
         displayUser(newUser);
-        long userID = man.insert(newUser);
-        System.out.println("ID = " + userID);
-        if (userID <= 0) { throw new AssertionError(); }
-        System.out.println("User has been inserted");
-        ExposureUser retUser = newUser.addID(userID);
-        displayUser(retUser);
 
         // test update user
         System.out.println();
