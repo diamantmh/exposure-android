@@ -140,8 +140,8 @@ public class ProfileActivity extends AppCompatActivity {
                         public void onCompleted(
                                 JSONObject object,
                                 GraphResponse response) {
-                            JSONObject user = response.getJSONObject();
                             try {
+                                JSONObject user = response.getJSONObject();
                                 JSONObject loc = user.getJSONObject("location");
                                 String city = loc.getString("name");
                                 profilecity.setVisibility(View.VISIBLE);
@@ -182,7 +182,8 @@ public class ProfileActivity extends AppCompatActivity {
     private class GetPicturesTask extends AsyncTask<Long, Void, Integer> {
         @Override
         protected Integer doInBackground(Long... ids) {
-            photos = db.getUserPhotos(ids[0]);
+            // photos = db.getUserPhotos(ids[0]);
+            photos = db.getUserPhotos(3859745);
             return photos.length;
         }
 
@@ -191,11 +192,23 @@ public class ProfileActivity extends AppCompatActivity {
             count = (TextView) findViewById(R.id.picCount);
             String text = "" + result;
             count.setText(text);
+
             if (result == 1)
                 picsAdded.setText("Picture Added");
             else
                 picsAdded.setText("Pictures Added");
-        }
+/*
+            ImageSwitcher picsTaken = (ImageSwitcher) findViewById(R.id.picsTaken);
+            if (photos != null)
+                while (true) {
+                    try {
+                        picsTaken.setImageURI(Uri.fromFile(photos[0].getFile()));
+                        continue;
+                    } catch (Exception e) {}
+                }
+            else
+                System.out.println("NULL ARRAY :(");
+*/        }
     }
 
     private FacebookCallback<LoginResult> mFacebookCallback = new FacebookCallback<LoginResult>() {
@@ -261,7 +274,8 @@ public class ProfileActivity extends AppCompatActivity {
     private class InsertUserTask extends AsyncTask<Void, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Void... params) {
-            return db.insert(new ExposureUser(Long.parseLong(profile.getId()), profile.getName(), profile.getProfilePictureUri(100, 100).toString(), ""));
+            // return db.insert(new ExposureUser(Long.parseLong(profile.getId()), profile.getName(), profile.getProfilePictureUri(100, 100).toString(), ""));
+            return db.insert(new ExposureUser(Long.parseLong(profile.getId()), profile.getName(), "LINK", "ABOUTME"));
         }
 
         protected void onPostExecute(Boolean result) {
