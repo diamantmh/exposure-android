@@ -94,6 +94,7 @@ public class DataDriver extends FragmentActivity {
 
         // location tests
         // test insert location
+
         System.out.println();
         System.out.println("Inserting new location with no ID specified");
         Category cat = new Category(userID, Category.WALKING_ID);
@@ -105,6 +106,7 @@ public class DataDriver extends FragmentActivity {
         System.out.println("Returned Location ID is: " + retLocID);
         if (retLocID <= 0) { throw new AssertionError(); }
         ExposureLocation retLoc = newLoc.addID(retLocID);
+
 
         // test insert comment
         System.out.println();
@@ -180,6 +182,7 @@ public class DataDriver extends FragmentActivity {
 
         System.out.println("Thanks for using the DatabaseManager Demo!");
         System.exit(0);
+
     }
 
     private void displayLocation(ExposureLocation loc) {
