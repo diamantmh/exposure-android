@@ -226,7 +226,7 @@ public class DataDriverTestInsert extends FragmentActivity {
                 System.exit(1);
             }
         }
-        System.out.println("----------------- Done Testing Insert Photos -----------------");
+        System.out.println("----------------- Done Testing Insert Categories -----------------");
 
         System.out.println();
         System.out.println("Creating Photo Objects... ");
