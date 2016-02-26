@@ -205,7 +205,7 @@ public class PostActivity extends AppCompatActivity {
         final Long userID = Long.parseLong(thing.getId());
         new Thread(new Runnable() {
             public void run() {
-                ExposurePhoto p = new ExposurePhoto(3859745, id, mCurrentPhotoPath, new Date(), new Time(0), new File(mCurrentPhotoPath));
+                ExposurePhoto p = new ExposurePhoto(userID, id, mCurrentPhotoPath, new Date(), new Time(0), new File(mCurrentPhotoPath));
                 long result = m.insert(p);
                 Log.d("BUENOs", "" + result);
             }
@@ -336,6 +336,7 @@ public class PostActivity extends AppCompatActivity {
 
         @Override
         protected Long doInBackground(ExposureLocation... loc) {
+            Log.d("HUNNY", "here");
             return m.insert(loc[0]);
         }
 

@@ -108,12 +108,13 @@ public class LocationView extends AppCompatActivity {
         final DatabaseManager m = new DatabaseManager(getApplicationContext());
         new Thread(new Runnable() {
             public void run() {
-                Comment c = new Comment(3859745, id, newComment.getText().toString(), new Date(), new Time(0));
+                Comment c = new Comment(userID, id, newComment.getText().toString(), new Date(), new Time(0));
                 long result = m.insert(c);
                 Log.d("BUENOs", "" + result);
             }
         }).start();
         addComment(newComment.getText().toString(), thing.getName(), new Date().toString());
+        newComment.setText("");
     }
 
     public void addComment(String content, String author, String time) {
