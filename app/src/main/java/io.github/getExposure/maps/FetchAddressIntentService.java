@@ -6,7 +6,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -44,20 +43,20 @@ public class FetchAddressIntentService extends IntentService {
         System.out.println("FAIS got: " + searchText);
         try {
             List<Address> result = geocoder.getFromLocationName(searchText, 5);
+            Bundle resultBundle = new Bundle();
+            LatLng resultAddress = null;
+            ResultReceiver receiver = (ResultReceiver) extras.get("receiver");
             if (result.size() < 1) {
-                //TODO: no addresses or no text entered
-                System.out.println("No results found");
+                // no results found, so resultAddress is null
             } else {
-
-                LatLng resultAddress = new LatLng(result.get(0).getLatitude(), result.get(0).getLongitude());
-                ResultReceiver receiver = (ResultReceiver) extras.get("receiver");
-                Bundle resultBundle = new Bundle();
-                resultBundle.putString("searchText", searchText);
-                resultBundle.putParcelable("address", resultAddress);
-                receiver.send(MapsActivity.SEARCH_RESULT_CODE, resultBundle);
+                resultAddress = new LatLng(result.get(0).getLatitude(), result.get(0).getLongitude());
             }
+            resultBundle.putString("searchText", searchText);
+            resultBundle.putParcelable("address", resultAddress);
+            receiver.send(MapsActivity.SEARCH_RESULT_CODE, resultBundle);
 
-        } catch (IllegalArgumentException e) {
+        } //TODO: catch exceptions then do..?
+        catch (IllegalArgumentException e) {
             //if locationName is null
             e.printStackTrace();
         } catch (IOException e) {

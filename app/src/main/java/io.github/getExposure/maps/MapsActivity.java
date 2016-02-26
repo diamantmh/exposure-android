@@ -213,7 +213,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
 
         //checkLocationPermission();
         LatLng drum = new LatLng(DRUMHELLER_LATITUDE, DRUMHELLER_LONGITUDE);
-        mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
+        //mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
         // Moves the camera near seattle
         //mMap.addMarker(new MarkerOptions().position(drum).title("Drumheller Fountain"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(drum));
@@ -228,7 +228,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * @param view the view
      */
     public void addPins(View view) {
-
+        mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
 
         /*
         //Testing methods
@@ -303,23 +303,8 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
 
         EditText editText = (EditText) findViewById(R.id.search_exposure);
         String searchText = editText.getText().toString();
-        Toast.makeText(MapsActivity.this, "search: " + searchText, Toast.LENGTH_SHORT).show();
-        /*
-        System.out.println("Searchtext: " + searchText);
-        String[] LatAndLong = searchText.split(",");
-        System.out.println("LatAndLong length: " + LatAndLong.length);
-        for (String s : LatAndLong) {
-            System.out.print("element: \n");
-        }
-        if (LatAndLong.length != 2) {
-            System.out.println("error");
-        }
-        double lat = Double.parseDouble(LatAndLong[0]);
-        double lng = Double.parseDouble(LatAndLong[1]);
-        LatLng query = new LatLng(lat, lng);
-        mMap.addMarker(new MarkerOptions().position(query).title("(" + lat + ", " + lng + ")"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(query));
-        */
+        //Toast.makeText(MapsActivity.this, "search: " + searchText, Toast.LENGTH_SHORT).show();
+
         //todo: not sure how to instantiate this/what handler actually does
         mResultReceiver = new AddressResultReceiver(new Handler());
         Intent intent = new Intent(this, FetchAddressIntentService.class);
@@ -388,7 +373,8 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
 
 
     /**
-     * Callback class for search functionality
+     * Callback class called when the asynchronous service to fetch the geocoded location returns
+     * (FetchAddressIntentService)
      */
     private class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
@@ -398,8 +384,15 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             LatLng query = resultData.getParcelable("address");
-            mMap.addMarker(new MarkerOptions().position(query).title(resultData.getString("searchText")));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(query));
+            if (query == null) {
+                Toast.makeText(MapsActivity.this, "No result found", Toast.LENGTH_SHORT).show();
+            } else {
+                // just a pin for showing the searched location, not for actual clicking, so listener
+                // is null
+                mMap.setOnInfoWindowClickListener(null);
+                mMap.addMarker(new MarkerOptions().position(query).title(resultData.getString("searchText")));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(query));
+            }
         }
     }
 
