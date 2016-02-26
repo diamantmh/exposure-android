@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -40,9 +41,14 @@ import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.text.BreakIterator;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.github.getExposure.ExposureFragmentActivity;
+import io.github.getExposure.database.DatabaseManager;
+import io.github.getExposure.database.ExposureLocation;
+import io.github.getExposure.database.ExposurePhoto;
 import io.github.getExposure.post.LocationView;
 import io.github.getExposure.R;
 
@@ -78,6 +84,8 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     private String mLastUpdateTime;
     private boolean mRequestingLocationUpdates;
     private AddressResultReceiver mResultReceiver;
+    private DatabaseManager db;
+    private ExposureLocation[] currLocations;
     // in v1.0
 
     /**
@@ -118,6 +126,9 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
         ActivityCompat.requestPermissions(this, permissions, MAPS_LOCATION_REQUEST_CODE);
         createLocationRequest();
+
+        // Initialize database
+        db = new DatabaseManager(getApplicationContext());
 
     }
 
@@ -228,6 +239,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * @param view the view
      */
     public void addPins(View view) {
+        Toast.makeText(MapsActivity.this, "Loading pins...", Toast.LENGTH_SHORT).show();
         mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
 
         /*
@@ -257,21 +269,19 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         LatLng ne = bounds.northeast;
         LatLng sw = bounds.southwest;
         LatLng center = bounds.getCenter();
-        mMap.addMarker(new MarkerOptions().position(center).title("test"));
-        mMap.addMarker(new MarkerOptions().position(ne).title("test"));
-        mMap.addMarker(new MarkerOptions().position(sw).title("test"));
-        /*
-        DatabaseManager db = new DatabaseManager();
-        // need to get all ID's from db
-        VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
-        LatLngBounds bounds = visibleRegion.latLngBounds;
-        LatLng ne = bounds.northeast;
-        LatLng sw = bounds.southwest;
-        LatLng center = bounds.getCenter();
         float originLat = (float) center.latitude;
         float originLon = (float) center.longitude;
         float radiusLat = (float) (ne.latitude - sw.latitude);
         float radiusLon = (float) (ne.longitude - sw.longitude);
+        new GetLocationsTask().execute(originLat, originLon, radiusLat, radiusLon);
+
+        /*
+        mMap.addMarker(new MarkerOptions().position(center).title("test"));
+        mMap.addMarker(new MarkerOptions().position(ne).title("test"));
+        mMap.addMarker(new MarkerOptions().position(sw).title("test"));
+        */
+
+        /*
         System.out.println("origin lat/lon: " + originLat + ", " + originLon + " radius lat/lon: " +
             radiusLat + ", " + radiusLon);
         ExposureLocation[] locationsInRadius = db.getLocationsInRadius(originLat, originLon, radiusLat, radiusLon);
@@ -286,6 +296,41 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             mMap.addMarker(new MarkerOptions().position(temp).title(name));
         }
         */
+    }
+
+    private void placePins(ExposureLocation[] result) {
+        mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
+        currLocations = result;
+
+
+        //TODO: Do the photos part
+        for (ExposureLocation e: result) {
+            e.getLat();
+            LatLng temp = new LatLng(e.getLat(), e.getLon());
+            mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()));
+            /*
+            //new GetPhotosTask().execute(result);
+            ExposurePhoto[] tempPhotos = db.getLocationPhotos(e.getID());
+            for (ExposurePhoto c: tempPhotos) {
+                System.out.println("link: " + c.getSource());
+            }
+            */
+        }
+        Toast.makeText(MapsActivity.this, "pins placed on screen.", Toast.LENGTH_SHORT).show();
+
+
+    }
+
+    private void actuallyPlacePins(ExposurePhoto[] result) {
+        for (ExposureLocation e: currLocations) {
+            LatLng temp = new LatLng(e.getLat(), e.getLon());
+            mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()));
+            ExposurePhoto[] tempPhotos = result;
+            for (ExposurePhoto c: tempPhotos) {
+                System.out.println("link: " + c.getSource());
+            }
+        }
+        Toast.makeText(MapsActivity.this, "pins placed on screen.", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -319,7 +364,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     public void onLocationChanged(Location location) {
         Toast.makeText(MapsActivity.this, "onLocationChanged", Toast.LENGTH_SHORT).show();
         if (mCurrentLocation == null && mLastLocation == null) { //first time location being updated and no other locations
-                                        // in device's history
+            // in device's history
             LatLng curr = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
         }
@@ -369,6 +414,37 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
+    }
+
+    private class GetLocationsTask extends AsyncTask<Float, Void, ExposureLocation[]> {
+
+        @Override
+        protected ExposureLocation[] doInBackground(Float... params) {
+            // remember paramaters are: originLat, originLon, radiusLat, radiusLon
+            return db.getLocationsInRadius(params[0], params[1], params[2], params[3]);
+        }
+
+        protected void onPostExecute(ExposureLocation[] result) {
+            placePins(result);
+        }
+    }
+
+    private class GetPhotosTask extends AsyncTask<ExposureLocation[], Void, List<ExposurePhoto[]>> {
+
+        @Override
+        protected List<ExposurePhoto[]> doInBackground(ExposureLocation[]... params) {
+            // remember paramaters are: originLat, originLon, radiusLat, radiusLon
+            List<ExposurePhoto[]> result = new ArrayList<>();
+            for (ExposureLocation e: params[0]) {
+                ExposurePhoto[] tempPhoto = db.getLocationPhotos(e.getID());
+                result.add(tempPhoto);
+            }
+            return result;
+        }
+
+        protected void onPostExecute(ExposurePhoto[] result) {
+            actuallyPlacePins(result);
+        }
     }
 
 
@@ -452,5 +528,3 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         }
     }
 }
-
-
