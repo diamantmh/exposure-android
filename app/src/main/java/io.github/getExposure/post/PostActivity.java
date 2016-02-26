@@ -52,6 +52,8 @@ public class PostActivity extends AppCompatActivity {
     private EditText longitude;
     private EditText description;
     private TextView categories;
+    private TextView logMessage;
+
     static final int REQUEST_GALLERY_PHOTO = 3;
     static final int REQUEST_IMAGE_CAPTURE = 2;
     static final int GET_CATEGORIES = 1;
@@ -62,14 +64,35 @@ public class PostActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_view);
+
         name = (EditText) findViewById(R.id.name);
         latitude = (EditText) findViewById(R.id.latitude);
         longitude = (EditText) findViewById(R.id.longitude);
-
+        description = (EditText) findViewById(R.id.description);
         categories = (TextView) findViewById(R.id.categories);
+
+        logMessage = (TextView) findViewById(R.id.notLoggedInMessage);
+
+        if (Profile.getCurrentProfile() == null) {
+            name.setVisibility(View.INVISIBLE);
+            latitude.setVisibility(View.INVISIBLE);
+            longitude.setVisibility(View.INVISIBLE);
+            categories.setVisibility(View.INVISIBLE);
+            description.setVisibility(View.INVISIBLE);
+            findViewById(R.id.submit).setVisibility(View.INVISIBLE);
+            logMessage.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        name.setVisibility(View.VISIBLE);
+        latitude.setVisibility(View.VISIBLE);
+        longitude.setVisibility(View.VISIBLE);
+        categories.setVisibility(View.VISIBLE);
+        description.setVisibility(View.VISIBLE);
+        findViewById(R.id.submit).setVisibility(View.VISIBLE);
+        logMessage.setVisibility(View.INVISIBLE);
 
         categories.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +141,11 @@ public class PostActivity extends AppCompatActivity {
             public void onProviderDisabled(String provider) {}
         };
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     public void post() {
@@ -183,7 +211,7 @@ public class PostActivity extends AppCompatActivity {
             final ExposureLocation loc = new ExposureLocation(Float.parseFloat(latitude.getText().toString()),
                     Float.parseFloat(longitude.getText().toString()), 0, 0, name.getText().toString(),
                     description.getText().toString(), new HashSet<Category>(), new ArrayList<Comment>());
-            final DatabaseManager m = new DatabaseManager();
+            final DatabaseManager m = new DatabaseManager(getApplicationContext());
             new Thread(new Runnable() {
                 public void run() {
                     //long result = m.insert(loc);

@@ -1,21 +1,28 @@
 package io.github.getExposure.database;
 
+// RestTemplate Imports
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-// Image Downloader Import
+// Image Downloader Imports
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.PrintStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.io.ByteArrayOutputStream;
+import java.sql.Time;
+import java.util.Date;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import android.content.Context;
 import android.util.Log;
-//
+import android.os.Environment;
+import android.util.Base64;
 
 /**
  * DatabaseManager is an abstraction that handles interactions with the
@@ -32,8 +39,12 @@ import android.util.Log;
 public class DatabaseManager {
     private RestTemplate restTemplate;
 
-    protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
-    protected static final String PATH = "/data/data/";  //Downloaded Image Files in this directory
+    protected static final String WEB_SERVICE = "http://exposureweb.cloudapp.net/RESTfulProject/REST/WebService/";
+    //protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
+    //protected static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
+
+    protected Context CONTEXT;
+    protected static final String DEFAULT_URL = "https://exposurestorage.blob.core.windows.net/exposurecontainer/10";
 
     private static final long NULL_ID = -1;
 
@@ -43,10 +54,10 @@ public class DatabaseManager {
      */
 
     /**
-     * Constructs a DatabaseManager.
+     * Constructs a DatabaseManager with the given context con.
      */
-    public DatabaseManager() {
-        this(new RestTemplate());
+    public DatabaseManager(Context con) {
+        this(new RestTemplate(), con);
     }
 
     /**
@@ -56,9 +67,10 @@ public class DatabaseManager {
      * or it can be used for testing purposes (providing a mocked
      * RestTemplate)
      */
-    public DatabaseManager(RestTemplate rt) {
+    public DatabaseManager(RestTemplate rt, Context con) {
         restTemplate = rt;
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        CONTEXT = con;
     }
 
     /**
@@ -75,7 +87,7 @@ public class DatabaseManager {
      * inserted separately using insert(Comment comment)
      *
      * @param loc the ExposureLocation with the desired data
-     * @return true iff the location entry matching the given ID was updated
+     * @return true iff the location entry matching the ID of loc was updated
       */
 
     public boolean update(ExposureLocation loc) {
@@ -86,13 +98,7 @@ public class DatabaseManager {
         final String url = WEB_SERVICE + "updateLocation";
         boolean result = restTemplate.postForObject(url, wLoc, Boolean.class);
 
-        // register any unregistered categories in loc
-        for (Category cat : loc.getCategories()) {
-            if (cat.getId() == Category.NULL_ID) {
-                Category registeredCat = new Category(loc.getID(),cat.getId());
-                insert(registeredCat);
-            }
-        }
+        registerCategoriesAndCommentsInLocation(loc);
 
         return result;
     }
@@ -101,10 +107,11 @@ public class DatabaseManager {
      * Returns true if and only if the specified user is updated. Replaces
      * the entry in the database matching the given id with the given value.
      *
-     * Requires that user to be an existing user (a user returned by DatabaseManager).
+     * Requires that user to be an existing user (a user registered by
+     * DatabaseManager).
      *
      * @param user the ExposureUser with the desired data
-     * @return true iff the user entry matching the given ID was updated
+     * @return true iff the user entry matching the ID of user was updated
      */
     public boolean update(ExposureUser user) {
         final String url = WEB_SERVICE + "updateUser";
@@ -138,20 +145,15 @@ public class DatabaseManager {
         final String url = WEB_SERVICE + "insertLocation";
         long locID = restTemplate.postForObject(url, wLoc, Long.class);
 
-        // register any unregistered categories in loc
-        for (Category cat : loc.getCategories()) {
-            if (cat.getId() == Category.NULL_ID) {
-                Category registeredCat = new Category(locID,cat.getId());
-                insert(registeredCat);
-            }
-        }
+        registerCategoriesAndCommentsInLocation(loc.addID(locID));
 
         return locID;
     }
 
     /**
      * Returns the ID of the new entry in the database. Makes a new entry in the
-     * database for the given ExposurePhoto. Returns -1 if the entry was not created.
+     * database for the given ExposurePhoto. Returns a negative number if the
+     * entry was not created.
      *
      * Requires that photo to be a new photo (no ID specified when constructed).
      *
@@ -162,23 +164,22 @@ public class DatabaseManager {
      */
     public long insert(ExposurePhoto photo) {
         final String url = WEB_SERVICE + "insertPhoto";
-        return restTemplate.postForObject(url, photo, Long.class);
+        return restTemplate.postForObject(url, new WebPhoto(photo), Long.class);
     }
 
     /**
-     * Returns the ID of the new entry in the database. Makes a new entry in the
-     * database for the given ExposureUser. Returns -1 if the entry was not created.
+     * Returns true if and only if the user was registered in the database
+     * successfully
      *
-     * Requires that user to be a new user (no ID specified when constructed).
+     * User should be constructed with the ID given by the Facebook API.
      *
      * @param user the ExposureUser with the desired data to be saved as a new entry
      *              in the database
-     * @return the ID of the created user entry. Returns -1 if the user entry
-     * was not successfully created
+     * @return true iff the user was registered in the database successfully
      */
-    public long insert(ExposureUser user) {
+    public boolean insert(ExposureUser user) {
         final String url = WEB_SERVICE + "insertUser";
-        return restTemplate.postForObject(url, user, Long.class);
+        return restTemplate.postForObject(url, user, Boolean.class);
     }
 
     /**
@@ -283,7 +284,7 @@ public class DatabaseManager {
      */
     public ExposurePhoto[] getUserPhotos(long id) {
         final String url = WEB_SERVICE + "getUserPhotos?id=" + id;
-        return restTemplate.getForObject(url, ExposurePhoto[].class);
+        return downloadPhotos(restTemplate.getForObject(url, ExposurePhoto[].class));
     }
 
     /**
@@ -299,7 +300,7 @@ public class DatabaseManager {
      */
     public ExposurePhoto[] getLocationPhotos(long id) {
         final String url = WEB_SERVICE + "getLocationPhotos?id=" + id;
-        return restTemplate.getForObject(url, ExposurePhoto[].class);
+        return downloadPhotos(restTemplate.getForObject(url, ExposurePhoto[].class));
     }
 
     /**
@@ -347,8 +348,79 @@ public class DatabaseManager {
      * Returns a downloaded image File from using a random url
      * @return File containing an image
      */
-    public File downLoadImage() {
-        return ImageManager.DownloadFromUrl("https://exposurestorage.blob.core.windows.net/exposurecontainer/10", "TestImage");
+    protected File downLoadImage() {
+        return ImageManager.DownloadFromUrl(DEFAULT_URL, "", CONTEXT);
+    }
+
+    /**
+     * Returns a downloaded image File from using a random url
+     * @param url The specified image we want to download
+     * @return File containing an image
+     */
+    protected File downLoadImage(String url) {
+        return ImageManager.DownloadFromUrl(url, "", CONTEXT);
+    }
+
+    /**
+     * Returns a downloaded image File from using a random url
+     * @return File containing an image
+     */
+    protected File downLoadImage(String url, String file_name) {
+        return ImageManager.DownloadFromUrl(DEFAULT_URL, file_name, CONTEXT);
+    }
+
+    /**
+     * Inserts any unregistered categories and comments inside loc. A category
+     * or comment is unregistered if the locID was omitted when constructed.
+     *
+     * @param loc the location to register categories for
+     */
+    private void registerCategoriesAndCommentsInLocation(ExposureLocation loc) {
+        // register any unregistered categories in loc
+        for (Category cat : loc.getCategories()) {
+            if (cat.getId() == Category.NULL_ID) { // if unregistered
+                Category registeredCat = new Category(loc.getID(),cat.getId());
+                insert(registeredCat);
+            }
+        }
+
+        // register any unregistered comments in loc. Registers with a new ID and
+        // associates it with the given location
+        for (Comment com : loc.getComments()) {
+            if (com.getId() == Comment.NULL_ID) { // if unregistered
+                Comment registeredCom = new Comment(com.getAuthorID(),loc.getID(),
+                        com.getContent(),com.getDate(),com.getTime());
+                insert(com);
+            }
+        }
+    }
+
+    /**
+     * Returns an array of downloaded photos specified by the given photo
+     * array. Returns null if photo is null.
+     * Downloads all the photos in the given array from the source urls in
+     * each ExposurePhoto in photos.
+     *
+     * @param photos array of photos to be downloaded
+     * @return an array of downloaded photos or null if there are no photos
+     * to download.
+     */
+    private ExposurePhoto[] downloadPhotos(ExposurePhoto[] photos) {
+        // if no results return null
+        if (photos == null) {
+            return null;
+        }
+
+        // download each location photo
+        ExposurePhoto[] downloadedPhotos = new ExposurePhoto[photos.length];
+        for (int i = 0; i < photos.length; i++) {
+            ExposurePhoto photo = photos[i];
+            File imgFile = ImageManager.DownloadFromUrl(photo.getSource(), CONTEXT);
+            downloadedPhotos[i] = new ExposurePhoto(photo.getID(),photo.getAuthorID(),photo.getLocID(),
+                    photo.getSource(),photo.getDate(),photo.getTime(),imgFile);
+        }
+
+        return downloadedPhotos;
     }
 
     /**
@@ -525,27 +597,257 @@ public class DatabaseManager {
 
 
 
+    /**
+     * WebPhoto is an immutable representation of a photo. This class can be used
+     * for sending data to the web service and is only be used
+     * internally by Databasemanager.
+     *
+     * specfield id : long  // uniquely identifies this photo for database interactions
+     */
+    private static class WebPhoto {
+
+        private final long id;
+        private final long authorID;
+        private final long locID;
+        private final String source;
+        private final Date date;
+        private final Time time;
+        private final String file;
+
+        private static final long NULL_ID = -1;
+
+        /**
+         * Constructs a WebPhoto with the given ExposurePhoto.
+         *
+         * @param ep ExposurePhoto object to convert
+         */
+        public WebPhoto(ExposurePhoto ep) {
+            this.id = ep.getID();
+            this.authorID = ep.getAuthorID();
+            this.locID = ep.getLocID();
+            this.source = ep.getSource();
+            this.date = ep.getDate();
+            this.time = ep.getTime();
+            this.file = convertFileToString(ep.getFile());
+        }
+
+        // Convert my file to a Base64 String
+        private String convertFileToString(File file) {
+
+            /*
+            // Test
+            File dest = new File("/Users/Tyler/Desktop/fromApp");
+
+            try {
+                dest.createNewFile();
+                FileInputStream in = new FileInputStream(file);
+                FileOutputStream out = new FileOutputStream(dest);
+
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                in.close();
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // Test end
+            */
+
+
+            String encodedBase64 = null;
+            FileInputStream fileInputStream = null;
+            byte[] bytes = new byte[(int)file.length()];
+            try {
+                fileInputStream = new FileInputStream(file);
+                fileInputStream.read(bytes);
+                fileInputStream.close();
+
+                String encodedString = Base64.encodeToString(bytes, Base64.DEFAULT);
+                return encodedString;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            /*
+
+            // Test
+
+            try {
+                File textFile = new File("/Users/Tyler/fromApp.txt");
+                FileOutputStream stream = new FileOutputStream(textFile);
+                PrintStream p = new PrintStream(stream);
+                p.print(encodedBase64);
+                p.close();
+                stream.close();
+            }
+            catch (IOException e) {
+                Log.e("Exception", "File write failed: " + e.toString());
+            }
+            // Test end
+            */
+
+
+            return encodedBase64;
+        }
+
+        /**
+         * Encodes the byte array into base64 string
+         *
+         * @param imageByteArray - byte array
+         * @return String a {@link java.lang.String}
+         */
+        /*
+        public static String encodeImage(byte[] imageByteArray) {
+            return Base64.encodeBase64URLSafeString(imageByteArray);
+        }
+*/
+        /**
+         * Default constructor required for JSON decoding.
+         */
+        public WebPhoto() {
+            id = NULL_ID;
+            authorID = NULL_ID;
+            locID = NULL_ID;
+            source = "";
+            date = new Date(0);
+            time = new Time(0);
+            file = "";
+        }
+
+        /**
+         * Returns the unique identifier for this photo.
+         *
+         * The returned ID can be used to interact with DatabaseManager.
+         *
+         * @return the unique identifier of this photo or -1 if this ExposurePhoto has
+         * no ID (if ID omitted when constructed)
+         */
+        public long getID() {
+            return id;
+        }
+
+        /**
+         * Returns the unique identifier of the ExposureUser that originally posted this
+         * photo.
+         *
+         * The returned ID can be used to interact with DatabaseManager.
+         *
+         * @return the unique identifier of the ExposureUser that posted this photo
+         */
+        public long getAuthorID() {
+            return authorID;
+        }
+
+        /**
+         * Returns the unique identifier of the location where this photo was
+         * taken.
+         *
+         * The returned ID can be used to interact with DatabaseManager.
+         *
+         * @return the unique identifier of the ExposureLocation where this ExposurePhoto was taken
+         */
+        public long getLocID() {
+            return locID;
+        }
+
+        /**
+         * Returns the source link to the picture as a String
+         *
+         * @return the source link to the profile picture of this user
+         */
+        public String getSource() {
+            return source;
+        }
+
+        /**
+         * Returns the Date this photo was taken.
+         *
+         * @return the Date this photo was taken.
+         */
+        public Date getDate() {
+            return new Date(date.getTime());
+        }
+
+        /**
+         * Returns the Time this photo was taken.
+         *
+         * @return the Time this photo was taken.
+         */
+        public Time getTime() {
+            return new Time(time.getTime());
+        }
+
+        /**
+         * Returns the File of this photo.
+         *
+         * @return the File of this photo.
+         */
+        public String getFile() {
+            return file;
+        }
+
+    }
+
+
+    /**
+     * ImageManager is a utility that handles downloading images.
+     */
     private static class ImageManager {
 
-        //private final String PATH = "/data/data/com.exposure.imagedownloader/";  //put the downloaded file here
+        public static File DownloadFromUrl(String imageURL, Context context) {
+            return DownloadFromUrl(imageURL, "", context);
+        }
 
-
-        public static File DownloadFromUrl(String imageURL, String fileName) {  //this is the downloader method
+        public static File DownloadFromUrl(String imageURL, String file_name, Context context) {  //this is the downloader method
             File file = null;
-            System.out.println("Downloading From Url");
+            File dir;
+
+            boolean mExternalStorageAvailable = false;
+            boolean mExternalStorageWriteable = false;
+            String state = Environment.getExternalStorageState();
+
+            if (Environment.MEDIA_MOUNTED.equals(state)) {
+                // We can read and write the media
+                mExternalStorageAvailable = mExternalStorageWriteable = true;
+            } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+                // We can only read the media
+                mExternalStorageAvailable = true;
+                mExternalStorageWriteable = false;
+                System.out.println("We can only read");
+                System.exit(1);
+            } else {
+                // Something else is wrong. It may be one of many other states, but all we need
+                //  to know is we can neither read nor write
+                System.out.println("HOLY SHIT HUSTON WE FOUND THE PROBLEM");
+                System.exit(1);
+            }
+            System.out.println();
+
             try {
                 URL url = new URL(imageURL); //you can write here any link
-                System.out.println("Opening File");
-                file = new File(PATH + fileName);
-                System.out.println("Creating new File");
-                file.createNewFile();
-                System.out.println("Created new File");
+
+                String name = "tempImage" + file_name;
+                file = new File(context.getCacheDir(), name);
+
+                System.out.println();
+
+                if (!file.createNewFile() && !file.exists()) {
+                    System.out.println("\nERROR WHEN CREATING FILE\n");
+                    System.exit(1);
+                }
 
                 long startTime = System.currentTimeMillis();
+                /*
                 Log.d("ImageManager", "download begining");
                 Log.d("ImageManager", "download url:" + url);
-                Log.d("ImageManager", "downloaded file name:" + fileName);
-                        /* Open a connection to that URL. */
+                //Log.d("ImageManager", "downloaded file name:" + fileName);
+                        Open a connection to that URL.
+                */
                 URLConnection ucon = url.openConnection();
 
                         /*
@@ -566,17 +868,17 @@ public class DatabaseManager {
                 while((current = bis.read(data,0,data.length)) != -1){
                     buffer.write(data, 0, current);
                 }
-                System.out.println("Create File OutputStream");
+                //System.out.println("Create File OutputStream");
                         /* Convert the Bytes read to a String. */
                 FileOutputStream fos = new FileOutputStream(file);
-                System.out.println("Write to Buffer");
+                //System.out.println("Write to Buffer");
                 fos.write(buffer.toByteArray());
                 fos.close();
-                Log.d("ImageManager", "download ready in"
-                        + ((System.currentTimeMillis() - startTime) / 1000)
-                        + " sec");
+                //Log.d("ImageManager", "download ready in "
+                //        + ((System.currentTimeMillis() - startTime) / 1000)
+                //        + " sec");
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.d("ImageManager", "Error: " + e);
             }
 

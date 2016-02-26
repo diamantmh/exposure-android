@@ -72,10 +72,6 @@
             android:label="@string/title_activity_profile_view"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".profile.LoginActivity"
-            android:label="@string/title_activity_login" >
-        </activity>
-        <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
@@ -101,6 +97,22 @@
             android:label="@string/title_data_driver"
             android:theme="@style/AppTheme.CustomPOP">
         </activity>
+        <activity
+            android:name=".database.DataDriverTestInsert"
+            android:label="DataDriverTestInsert"
+            android:theme="@style/AppTheme.CustomPOP">
+        </activity>
+        <activity
+            android:name=".database.DataDriverTestGet"
+            android:label="DataDriverTestGet"
+            android:theme="@style/AppTheme.CustomPOP">
+        </activity>
+        <activity
+            android:name=".database.DataDriverTestRemove"
+            android:label="DataDriverTestRemove"
+            android:theme="@style/AppTheme.CustomPOP">
+        </activity>
+
 
     </application>
 

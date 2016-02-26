@@ -9,13 +9,12 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 /**
  * Example class that demonstrates the use of DatabaseManager
  */
-public class DataDriver extends FragmentActivity {
+public class DataDriverTestGet extends FragmentActivity {
 
     private static DatabaseManager man;
 
