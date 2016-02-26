@@ -36,6 +36,44 @@ public class Category {
      */
 
     /**
+     * Constructs a Category from the given string. Given category string
+     * must match one of the standard categories in Category.tags[]
+     *
+     * Register this Category cat with this location by calling
+     * DatabaseManager.insert(cat).
+     *
+     * @param locID the unique identifier for the location this category is
+     *              associated with
+     * @param category the string representing the content of the category
+     * @throws IllegalArgumentException if given category is not recognized
+     */
+    public Category(long locID, String category) {
+        for (int i = 0; i < tags.length; i++) {
+            if (category.toLowerCase().equals(tags[i])) {
+                this.id = i + 1;
+                this.locID = NULL_ID;
+                this.content = tags[i];
+                return;
+            }
+        }
+        this.id = NULL_ID;
+        this.locID = NULL_ID;
+        this.content = "invalid category string";
+        throw new IllegalArgumentException("Invalid category string. Check Category.tags");
+    }
+
+    /**
+     * Constructs a Category from the given string. Given category string
+     * must match one of the standard categories in Category.tags[]
+     *
+     * @param category the string representing the content of the category
+     * @throws IllegalArgumentException if given category is not recognized
+     */
+    public Category(String category) {
+        this(NULL_ID, category);
+    }
+
+    /**
      * Constructs a Category associated to the location that matches the given
      * location ID and representing the category matching the given category ID
      *
