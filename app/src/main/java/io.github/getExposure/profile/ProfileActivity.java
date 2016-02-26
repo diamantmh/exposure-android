@@ -1,10 +1,18 @@
 package io.github.getExposure.profile;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -44,6 +52,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ProfileTracker mProfileTracker;
 
     private DatabaseManager db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,10 +118,51 @@ public class ProfileActivity extends AppCompatActivity {
         setupCity(isLoggedIn);
         setupAddedText(isLoggedIn);
         setupLoginMessage(isLoggedIn);
+        setupImages(isLoggedIn);
         if (isLoggedIn)
             findViewById(R.id.notLoggedInMessage).setVisibility(View.INVISIBLE);
         else
             findViewById(R.id.notLoggedInMessage).setVisibility(View.VISIBLE);
+    }
+
+    private void setupImages(boolean isLoggedIn) {
+        ImageView one = (ImageView) findViewById(R.id.imageView1);
+        ImageView two = (ImageView) findViewById(R.id.imageView2);
+        ImageView three = (ImageView) findViewById(R.id.imageView3);
+
+        TextView mTextView = (TextView) findViewById(R.id.textView);
+        mTextView.setPaintFlags(mTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+        if (isLoggedIn) {
+            one.setVisibility(View.VISIBLE);
+            two.setVisibility(View.VISIBLE);
+            three.setVisibility(View.VISIBLE);
+            mTextView.setVisibility(View.VISIBLE);
+
+            if (photos == null || photos.length == 0) {
+
+            } else if (photos.length == 1) {
+                Bitmap bitmap2 = BitmapFactory.decodeFile(photos[1].getFile().getPath());
+                two.setImageBitmap(bitmap2);
+            } else if (photos.length == 2) {
+                Bitmap bitmap1 = BitmapFactory.decodeFile(photos[0].getFile().getPath());
+                one.setImageBitmap(bitmap1);
+                Bitmap bitmap3 = BitmapFactory.decodeFile(photos[1].getFile().getPath());
+                three.setImageBitmap(bitmap3);
+            } else {
+                Bitmap bitmap1 = BitmapFactory.decodeFile(photos[0].getFile().getPath());
+                one.setImageBitmap(bitmap1);
+                Bitmap bitmap2 = BitmapFactory.decodeFile(photos[1].getFile().getPath());
+                two.setImageBitmap(bitmap2);
+                Bitmap bitmap3 = BitmapFactory.decodeFile(photos[2].getFile().getPath());
+                three.setImageBitmap(bitmap3);
+            }
+        } else {
+            one.setVisibility(View.INVISIBLE);
+            two.setVisibility(View.INVISIBLE);
+            three.setVisibility(View.INVISIBLE);
+            mTextView.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void setupName(boolean isLoggedIn) {
@@ -183,7 +233,7 @@ public class ProfileActivity extends AppCompatActivity {
         @Override
         protected Integer doInBackground(Long... ids) {
             // photos = db.getUserPhotos(ids[0]);
-            photos = db.getUserPhotos(3859745);
+            photos = db.getUserPhotos(ids[0]);
             return photos.length;
         }
 
@@ -197,18 +247,9 @@ public class ProfileActivity extends AppCompatActivity {
                 picsAdded.setText("Picture Added");
             else
                 picsAdded.setText("Pictures Added");
-/*
-            ImageSwitcher picsTaken = (ImageSwitcher) findViewById(R.id.picsTaken);
-            if (photos != null)
-                while (true) {
-                    try {
-                        picsTaken.setImageURI(Uri.fromFile(photos[0].getFile()));
-                        continue;
-                    } catch (Exception e) {}
-                }
-            else
-                System.out.println("NULL ARRAY :(");
-*/        }
+
+            setupImages((profile != null));;
+        }
     }
 
     private FacebookCallback<LoginResult> mFacebookCallback = new FacebookCallback<LoginResult>() {
@@ -244,7 +285,6 @@ public class ProfileActivity extends AppCompatActivity {
     };
 
     private ExposureUser getExposureUser() {
-        System.out.println("LOLOLOLOLOL");
         long id = Long.parseLong(profile.getId());
         new GetUserTask().execute(id);
         return null;
@@ -255,18 +295,13 @@ public class ProfileActivity extends AppCompatActivity {
         protected Boolean doInBackground(Long... ids) {
             ExposureUser user = db.getUser(ids[0]);
             if (user != null) {
-                System.out.println(user.getID());
-                System.out.println(profile.getId());
                 return false;
             } else return true;
         }
 
         protected void onPostExecute(Boolean result) {
             if (result) {
-                System.out.println("User not there");
                 new InsertUserTask().execute();
-            } else {
-                System.out.println("User already there");
             }
         }
     }
@@ -276,14 +311,6 @@ public class ProfileActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             // return db.insert(new ExposureUser(Long.parseLong(profile.getId()), profile.getName(), profile.getProfilePictureUri(100, 100).toString(), ""));
             return db.insert(new ExposureUser(Long.parseLong(profile.getId()), profile.getName(), "LINK", "ABOUTME"));
-        }
-
-        protected void onPostExecute(Boolean result) {
-            if (result) {
-                System.out.println("User added!");
-            } else {
-                System.out.println("User not added.");
-            }
         }
     }
 
