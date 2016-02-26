@@ -2,13 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.github.getExposure">
 
-    <!-- testing this for android gps location -->
-    <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.google.android.gms.location.sample.locationupdates" >
-
-        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    </manifest>
-
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -17,6 +10,7 @@
     <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
@@ -52,6 +46,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCn8ZhUZDYAydvXJUCVSjjtL9LLQNHR7J8" />
+        <service
+            android:name=".maps.FetchAddressIntentService"
+            android:exported="false"/>
 
         <activity
             android:name=".maps.MapsActivity"
