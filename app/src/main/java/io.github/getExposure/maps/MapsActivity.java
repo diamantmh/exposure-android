@@ -31,8 +31,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.text.BreakIterator;
 import java.text.DateFormat;
@@ -68,15 +70,9 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     private int currentFilter = 0; // Current filter to select which pins to display, to be implemented
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
-    private BreakIterator mLatitudeText;
-    private BreakIterator mLongitudeText;
-    private boolean locationPermissions;
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
     private String mLastUpdateTime;
-    private BreakIterator mLatitudeTextView;
-    private BreakIterator mLastUpdateTimeTextView;
-    private BreakIterator mLongitudeTextView;
     private boolean mRequestingLocationUpdates;
     // in v1.0
 
@@ -129,35 +125,35 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     }
 
     public void center(View view) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        // Permissions for getting location
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(MapsActivity.this, "Cannot find current locations, need permission.", Toast.LENGTH_SHORT).show();
             System.out.println("dere be no permissions to do center");
-            return;
-        }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
-            //mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-            //mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-            //System.out.println("Lat/Long text: " + mLatitudeText.getText().toString() + " " + mLongitudeText.getText().toString());
-            Toast.makeText(MapsActivity.this, "LastLocation found", Toast.LENGTH_SHORT).show();
-            Toast.makeText(MapsActivity.this, "Lat/Lon: " + mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
-            LatLng curr = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
-        } else {
-            startLocationUpdates();
-            Toast.makeText(MapsActivity.this, "LastLocation is null", Toast.LENGTH_SHORT).show();
-            System.out.println("LastLocation is null");
+        } else { // Permission granted
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            if (mCurrentLocation != null) {
+                //Toast.makeText(MapsActivity.this, "currentLocation found", Toast.LENGTH_SHORT).show();
+                LatLng curr = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
+            } else if (mLastLocation != null) {
+                //Toast.makeText(MapsActivity.this, "LastLocation found", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MapsActivity.this, "Lat/Lon: " + mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+                LatLng curr = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
+            } else {
+                startLocationUpdates();
+                // todo: this message will show when location is enabled, just on first startup with no
+                // current/last location
+                Toast.makeText(MapsActivity.this, "Make sure that location is enabled", Toast.LENGTH_SHORT).show();
+                System.out.println("LastLocation is null");
+            }
         }
     }
 
 
+    //TODO: maybe actually use onconnected
     @Override
     public void onConnected(Bundle connectionHint) {
         System.out.println("onConnected");
@@ -168,17 +164,11 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         */
     }
 
-    protected void startLocationUpdates() {
+    private void startLocationUpdates() {
         System.out.println("startLocationUpdates");
         Toast.makeText(MapsActivity.this, "startLocationUpdates", Toast.LENGTH_SHORT).show();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            // compiler check, should neveer enter here because it's checked in the calling method
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(
@@ -186,6 +176,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     }
 
     //TODO: request location updates at slower/stop location updates when unnecessary
+    // also why i cant do stoplocatinupdates rn
     @Override
     protected void onPause() {
         super.onPause();
@@ -200,9 +191,9 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         }
     }
 
-    protected void stopLocationUpdates() {
+    private void stopLocationUpdates() {
         System.out.println("stopLocationUpdates");
-        Toast.makeText(MapsActivity.this, "stopLocationUpdates", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MapsActivity.this, "stopLocationUpdates", Toast.LENGTH_SHORT).show();
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
     }
@@ -219,21 +210,6 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             System.out.println("permissions not granted");
             mRequestingLocationUpdates = false;
         }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    protected void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
     }
 
     /**
@@ -255,7 +231,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         //checkLocationPermission();
         LatLng drum = new LatLng(DRUMHELLER_LATITUDE, DRUMHELLER_LONGITUDE);
         mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
-        // Add a marker near seattle and move the camera
+        // Moves the camera near seattle
         //mMap.addMarker(new MarkerOptions().position(drum).title("Drumheller Fountain"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(drum));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
@@ -284,6 +260,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
                             "click to view location"));
         }
 */
+        /*
         // temp functionality for dmeo
         LatLng drum = new LatLng(DRUMHELLER_LATITUDE, DRUMHELLER_LONGITUDE);
         mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
@@ -291,6 +268,15 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         mMap.addMarker(new MarkerOptions().position(drum).title("Drumheller Fountain"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(drum));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+        */
+        VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
+        LatLngBounds bounds = visibleRegion.latLngBounds;
+        LatLng ne = bounds.northeast;
+        LatLng sw = bounds.southwest;
+        LatLng center = bounds.getCenter();
+        mMap.addMarker(new MarkerOptions().position(center).title("test"));
+        mMap.addMarker(new MarkerOptions().position(ne).title("test"));
+        mMap.addMarker(new MarkerOptions().position(sw).title("test"));
         /*
         DatabaseManager db = new DatabaseManager();
         // need to get all ID's from db
@@ -318,18 +304,6 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         }
         */
     }
-/*
-    public void checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-            System.out.println("thanksfor lettingmetracku");
-        } else {
-            System.out.println("why dafuck u not allow me to TRACK u");
-            // Show rationale and request permission.
-        }
-    }
-*/
 
     /**
      * Callback called when the user clicks the "search" button.
@@ -357,28 +331,41 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
 
     }
 
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Toast.makeText(MapsActivity.this, "onLocationChanged", Toast.LENGTH_SHORT).show();
+        if (mCurrentLocation == null && mLastLocation == null) { //first time location being updated and no other locations
+                                        // in device's history
+            LatLng curr = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
+        }
+        mCurrentLocation = location;
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+
+    }
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        Toast.makeText(MapsActivity.this, "onLocationChanged", Toast.LENGTH_SHORT).show();
-        mCurrentLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        LatLng curr = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
-       // updateUI();
+    public void onConnectionSuspended(int i) {
+
     }
 
-    /*
-    private void updateUI() {
-        mLatitudeTextView.setText(String.valueOf(mCurrentLocation.getLatitude()));
-        mLongitudeTextView.setText(String.valueOf(mCurrentLocation.getLongitude()));
-        mLastUpdateTimeTextView.setText(mLastUpdateTime);
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
     }
-*/
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+
 
     /**
      * Internal listener class for MapsInfoWindowClicks
@@ -393,10 +380,8 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         //TODO: currently just goes back to list view
         @Override
         public void onInfoWindowClick(Marker marker) {
-            String input = "Pin clicked";
             System.out.println("Pin clicked");
-            CharSequence str =  input.subSequence(0, input.length());
-            Toast.makeText(MapsActivity.this, str, Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapsActivity.this, "Pin clicked", Toast.LENGTH_SHORT).show();
             // change this to post view
             Intent locationViewIntent = new Intent(getApplicationContext(), LocationView.class);
             locationViewIntent.putExtra("photo", "");
