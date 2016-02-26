@@ -85,16 +85,34 @@
         <activity
             android:name=".post.LocationView"
             android:label="@string/title_activity_location_view"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity
             android:name=".post.PopUpCategoriesView"
             android:label="Categories"
-            android:theme="@style/AppTheme.CustomPOP"></activity>
+            android:theme="@style/AppTheme.CustomPOP">
+        </activity>
         <activity
             android:name=".database.DataDriver"
             android:label="@string/title_data_driver"
             android:theme="@style/AppTheme.CustomPOP">
         </activity>
+        <activity
+            android:name=".database.DataDriverTestInsert"
+            android:label="DataDriverTestInsert"
+            android:theme="@style/AppTheme.CustomPOP">
+        </activity>
+        <activity
+            android:name=".database.DataDriverTestGet"
+            android:label="DataDriverTestGet"
+            android:theme="@style/AppTheme.CustomPOP">
+        </activity>
+        <activity
+            android:name=".database.DataDriverTestRemove"
+            android:label="DataDriverTestRemove"
+            android:theme="@style/AppTheme.CustomPOP">
+        </activity>
+
 
     </application>
 
