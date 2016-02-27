@@ -61,6 +61,10 @@ The app functions are rather intuitive, but there are a few reminders for the Ma
 	- (notice that it's longitude first, and backspace does not work correctly once connected to the emulator terminal)
 - The "Loc" button will center the map at your most recent location, if available
 - The "Apply Filter" button will load all pins that can be visible on the current orientation of the map
+	- Available sample locations:
+		- Search for latitude/longitude "10,10", or "50,50" and zoom out 11-13 times.
+		- Set categories to "All" and click "Apply Filter"
+		- Click pin and then pin's info window to load location/photo info.
 - Loading the pictures and locations may take a minute to load, be patient (will be sped up for Release candidate)
 
 
