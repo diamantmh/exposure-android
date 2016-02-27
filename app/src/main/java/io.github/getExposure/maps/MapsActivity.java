@@ -334,12 +334,14 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         for (ExposureLocation e: locToPhotos.keySet()) {
             LatLng temp = new LatLng(e.getLat(), e.getLon());
             ExposurePhoto[] tempPhotos = locToPhotos.get(e);
+            System.out.println("tempPhotos length: " + tempPhotos.length);
             for (ExposurePhoto c: tempPhotos) {
                 System.out.println("link: " + c.getSource());
                 System.out.println("path: " + c.getFile().getAbsolutePath());
             }
             i++;
             String snippet;
+            // just get the first photo
             if (tempPhotos.length > 0) {
                 System.out.println("# photos: " + tempPhotos.length);
                 System.out.println("path of photo to display:" + tempPhotos[0].getFile().getAbsolutePath());
