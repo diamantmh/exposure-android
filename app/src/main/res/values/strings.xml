@@ -29,11 +29,15 @@
     <!-- Strings for the spinner on maps -->
     <string-array name="maps_filter_spinner">
         <item>All</item>
-        <item>Day</item>
-        <item>Night</item>
-        <item>Sunny</item>
-        <item>Cloudy</item>
-        <item>Rainy</item>
-        <item>Snow</item>
+        <item>Out Doors</item>
+        <item>Scenic</item>
+        <item>Landscape</item>
+        <item>Winter</item>
+        <item>Spring</item>
+        <item>Mountains</item>
+        <item>Water</item>
+        <item>Forest</item>
+        <item>Summer</item>
+        <item>Autumn</item>
     </string-array>
 </resources>

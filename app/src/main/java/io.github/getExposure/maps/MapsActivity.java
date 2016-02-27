@@ -42,6 +42,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import io.github.getExposure.ExposureFragmentActivity;
 import io.github.getExposure.database.Category;
@@ -304,16 +305,32 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
                 snippet = e.getName() + "," + photoPath + "," +
                         e.getDesc() + "," + e.getCategories();
                 // test for how categories is stored
+                /*
                 for (Category c: e.getCategories()) {
                     System.out.println("categories content: " + c.getContent());
                 }
-                mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()).snippet(snippet));
+                */
+                if (currentFilter == getFilterFromCategories(e.getCategories())) {
+                // if it matches the current category, will always pass for now since categories needs development
+                    mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()).snippet(snippet));
+                }
             } else { // what to do if the location exists but no photos
                 // don't add a pin
                 //snippet = e.getName() + "," + "bleh" + "," + e.getDesc() + "," + e.getCategories();
             }
         }
         Toast.makeText(MapsActivity.this, "Pins placed on screen.", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Returns an int representing the categories that the input contains, to compare to the int
+     * that the current filter the spinner is set on
+     * @param input the Categories
+     * @return the int representing the categories it contains
+     */
+    //TODO: To be implemented correctly, need info about other modules
+    private int getFilterFromCategories(Set<Category> input) {
+        return 0;
     }
 
     /**
