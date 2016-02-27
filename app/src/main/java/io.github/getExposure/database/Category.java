@@ -106,6 +106,11 @@ public class Category {
     public Category(long categoryID) {
         this(NULL_ID, categoryID);
     }
+    
+    // Used only for JSON object conversion
+    public Category() {
+        this(NULL_ID, 2);
+    }
 
     /**
      * Returns the id matching the category type this category represents.
