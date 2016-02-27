@@ -35,15 +35,33 @@ Once you have Exposure’s source code, follow these instructions in Android Stu
 - Open Android Studio
 - Select “Open Existing Android Studio Project”
 - Select the unzipped `exposure-android` directory
+- Click "Ok" if it prompts to use a found .gradle file
 - Start the database web service. To do so...
 	- Open Terminal
 	- Navigate to “/exposure-android/web/”
 	- Run the “run” script
 		- `./run`
 - Replace your `debug.keystore` file located at `~/.android/debug.keystore` with Exposure's `debug.keystore` [here](https://drive.google.com/drive/u/0/folders/0B2oTf4T_FgbITHYtYnl0SmF0UEE)
+- Ensure "ADB Integration" is checked (Tools -> Android -> ADB Integration)
 - Once Gradle finishes building, click the green play button to run the app
 - Select the “Nexus 5 API 23” Android Virtual Device
 - Voila, Exposure should start up in the Android Emulator with a map view
+
+## Run
+
+The app functions are rather intuitive, but there are a few reminders for the Maps:
+
+- To activate GPS for the emulator:
+	- Launch the emulator standalone, or through the run process
+	- Open the terminal in Android Studio, next to the Android Monitor tab
+	- Type: "telnet localhost <emulator id>" where <emulator id> is 5554 by default
+		-If telnet is not recognized, you may need to turn the feature on.  For Windows users: [fix](http://stackoverflow.com/questions/25031090/telnet-is-not-recognized-as-internal-or-external-command)
+	- Type: "geo fix <longitude> <latitude>"
+	- (notice that it's longitude first, and backspace does not work correctly once connected to the emulator terminal)
+- The "Loc" button will center the map at your most recent location, if available
+- The "Apply Filter" button will load all pins that can be visible on the current orientation of the map
+- Loading the pictures and locations may take a minute to load, be patient (will be sped up for Release candidate)
+
 
 ### Design Patterns
 
