@@ -340,14 +340,14 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             }
             i++;
             String snippet;
-            if (tempPhotos.length > 1) {
+            if (tempPhotos.length > 0) {
                 System.out.println("# photos: " + tempPhotos.length);
-                System.out.println("path of photo to display:" + tempPhotos[1].getFile().getAbsolutePath());
+                System.out.println("path of photo to display:" + tempPhotos[0].getFile().getAbsolutePath());
                 // attach just the first photo
                 // "1" because targeting the nonexposure storage files
                 // and the husky picture
                 //String photoPath = "http://exposurestorage.blob.core.windows.net/exposurecontainer/59";
-                String photoPath = tempPhotos[1].getFile().getAbsolutePath();
+                String photoPath = tempPhotos[0].getFile().getAbsolutePath();
                 snippet = e.getName() + "," + photoPath + "," +
                         e.getDesc() + "," + e.getCategories();
                 // test for how categories is stored
