@@ -65,20 +65,6 @@ public class DataDriverTest2 extends FragmentActivity {
         StrictMode.setThreadPolicy(policy);
 
         System.out.println();
-        System.out.println("----------------- Initializing Test Objects -----------------");
-        System.out.println();
-
-        // DOWNLOAD AND INITIALIZE IMAGE OBJECT
-        System.out.print("Downloading Image Object... ");
-        File newPNG = man.downLoadImage();
-        if (!newPNG.exists()) {
-            System.out.println("\t\tError: Downloaded Image Does not Exist");
-            System.exit(1);
-        } else {
-            System.out.println("\t\tCOMPLETE");
-        }
-
-        System.out.println();
         System.out.println("----------------- Initializing User Objects -----------------");
         System.out.println();
 
