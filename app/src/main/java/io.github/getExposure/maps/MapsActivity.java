@@ -63,6 +63,7 @@ import io.github.getExposure.R;
  */
 
 //TODO: save state of activity, changing screen orientation/language can break it
+//TODO: make the loading photos/locations efficient in calling order
 public class MapsActivity extends ExposureFragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, ActivityCompat.OnRequestPermissionsResultCallback, LocationListener, OnMapReadyCallback {
     //Latitude/longitude of the Paul G Allen Center
@@ -71,13 +72,16 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     //Latitude/longitude of Drumheller fountain
     private final static double DRUMHELLER_LATITUDE = 47.653808;
     private final static double DRUMHELLER_LONGITUDE = -122.307832;
-    private static final int MAPS_LOCATION_REQUEST_CODE = 42;
-    public static final int SEARCH_RESULT_CODE = 39;
+
+    private static final int MAPS_LOCATION_REQUEST_CODE = 42; // unique request code to maps
+    public static final int SEARCH_RESULT_CODE = 39; // unique result code for the search functionality
+
+    // Fields for interval of location requests, in seconds
     private static final int LOCATION_REQUEST_INTERVAL = 10;
     private static final int LOCATION_REQUEST_INTERVAL_FASTEST = 5;
 
     private GoogleMap mMap;
-    private int currentFilter = 0; // Current filter to select which pins to display, to be implemented
+    private int currentFilter = 0; // Current filter to select which pins to display
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private LocationRequest mLocationRequest;
@@ -304,8 +308,9 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
                     System.out.println("categories content: " + c.getContent());
                 }
                 mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()).snippet(snippet));
-            } else { // what to do if the location exists but no photos, don't add a pin
-                snippet = e.getName() + "," + "bleh" + "," + e.getDesc() + "," + e.getCategories();
+            } else { // what to do if the location exists but no photos
+                // don't add a pin
+                //snippet = e.getName() + "," + "bleh" + "," + e.getDesc() + "," + e.getCategories();
             }
         }
         Toast.makeText(MapsActivity.this, "Pins placed on screen.", Toast.LENGTH_SHORT).show();
@@ -460,7 +465,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
          * @param result the locations within the origin and lat/long radius
          */
         protected void onPostExecute(ExposureLocation[] result) {
-            locToPhotos = new HashMap<ExposureLocation, ExposurePhoto[]>();
+            locToPhotos = new HashMap<>();
             for (ExposureLocation e: result) {
                 locToPhotos.put(e, null);
             }
