@@ -90,7 +90,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     private boolean mRequestingLocationUpdates;
     private AddressResultReceiver mResultReceiver;
     private DatabaseManager db;
-    private Map<ExposureLocation, ExposurePhoto[]> locToPhotos;
+    protected Map<ExposureLocation, ExposurePhoto[]> locToPhotos;
 
     /**
      * Method called when MapsActivity is active
@@ -279,7 +279,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * each location, with 1 photo per location.
      * TODO: multiple photos per location
      */
-    private void actuallyPlacePins() {
+    protected void actuallyPlacePins() {
         if (locToPhotos == null) {
             throw new IllegalStateException("locToPhotos cannot be null, don't call this method directly");
         }
