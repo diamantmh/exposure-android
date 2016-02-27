@@ -2,6 +2,7 @@ package io.github.getExposure.post;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,11 +10,11 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -37,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 
 import io.github.getExposure.R;
 import io.github.getExposure.database.Category;
@@ -57,6 +59,7 @@ public class PostActivity extends AppCompatActivity {
     static final int REQUEST_GALLERY_PHOTO = 3;
     static final int REQUEST_IMAGE_CAPTURE = 2;
     static final int GET_CATEGORIES = 1;
+    private DatabaseManager m;
     private String mCurrentPhotoPath;
     private LocationManager lm;
     private double lat;
@@ -85,6 +88,8 @@ public class PostActivity extends AppCompatActivity {
             logMessage.setVisibility(View.VISIBLE);
             return;
         }
+
+        m = new DatabaseManager(getApplicationContext());
 
         name.setVisibility(View.VISIBLE);
         latitude.setVisibility(View.VISIBLE);
@@ -149,77 +154,71 @@ public class PostActivity extends AppCompatActivity {
     }
 
     public void post() {
-        Intent postViewIntent = new Intent(getApplicationContext(), LocationView.class);
-        boolean flag = false;
-
         if(mCurrentPhotoPath == null) {
             Toast toast = Toast.makeText(getApplicationContext(), "please upload or take a photo!", Toast.LENGTH_SHORT);
             toast.show();
-            flag = true;
-        } else {
-            postViewIntent.putExtra("photo", mCurrentPhotoPath);
+            return;
         }
 
-        if(name.getText().toString().equals("") && !flag) {
+        if(name.getText().toString().equals("")) {
             Toast toast = Toast.makeText(getApplicationContext(), "name your location first!", Toast.LENGTH_SHORT);
             toast.show();
-            flag = true;
-        } else {
-            postViewIntent.putExtra("name", name.getText().toString());
+            return;
         }
 
-        if(latitude.getText().toString().equals("") && !flag) {
+        if(latitude.getText().toString().equals("")) {
             Toast toast = Toast.makeText(getApplicationContext(), "need latitude first!", Toast.LENGTH_SHORT);
             toast.show();
-            flag = true;
-        } else {
-            postViewIntent.putExtra("latitude", latitude.getText().toString());
+            return;
         }
 
-        if(longitude.getText().toString().equals("") && !flag) {
+        if(longitude.getText().toString().equals("")) {
             Toast toast = Toast.makeText(getApplicationContext(), "need longitude first!", Toast.LENGTH_SHORT);
             toast.show();
-            flag = true;
-        } else {
-            postViewIntent.putExtra("longitude", longitude.getText().toString());
+            return;
         }
 
-        if(description.getText().toString().equals("") && !flag) {
+        if(description.getText().toString().equals("")) {
             Toast toast = Toast.makeText(getApplicationContext(), "you need to enter a description first!", Toast.LENGTH_SHORT);
             toast.show();
-            flag = true;
-        } else {
-            postViewIntent.putExtra("description", description.getText().toString());
+            return;
         }
 
-        if(categories.getText().toString().equals("Categories") && !flag) {
+        if(categories.getText().toString().equals("Categories")) {
             Toast toast = Toast.makeText(getApplicationContext(), "please add some categories!", Toast.LENGTH_SHORT);
             toast.show();
-            flag = true;
-        } else {
-            postViewIntent.putExtra("categories", categories.getText().toString());
+            return;
         }
-
-
-        if(!flag) {
-            /*
-            Profile thing = Profile.getCurrentProfile();
-            final Long id = Long.parseLong(thing.getId());
-
-            final ExposurePhoto p = new ExposurePhoto(long authorID, long locID, mCurrentPath, Date date, Time time, File file);
-            */
-            final ExposureLocation loc = new ExposureLocation(Float.parseFloat(latitude.getText().toString()),
-                    Float.parseFloat(longitude.getText().toString()), 0, 0, name.getText().toString(),
-                    description.getText().toString(), new HashSet<Category>(), new ArrayList<Comment>());
-            final DatabaseManager m = new DatabaseManager(getApplicationContext());
-            new Thread(new Runnable() {
-                public void run() {
-                    //long result = m.insert(loc);
-                    //Log.d("BUENO", "" + result);
-                }
-            }).start();
-        startActivity(postViewIntent);
+        String[] cat = categories.getText().toString().split(", ");
+        Set<Category> cats = new HashSet<Category>();
+        for(String s : cat) {
+            cats.add(new Category(s));
         }
+        ExposureLocation loc = new ExposureLocation(Float.parseFloat(latitude.getText().toString()),
+                Float.parseFloat(longitude.getText().toString()), 0, 0, name.getText().toString(),
+                description.getText().toString(), cats, new ArrayList<Comment>());
+        new post().execute(loc);
+    }
+
+    public void go(final long id) {
+        Profile thing = Profile.getCurrentProfile();
+        final Long userID = Long.parseLong(thing.getId());
+        new Thread(new Runnable() {
+            public void run() {
+                ExposurePhoto p = new ExposurePhoto(userID, id, mCurrentPhotoPath, new Date(), new Time(0), new File(mCurrentPhotoPath));
+                long result = m.insert(p);
+                Log.d("BUENOs", "" + result);
+            }
+        }).start();
+        Intent locationView = new Intent(getApplicationContext(), LocationView.class);
+        locationView.putExtra("photo", mCurrentPhotoPath);
+        locationView.putExtra("name", name.getText().toString());
+        locationView.putExtra("latitude", latitude.getText().toString());
+        locationView.putExtra("longitude", longitude.getText().toString());
+        locationView.putExtra("description", description.getText().toString());
+        locationView.putExtra("categories", categories.getText().toString());
+        locationView.putExtra("locationID", id);
+        startActivity(locationView);
     }
 
     private void selectImage() {
@@ -239,7 +238,6 @@ public class PostActivity extends AppCompatActivity {
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
-
                         // Continue only if the File was successfully created
                         if (photoFile != null) {
                             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
@@ -298,7 +296,6 @@ public class PostActivity extends AppCompatActivity {
             Bitmap myBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
             photo.setImageBitmap(myBitmap);
             galleryAddPic();
-
             if(lat != 0.0) {
                 latitude.setText("" + lat);
                 longitude.setText("" + log);
@@ -306,7 +303,6 @@ public class PostActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(getApplicationContext(), "can't get current location", Toast.LENGTH_SHORT);
                 toast.show();
             }
-
         } else if (requestCode == REQUEST_GALLERY_PHOTO && resultCode == RESULT_OK) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
@@ -318,6 +314,36 @@ public class PostActivity extends AppCompatActivity {
             cursor.close();
             Bitmap imageBitmap = BitmapFactory.decodeFile(picturePath);
             photo.setImageBitmap(imageBitmap);
+        }
+    }
+
+    private class post extends AsyncTask<ExposureLocation, Void, Long> {
+        private ProgressDialog prog;
+
+        public post() {
+            prog = new ProgressDialog(PostActivity.this);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            prog.setMessage("Posting...");
+            prog.setIndeterminate(false);
+            prog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            prog.setCancelable(true);
+            prog.show();
+        }
+
+        @Override
+        protected Long doInBackground(ExposureLocation... loc) {
+            Log.d("HUNNY", "here");
+            return m.insert(loc[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Long result) {
+            prog.dismiss();
+            go(result);
         }
     }
 }

@@ -5,6 +5,24 @@
     android:orientation="vertical"
     tools:context="exposure.getExposure.ListActivity">
 
+    <EditText android:id="@+id/search_exposure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/search"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/button2"
+        android:layout_above="@+id/map" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_search"
+        android:onClick="search"
+        android:id="@+id/button2"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
     <!-- 3 buttons at the bottom -->
     <LinearLayout
         android:id="@+id/viewSwitchers"
@@ -41,4 +59,5 @@
             android:layout_weight="1"
             android:id="@+id/button5" />
     </LinearLayout>
+
 </RelativeLayout>
