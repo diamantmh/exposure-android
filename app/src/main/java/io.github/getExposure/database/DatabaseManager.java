@@ -831,7 +831,7 @@ public class DatabaseManager {
             try {
                 URL url = new URL(imageURL); //you can write here any link
 
-                String name = "tempImage" + file_name;
+                String name = "tempImage" + file_name + ".jpg";
                 file = new File(context.getCacheDir(), name);
 
                 System.out.println();
