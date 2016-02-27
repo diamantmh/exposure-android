@@ -43,6 +43,7 @@ Once you have Exposure’s source code, follow these instructions in Android Stu
 		- `./run`
 - Replace your `debug.keystore` file located at `~/.android/debug.keystore` with Exposure's `debug.keystore` [here](https://drive.google.com/drive/u/0/folders/0B2oTf4T_FgbITHYtYnl0SmF0UEE)
 - Ensure "ADB Integration" is checked (Tools -> Android -> ADB Integration)
+	- Occasionally Android Studio will not recognize the launched emulator to launch the app on.  If that happens, simply run again and select the currently running emulator.
 - Once Gradle finishes building, click the green play button to run the app
 - Select the “Nexus 5 API 23” Android Virtual Device
 - Voila, Exposure should start up in the Android Emulator with a map view
