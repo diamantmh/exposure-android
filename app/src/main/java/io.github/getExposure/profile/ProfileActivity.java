@@ -44,6 +44,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView profilename;
     private TextView picsAdded;
     private TextView count;
+    private TextView loading;
     private ExposurePhoto[] photos;
 
     private CallbackManager mCallbackManager;
@@ -212,14 +213,9 @@ public class ProfileActivity extends AppCompatActivity {
         picsAdded = (TextView) findViewById(R.id.picsAdded);
         count = (TextView) findViewById(R.id.picCount);
 
-        if (!isLoggedIn) {
-            picsAdded.setVisibility(View.INVISIBLE);
-            count.setVisibility(View.INVISIBLE);
-        } else {
+        if (isLoggedIn) {
             long id = Long.parseLong(profile.getId());
             new GetPicturesTask().execute(id);
-            picsAdded.setVisibility(View.VISIBLE);
-            count.setVisibility(View.VISIBLE);
         }
     }
 
@@ -232,14 +228,20 @@ public class ProfileActivity extends AppCompatActivity {
     private class GetPicturesTask extends AsyncTask<Long, Void, Integer> {
         @Override
         protected Integer doInBackground(Long... ids) {
-            // photos = db.getUserPhotos(ids[0]);
             photos = db.getUserPhotos(ids[0]);
+            // photos = db.getUserPhotos(3859745);
             return photos.length;
         }
 
         protected void onPostExecute(Integer result) {
             picsAdded = (TextView) findViewById(R.id.picsAdded);
+            picsAdded.setVisibility(View.VISIBLE);
+
+            loading = (TextView) findViewById(R.id.loadingText);
+            loading.setVisibility(View.INVISIBLE);
+
             count = (TextView) findViewById(R.id.picCount);
+            count.setVisibility(View.VISIBLE);
             String text = "" + result;
             count.setText(text);
 
