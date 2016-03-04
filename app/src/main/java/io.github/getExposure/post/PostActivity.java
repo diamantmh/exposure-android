@@ -314,6 +314,13 @@ public class PostActivity extends AppCompatActivity {
             cursor.close();
             Bitmap imageBitmap = BitmapFactory.decodeFile(picturePath);
             photo.setImageBitmap(imageBitmap);
+            if(lat != 0.0) {
+                latitude.setText("" + lat);
+                longitude.setText("" + log);
+            } else {
+                Toast toast = Toast.makeText(getApplicationContext(), "can't get current location", Toast.LENGTH_SHORT);
+                toast.show();
+            }
         }
     }
 
