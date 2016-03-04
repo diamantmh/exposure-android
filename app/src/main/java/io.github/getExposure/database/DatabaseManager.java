@@ -448,7 +448,7 @@ public class DatabaseManager {
      * @return true if the user has rated this location before, and false otherwise
      */
     public boolean userHasRatedLocation(long uid, long lid) {
-        final String url = WEB_SERVICE + "userHasRatedLocation?lid=" + lid + "&uid" + uid;
+        final String url = WEB_SERVICE + "userHasRatedLocation?lid=" + lid + "&uid=" + uid;
         return restTemplate.getForObject(url, Boolean.class);
     }
 
