@@ -14,7 +14,7 @@ public class Comment {
     private final long id;
     private final long authorID;
     private final long locID;
-    private final String userName;
+    private final String username;
     private final String content;
     private final Date date;
     private final Time time;
@@ -42,16 +42,16 @@ public class Comment {
      * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
      * @param locID unique identifier of location where photo was taken,
      *              supplied by DatabaseManager
-     * @param userName the userName of the user who authored this comment
+     * @param username the username of the user who authored this comment
      * @param content the body of the message posted to the location
      * @param date the date this comment was posted
      * @param time the time this comment was posted
      */
-    public Comment(long id, long authorID, long locID, String userName, String content, Date date, Time time) {
+    public Comment(long id, long authorID, long locID, String username, String content, Date date, Time time) {
         this.id = id;
         this.authorID = authorID;
         this.locID = locID;
-        this.userName = (userName==null) ? "" : userName;
+        this.username = (username==null) ? "" : username;
         this.content = (content==null) ? "" : content;
         this.date = new Date(date.getTime());
         this.time = new Time(time.getTime());
@@ -68,20 +68,20 @@ public class Comment {
      * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
      * @param locID unique identifier of location where photo was taken,
      *              supplied by DatabaseManager
-     * @param userName the userName of the user who authored this comment
+     * @param username the username of the user who authored this comment
      * @param content the body of the message posted to the location
      * @param date the date this comment was posted
      * @param time the time this comment was posted
      */
-    public Comment (long authorID, long locID, String userName, String content, Date date, Time time) {
-        this(NULL_ID, authorID, locID, userName, content, date, time);
+    public Comment (long authorID, long locID, String username, String content, Date date, Time time) {
+        this(NULL_ID, authorID, locID, username, content, date, time);
     }
 
     public Comment () {
         id = NULL_ID;
         authorID = NULL_ID;
         locID = NULL_ID;
-        userName = "";
+        username = "";
         content = "";
         date = new Date(0);
         time = new Time(0);
@@ -124,12 +124,12 @@ public class Comment {
     }
 
     /**
-     * Returns the userName of the author of this comment
+     * Returns the username of the author of this comment
      *
-     * @return the userName of the author of this comment
+     * @return the username of the author of this comment
      */
     public String getUsername() {
-        return userName;
+        return username;
     }
 
     /**
@@ -169,7 +169,7 @@ public class Comment {
      * @return a Comment with the given id
      */
     public Comment addID(long id) {
-        return new Comment(id,authorID,locID,userName,content,
+        return new Comment(id,authorID,locID,username,content,
                 new Date(date.getTime()),new Time(time.getTime()));
     }
 }
