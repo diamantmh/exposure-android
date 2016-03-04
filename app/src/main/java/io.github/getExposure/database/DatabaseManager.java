@@ -427,7 +427,7 @@ public class DatabaseManager {
      * Checks to see if the user already rated a location before or not
      * @param uid The user id to of the user that wants to add a rating
      * @param lid The location id the user wants to add a rating to
-     * @return true if the user has not rated this location before, and false otherwise
+     * @return true if the user has rated this location before, and false otherwise
      */
     public boolean userHasRatedLocation(long uid, long lid) {
         final String url = WEB_SERVICE + "userHasRatedLocation?uid=" + uid + "?lid" + lid;
