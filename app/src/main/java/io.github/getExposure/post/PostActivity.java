@@ -343,7 +343,6 @@ public class PostActivity extends AppCompatActivity {
 
         @Override
         protected Long doInBackground(ExposureLocation... loc) {
-            Log.d("HUNNY", "here");
             return m.insert(loc[0]);
         }
 
