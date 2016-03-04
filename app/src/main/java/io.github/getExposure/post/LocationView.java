@@ -142,13 +142,10 @@ public class LocationView extends AppCompatActivity {
 
         commentArea = (LinearLayout) findViewById(R.id.comments);
         String rawComments = extras.getString("comments");
-        if(rawComments == null) {
-
-        } else {
+        if(rawComments != null) {
             for(String s : rawComments.split(";")) {
                 if(s.length() > 0) {
                     String[] data = s.split(",");
-                    Log.d("BEED", s);
                     addComment(data[2], data[0], data[1]);
                 }
             }
