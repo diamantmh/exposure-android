@@ -396,7 +396,7 @@ public class DatabaseManager {
     private void registerCategoriesAndCommentsInLocation(ExposureLocation loc) {
         // register any unregistered categories in loc
         for (Category cat : loc.getCategories()) {
-            if (cat.getId() == Category.NULL_ID) { // if unregistered
+            if (cat.getLocID() == Category.NULL_ID) { // if unregistered
                 Category registeredCat = new Category(loc.getID(),cat.getId());
                 insert(registeredCat);
             }
