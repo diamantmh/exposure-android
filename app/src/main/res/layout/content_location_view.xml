@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,76 +12,85 @@
     tools:context="io.github.getExposure.LocationViewActivity"
     tools:showIn="@layout/activity_location_view">
 
-
-    <ImageView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:id="@+id/photo"
-        android:src="@mipmap/take_photo_clipart"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_height="wrap_content">
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ratingBar"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Name"
-        android:textSize="15pt"
-        android:id="@+id/name"
-        android:layout_below="@+id/photo"
-        android:layout_centerHorizontal="true" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:id="@+id/photo"
+            android:src="@mipmap/take_photo_clipart"
+            android:layout_below="@id/ratingBar"
+            android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Description.."
-        android:id="@+id/description"
-        android:textSize="12pt"
-        android:layout_below="@+id/name"
-        android:layout_centerHorizontal="true" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:textSize="15pt"
+            android:id="@+id/name"
+            android:layout_below="@+id/photo"
+            android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="categories"
-        android:id="@+id/categories"
-        android:textSize="10pt"
-        android:layout_below="@+id/description"
-        android:layout_centerHorizontal="true" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description.."
+            android:id="@+id/description"
+            android:textSize="12pt"
+            android:layout_below="@+id/name"
+            android:layout_centerHorizontal="true" />
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:id="@+id/comments"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/categories"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true">
-    </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="categories"
+            android:id="@+id/categories"
+            android:textSize="10pt"
+            android:layout_below="@+id/description"
+            android:layout_centerHorizontal="true" />
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/comments"
-        android:id="@+id/new_comment"
-        android:hint="add a comment..."
-        android:layout_toStartOf="@+id/post_comment"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:id="@+id/comments"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/categories"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true">
+        </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Post!"
-        android:id="@+id/post_comment"
-        android:layout_below="@+id/comments"
-        android:layout_alignParentRight="true"
-        android:padding="1dp"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/comments"
+            android:id="@+id/new_comment"
+            android:hint="add a comment..."
+            android:layout_toStartOf="@+id/post_comment"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Done"
-        android:id="@+id/done"
-        android:layout_below="@+id/new_comment"
-        android:layout_centerHorizontal="true" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Post!"
+            android:id="@+id/post_comment"
+            android:layout_below="@+id/comments"
+            android:layout_alignParentRight="true"
+            android:padding="1dp"/>
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Done"
+            android:id="@+id/done"
+            android:layout_below="@+id/new_comment"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
 
-</RelativeLayout>
+</ScrollView>

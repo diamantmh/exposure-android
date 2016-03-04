@@ -424,6 +424,28 @@ public class DatabaseManager {
     }
 
     /**
+     * Checks to see if the user already rated a location before or not
+     * @param uid The user id to of the user that wants to add a rating
+     * @param lid The location id the user wants to add a rating to
+     * @return true if the user has rated this location before, and false otherwise
+     */
+    public boolean userHasRatedLocation(long uid, long lid) {
+        final String url = WEB_SERVICE + "userHasRatedLocation?uid=" + uid + "?lid" + lid;
+        return restTemplate.getForObject(url, Boolean.class);
+    }
+
+    /**
+     * Remembers who rated a location
+     * @param uid User ID of user that rated the location
+     * @param lid Location id of the location the user rated
+     */
+    public boolean insertUserRating(long uid, long lid) {
+        final String url = WEB_SERVICE + "userHasRatedLocation?uid=" + uid + "?lid" + lid;
+        //return restTemplate.getForObject(url, uid, lid, Boolean.class);
+        return true;
+    }
+
+    /**
      * WebLocation is an immutable representation of a location on the map. This
      * class can be used for sending data to the web service and is only be used
      * internally by Databasemanager.
