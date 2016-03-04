@@ -14,7 +14,7 @@ public class Comment {
     private final long id;
     private final long authorID;
     private final long locID;
-    private final String username;
+    private final String userName;
     private final String content;
     private final Date date;
     private final Time time;
@@ -51,7 +51,7 @@ public class Comment {
         this.id = id;
         this.authorID = authorID;
         this.locID = locID;
-        this.username = (username==null) ? "" : username;
+        this.userName = (username==null) ? "" : username;
         this.content = (content==null) ? "" : content;
         this.date = new Date(date.getTime());
         this.time = new Time(time.getTime());
@@ -81,7 +81,7 @@ public class Comment {
         id = NULL_ID;
         authorID = NULL_ID;
         locID = NULL_ID;
-        username = "";
+        userName = "";
         content = "";
         date = new Date(0);
         time = new Time(0);
@@ -129,7 +129,7 @@ public class Comment {
      * @return the username of the author of this comment
      */
     public String getUsername() {
-        return username;
+        return userName;
     }
 
     /**
@@ -169,7 +169,7 @@ public class Comment {
      * @return a Comment with the given id
      */
     public Comment addID(long id) {
-        return new Comment(id,authorID,locID,username,content,
+        return new Comment(id,authorID,locID,userName,content,
                 new Date(date.getTime()),new Time(time.getTime()));
     }
 }
