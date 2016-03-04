@@ -1,13 +1,18 @@
 package io.github.getExposure.post;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,11 +30,13 @@ import android.widget.ViewSwitcher;
 import com.facebook.Profile;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import io.github.getExposure.R;
@@ -50,10 +57,12 @@ public class LocationView extends AppCompatActivity {
     private EditText newComment;
     private Button postComment;
     private Button done;
+    private Button addPhoto;
     private long locationID;
     private long userID;
     private int total_rating;
     private int num_rating;
+    private String newPhotoPath;
 
     private ExposurePhoto[] photos;
     private int picCount;
@@ -134,7 +143,7 @@ public class LocationView extends AppCompatActivity {
         } else {
             for(String s : rawComments.split(";")) {
                 String[] data = s.split(",");
-                Log.d("GGGGe", s);
+                Log.d("BEED", s);
                 addComment(data[2], data[0], data[1]);
             }
         }
@@ -156,7 +165,77 @@ public class LocationView extends AppCompatActivity {
             }
         });
 
+        addPhoto = (Button) findViewById(R.id.add);
+        addPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent back = new Intent(getApplicationContext(), MapsActivity.class);
+                startActivity(back);
+            }
+        });
+
         new GetPicturesTask().execute(locationID);
+    }
+
+    private void selectImage() {
+        final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(LocationView.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Take Photo")) {
+                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                        File photoFile = null;
+                        try {
+                            photoFile = createImageFile();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        // Continue only if the File was successfully created
+                        if (photoFile != null) {
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                                    Uri.fromFile(photoFile));
+                            startActivityForResult(takePictureIntent, 1);
+                        }
+                    }
+                }
+                else if (options[item].equals("Choose from Gallery")) {
+                    Intent intent = new   Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_PICK);
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), 2);
+                }
+                else if (options[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        newPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(newPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
     }
 
     /**
@@ -219,13 +298,13 @@ public class LocationView extends AppCompatActivity {
         final DatabaseManager m = new DatabaseManager(getApplicationContext());
         new Thread(new Runnable() {
             public void run() {
-                // TODO: Fill in username for comment c
-                Comment c = new Comment(userID, locationID, "TEMPORARY USERNAME UNTIL MICHAEL D FIXES THIS",newComment.getText().toString(), new Date(), new Time(0));
+                Comment c = new Comment(userID, locationID, Profile.getCurrentProfile().getName(), newComment.getText().toString(), new Date(), new Time(0));
                 long result = m.insert(c);
                 Log.d("BUENOs", "" + result);
             }
         }).start();
-        addComment(newComment.getText().toString(), Profile.getCurrentProfile().getName(), new Date().toString());
+        String date = new SimpleDateFormat("MM-dd-yyyy").format(new Date());
+        addComment(newComment.getText().toString(), Profile.getCurrentProfile().getName(), date);
         newComment.setText("");
     }
 

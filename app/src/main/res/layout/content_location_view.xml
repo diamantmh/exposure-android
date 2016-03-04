@@ -91,6 +91,16 @@
             android:id="@+id/done"
             android:layout_below="@+id/new_comment"
             android:layout_centerHorizontal="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Photo"
+            android:layout_alignBottom="@id/done"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/add" />
+
+
     </RelativeLayout>
 
 </ScrollView>
