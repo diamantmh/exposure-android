@@ -1,5 +1,6 @@
 package io.github.getExposure.database;
 
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Date;
 
@@ -8,7 +9,7 @@ import java.util.Date;
  *
  * specfield id : long  // uniquely identifies this Category for database interactions
  */
-public class Comment {
+public class Comment implements Serializable {
 
     private final long id;
     private final long authorID;
