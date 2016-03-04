@@ -119,6 +119,24 @@ public class DatabaseManager {
     }
 
     /**
+     * Returns true if and only if the specified location matching locID is
+     * updated with the given rating by the user matching the given userID.
+     *
+     * @param locID the unique identifier of the location to add the rating to
+     * @param userID the unique identifier of the user that made this rating
+     * @param totalRating the new total rating for this location
+     * @param totalNumberRatings the new total number of reviews this location
+     *                           has recieved.
+     * @return Returns true iff the specified location matching locID is
+     * updated with the given rating by the user matching the given userID.
+     */
+    public boolean updateRating(long locID, long userID, int totalRating, int totalNumberRatings) {
+        final String url = WEB_SERVICE + "getLocation?lid=" + locID + "&uid=" + userID
+                + "&totalRating=" + totalRating + "&totalNumberRatings=" + totalNumberRatings;
+        return restTemplate.getForObject(url, Boolean.class);
+    }
+
+    /**
      * Returns the ID of the new entry in the database. Makes a new entry in the
      * database for the given ExposureLocation. Returns -1 if the entry was not
      * created.
@@ -410,7 +428,6 @@ public class DatabaseManager {
         if (photos == null) {
             return null;
         }
-        //abcd
         // download each location photo
         ExposurePhoto[] downloadedPhotos = new ExposurePhoto[photos.length];
         for (int i = 0; i < photos.length; i++) {
@@ -425,22 +442,24 @@ public class DatabaseManager {
 
     /**
      * Checks to see if the user already rated a location before or not
+     *
      * @param uid The user id to of the user that wants to add a rating
      * @param lid The location id the user wants to add a rating to
      * @return true if the user has rated this location before, and false otherwise
      */
     public boolean userHasRatedLocation(long uid, long lid) {
-        final String url = WEB_SERVICE + "userHasRatedLocation?uid=" + uid + "?lid" + lid;
+        final String url = WEB_SERVICE + "userHasRatedLocation?uid=" + uid + "&lid" + lid;
         return restTemplate.getForObject(url, Boolean.class);
     }
 
     /**
      * Remembers who rated a location
+     *
      * @param uid User ID of user that rated the location
-     * @param lid Location id of the location the user rated
+     * @param lid Location ID of the location the user rated
      */
     public boolean insertUserRating(long uid, long lid) {
-        final String url = WEB_SERVICE + "userHasRatedLocation?uid=" + uid + "?lid" + lid;
+        final String url = WEB_SERVICE + "userHasRatedLocation?uid=" + uid + "&lid" + lid;
         //return restTemplate.getForObject(url, uid, lid, Boolean.class);
         return true;
     }
