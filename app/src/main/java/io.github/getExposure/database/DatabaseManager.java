@@ -5,23 +5,13 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 
 // Image Downloader Imports
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileInputStream;
-import java.io.PrintStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.io.ByteArrayOutputStream;
 import java.sql.Time;
 import java.util.Date;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import android.content.Context;
-import android.util.Log;
-import android.os.Environment;
 import android.util.Base64;
 
 /**
@@ -43,7 +33,6 @@ public class DatabaseManager {
     //protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
     //protected static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
 
-    protected Context CONTEXT;
     protected static final String DEFAULT_URL = "https://exposurestorage.blob.core.windows.net/exposurecontainer/10";
 
     private static final long NULL_ID = -1;
@@ -56,8 +45,8 @@ public class DatabaseManager {
     /**
      * Constructs a DatabaseManager with the given context con.
      */
-    public DatabaseManager(Context con) {
-        this(new RestTemplate(), con);
+    public DatabaseManager() {
+        this(new RestTemplate());
     }
 
     /**
@@ -67,10 +56,9 @@ public class DatabaseManager {
      * or it can be used for testing purposes (providing a mocked
      * RestTemplate)
      */
-    public DatabaseManager(RestTemplate rt, Context con) {
+    public DatabaseManager(RestTemplate rt) {
         restTemplate = rt;
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        CONTEXT = con;
     }
 
     /**
@@ -302,7 +290,7 @@ public class DatabaseManager {
      */
     public ExposurePhoto[] getUserPhotos(long id) {
         final String url = WEB_SERVICE + "getUserPhotos?id=" + id;
-        return downloadPhotos(restTemplate.getForObject(url, ExposurePhoto[].class));
+        return restTemplate.getForObject(url, ExposurePhoto[].class);
     }
 
     /**
@@ -318,7 +306,7 @@ public class DatabaseManager {
      */
     public ExposurePhoto[] getLocationPhotos(long id) {
         final String url = WEB_SERVICE + "getLocationPhotos?id=" + id;
-        return downloadPhotos(restTemplate.getForObject(url, ExposurePhoto[].class));
+        return restTemplate.getForObject(url, ExposurePhoto[].class);
     }
 
     /**
@@ -363,28 +351,15 @@ public class DatabaseManager {
     }
 
     /**
-     * Returns a downloaded image File from using a random url
-     * @return File containing an image
+     * Checks to see if the user already rated a location before or not
+     *
+     * @param uid The user id to of the user that wants to add a rating
+     * @param lid The location id the user wants to add a rating to
+     * @return true if the user has rated this location before, and false otherwise
      */
-    protected File downLoadImage() {
-        return ImageManager.DownloadFromUrl(DEFAULT_URL, "", CONTEXT);
-    }
-
-    /**
-     * Returns a downloaded image File from using a random url
-     * @param url The specified image we want to download
-     * @return File containing an image
-     */
-    protected File downLoadImage(String url) {
-        return ImageManager.DownloadFromUrl(url, "", CONTEXT);
-    }
-
-    /**
-     * Returns a downloaded image File from using a random url
-     * @return File containing an image
-     */
-    protected File downLoadImage(String url, String file_name) {
-        return ImageManager.DownloadFromUrl(DEFAULT_URL, file_name, CONTEXT);
+    public boolean userHasRatedLocation(long uid, long lid) {
+        final String url = WEB_SERVICE + "userHasRatedLocation?lid=" + lid + "&uid=" + uid;
+        return restTemplate.getForObject(url, Boolean.class);
     }
 
     /**
@@ -411,45 +386,6 @@ public class DatabaseManager {
                 insert(com);
             }
         }
-    }
-
-    /**
-     * Returns an array of downloaded photos specified by the given photo
-     * array. Returns null if photo is null.
-     * Downloads all the photos in the given array from the source urls in
-     * each ExposurePhoto in photos.
-     *
-     * @param photos array of photos to be downloaded
-     * @return an array of downloaded photos or null if there are no photos
-     * to download.
-     */
-    private ExposurePhoto[] downloadPhotos(ExposurePhoto[] photos) {
-        // if no results return null
-        if (photos == null) {
-            return null;
-        }
-        // download each location photo
-        ExposurePhoto[] downloadedPhotos = new ExposurePhoto[photos.length];
-        for (int i = 0; i < photos.length; i++) {
-            ExposurePhoto photo = photos[i];
-            File imgFile = ImageManager.DownloadFromUrl(photo.getSource(), String.valueOf(photos[i].getID()), CONTEXT);
-            downloadedPhotos[i] = new ExposurePhoto(photo.getID(),photo.getAuthorID(),photo.getLocID(),
-                    photo.getSource(),photo.getDate(),photo.getTime(),imgFile);
-        }
-
-        return downloadedPhotos;
-    }
-
-    /**
-     * Checks to see if the user already rated a location before or not
-     *
-     * @param uid The user id to of the user that wants to add a rating
-     * @param lid The location id the user wants to add a rating to
-     * @return true if the user has rated this location before, and false otherwise
-     */
-    public boolean userHasRatedLocation(long uid, long lid) {
-        final String url = WEB_SERVICE + "userHasRatedLocation?lid=" + lid + "&uid=" + uid;
-        return restTemplate.getForObject(url, Boolean.class);
     }
 
     /**
@@ -820,99 +756,5 @@ public class DatabaseManager {
             return file;
         }
 
-    }
-
-
-    /**
-     * ImageManager is a utility that handles downloading images.
-     */
-    private static class ImageManager {
-
-        public static File DownloadFromUrl(String imageURL, Context context) {
-            return DownloadFromUrl(imageURL, "", context);
-        }
-
-        public static File DownloadFromUrl(String imageURL, String file_name, Context context) {  //this is the downloader method
-            File file = null;
-            File dir;
-
-            boolean mExternalStorageAvailable = false;
-            boolean mExternalStorageWriteable = false;
-            String state = Environment.getExternalStorageState();
-
-            if (Environment.MEDIA_MOUNTED.equals(state)) {
-                // We can read and write the media
-                mExternalStorageAvailable = mExternalStorageWriteable = true;
-            } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-                // We can only read the media
-                mExternalStorageAvailable = true;
-                mExternalStorageWriteable = false;
-                System.out.println("We can only read");
-                System.exit(1);
-            } else {
-                // Something else is wrong. It may be one of many other states, but all we need
-                //  to know is we can neither read nor write
-                System.out.println("HOLY SHIT HUSTON WE FOUND THE PROBLEM");
-                System.exit(1);
-            }
-            System.out.println();
-
-            try {
-                URL url = new URL(imageURL); //you can write here any link
-
-                String name = "tempImage" + file_name + ".jpg";
-                file = new File(context.getCacheDir(), name);
-
-                System.out.println();
-
-                if (!file.createNewFile() && !file.exists()) {
-                    System.out.println("\nERROR WHEN CREATING FILE\n");
-                    System.exit(1);
-                }
-
-                long startTime = System.currentTimeMillis();
-                /*
-                Log.d("ImageManager", "download begining");
-                Log.d("ImageManager", "download url:" + url);
-                //Log.d("ImageManager", "downloaded file name:" + fileName);
-                        Open a connection to that URL.
-                */
-                URLConnection ucon = url.openConnection();
-
-                        /*
-                         * Define InputStreams to read from the URLConnection.
-                         */
-                InputStream is = ucon.getInputStream();
-                BufferedInputStream bis = new BufferedInputStream(is);
-
-                        /*
-                         * Read bytes to the Buffer until there is nothing more to read(-1).
-                         */
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-                //We create an array of bytes
-                byte[] data = new byte[50];
-                int current = 0;
-
-                while((current = bis.read(data,0,data.length)) != -1){
-                    buffer.write(data, 0, current);
-                }
-                //System.out.println("Create File OutputStream");
-                        /* Convert the Bytes read to a String. */
-                FileOutputStream fos = new FileOutputStream(file);
-                //System.out.println("Write to Buffer");
-                fos.write(buffer.toByteArray());
-                fos.close();
-                //Log.d("ImageManager", "download ready in "
-                //        + ((System.currentTimeMillis() - startTime) / 1000)
-                //        + " sec");
-
-            } catch (Exception e) {
-                Log.d("ImageManager", "Error: " + e);
-            }
-
-            return file;
-
-        }
     }
 }
