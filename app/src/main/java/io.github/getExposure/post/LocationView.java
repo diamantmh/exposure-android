@@ -188,6 +188,7 @@ public class LocationView extends AppCompatActivity {
         final DatabaseManager m = new DatabaseManager(getApplicationContext());
         new Thread(new Runnable() {
             public void run() {
+                // TODO: Fill in username for comment c
                 Comment c = new Comment(userID, locationID, newComment.getText().toString(), new Date(), new Time(0));
                 long result = m.insert(c);
                 Log.d("BUENOs", "" + result);
