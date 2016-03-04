@@ -131,7 +131,7 @@ public class DatabaseManager {
      * updated with the given rating by the user matching the given userID.
      */
     public boolean updateRating(long locID, long userID, int totalRating, int totalNumberRatings) {
-        final String url = WEB_SERVICE + "getLocation?lid=" + locID + "&uid=" + userID
+        final String url = WEB_SERVICE + "updateRating?lid=" + locID + "&uid=" + userID
                 + "&totalRating=" + totalRating + "&totalNumberRatings=" + totalNumberRatings;
         return restTemplate.getForObject(url, Boolean.class);
     }
