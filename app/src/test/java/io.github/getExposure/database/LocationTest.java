@@ -12,7 +12,7 @@ import java.util.HashSet;
 import static org.junit.Assert.assertEquals;
 
 /**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
+ * Tests immutability of ExposureLocation.
  */
 public class LocationTest {
 /*
