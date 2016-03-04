@@ -60,7 +60,6 @@ public class LocationView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_view);
         Bundle extras = getIntent().getExtras();
-        String photoPath = extras.getString("photo");
         final DatabaseManager m = new DatabaseManager(getApplicationContext());
 
         locationID = extras.getLong("locationID");
@@ -126,7 +125,7 @@ public class LocationView extends AppCompatActivity {
             }
         });
 
-        new GetPicturesTask().execute(id);
+        new GetPicturesTask().execute(locationID);
     }
 
     /**
