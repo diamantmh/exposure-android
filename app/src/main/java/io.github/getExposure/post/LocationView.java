@@ -143,6 +143,7 @@ public class LocationView extends AppCompatActivity {
         } else {
             for(String s : rawComments.split(";")) {
                 String[] data = s.split(",");
+                Log.d("BEED", s);
                 addComment(data[2], data[0], data[1]);
             }
         }
@@ -302,7 +303,8 @@ public class LocationView extends AppCompatActivity {
                 Log.d("BUENOs", "" + result);
             }
         }).start();
-        addComment(newComment.getText().toString(), Profile.getCurrentProfile().getName(), new Date().toString());
+        String date = new SimpleDateFormat("MM-dd-yyyy").format(new Date());
+        addComment(newComment.getText().toString(), Profile.getCurrentProfile().getName(), date);
         newComment.setText("");
     }
 
