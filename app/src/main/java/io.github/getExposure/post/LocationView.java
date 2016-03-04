@@ -42,21 +42,49 @@ public class LocationView extends AppCompatActivity {
     private EditText newComment;
     private Button postComment;
     private Button done;
-    private long id;
+    private long locationID;
+    private long userID;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_view);
-
         Bundle extras = getIntent().getExtras();
         String photoPath = extras.getString("photo");
+        final DatabaseManager m = new DatabaseManager(getApplicationContext());
+
+        locationID = extras.getLong("locationID");
+        final Profile thing = Profile.getCurrentProfile();
         rating = (RatingBar) findViewById(R.id.ratingBar);
+        rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                if(thing == null) {
+                    Toast toast = Toast.makeText(getApplicationContext(), "must be logged in to rate!", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    new Thread(new Runnable() {
+                        public void run() {
+                            //add rating
+                        }
+                    }).start();
+                }
+            }
+        });
         rating.setRating((float) 5.0);
-
-
-        id = extras.getLong("locationID");
+        rating.setIsIndicator(true);
+        if(thing != null) {
+            userID = Long.parseLong(thing.getId());
+            new Thread(new Runnable() {
+                public void run() {
+                    //checkRating(m.userHasRatedLocation(userID, locationID));
+                }
+            }).start();
+        } else {
+            userID = 0;
+            rating.setIsIndicator(false);
+        }
 
         photo = (ImageView) findViewById(R.id.photo);
         Bitmap imageBitmap = BitmapFactory.decodeFile(photoPath);
@@ -84,7 +112,6 @@ public class LocationView extends AppCompatActivity {
             }
         });
 
-
         done = (Button) findViewById(R.id.done);
         done.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,13 +123,11 @@ public class LocationView extends AppCompatActivity {
     }
 
     public void postNewComment() {
-        Profile thing = Profile.getCurrentProfile();
-        if(thing == null) {
+        if(userID == 0) {
             Toast toast = Toast.makeText(getApplicationContext(), "please login before commenting!", Toast.LENGTH_SHORT);
             toast.show();
             return;
         }
-        final Long userID = Long.parseLong(thing.getId());
 
         if(newComment.getText().toString().equals("")) {
             Toast toast = Toast.makeText(getApplicationContext(), "please enter some comment!", Toast.LENGTH_SHORT);
@@ -112,13 +137,21 @@ public class LocationView extends AppCompatActivity {
         final DatabaseManager m = new DatabaseManager(getApplicationContext());
         new Thread(new Runnable() {
             public void run() {
-                Comment c = new Comment(userID, id, newComment.getText().toString(), new Date(), new Time(0));
+                Comment c = new Comment(userID, locationID, newComment.getText().toString(), new Date(), new Time(0));
                 long result = m.insert(c);
                 Log.d("BUENOs", "" + result);
             }
         }).start();
-        addComment(newComment.getText().toString(), thing.getName(), new Date().toString());
+        addComment(newComment.getText().toString(), Profile.getCurrentProfile().getName(), new Date().toString());
         newComment.setText("");
+    }
+
+    public void checkRating(boolean flag) {
+        if(!flag) {
+            rating.setIsIndicator(false);
+        } else {
+            // change star color
+        }
     }
 
     public void addComment(String content, String author, String time) {
