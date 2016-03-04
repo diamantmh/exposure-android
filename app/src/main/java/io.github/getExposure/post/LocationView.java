@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +33,7 @@ import io.github.getExposure.database.ExposurePhoto;
 import io.github.getExposure.maps.MapsActivity;
 
 public class LocationView extends AppCompatActivity {
-
+    private RatingBar rating;
     private ImageView photo;
     private TextView name;
     private TextView description;
@@ -51,6 +52,9 @@ public class LocationView extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         String photoPath = extras.getString("photo");
+        rating = (RatingBar) findViewById(R.id.ratingBar);
+        rating.setRating((float) 5.0);
+
 
         id = extras.getLong("locationID");
 
@@ -76,7 +80,7 @@ public class LocationView extends AppCompatActivity {
         postComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                post();
+                postNewComment();
             }
         });
 
@@ -91,7 +95,7 @@ public class LocationView extends AppCompatActivity {
         });
     }
 
-    public void post() {
+    public void postNewComment() {
         Profile thing = Profile.getCurrentProfile();
         if(thing == null) {
             Toast toast = Toast.makeText(getApplicationContext(), "please login before commenting!", Toast.LENGTH_SHORT);
