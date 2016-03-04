@@ -41,6 +41,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -588,7 +589,8 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             locationViewIntent.putExtra("locationID", currentLocation.getID());
             String comments = "";
             for (Comment c: currentLocation.getComments()) {
-                comments += c.getAuthorID() + "," + c.getDate().toString() + "," + c.getContent() + ";";
+                String date = new SimpleDateFormat("MM-dd-yyyy").format(c.getDate());
+                comments += c.getUsername() + "," + date + "," + c.getContent() + ";";
             }
             comments = comments.substring(0, comments.length() - 1);
             locationViewIntent.putExtra("comments", comments);
