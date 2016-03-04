@@ -453,18 +453,6 @@ public class DatabaseManager {
     }
 
     /**
-     * Remembers who rated a location
-     *
-     * @param uid User ID of user that rated the location
-     * @param lid Location ID of the location the user rated
-     */
-    public boolean insertUserRating(long lid, long uid, int totalRating, int totalNumberRatings) {
-        final String url = WEB_SERVICE + "updateRating?lid=" + lid + "&uid" + uid + "&totalRating"
-                + totalRating + "&totalNumberRatings" + totalNumberRatings;
-        return true;
-    }
-
-    /**
      * WebLocation is an immutable representation of a location on the map. This
      * class can be used for sending data to the web service and is only be used
      * internally by Databasemanager.
