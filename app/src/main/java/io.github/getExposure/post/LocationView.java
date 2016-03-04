@@ -3,6 +3,8 @@ package io.github.getExposure.post;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,11 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.facebook.Profile;
 
@@ -33,6 +37,8 @@ import io.github.getExposure.database.ExposurePhoto;
 import io.github.getExposure.maps.MapsActivity;
 
 public class LocationView extends AppCompatActivity {
+    private static final int SWITCH_DELAY = 5000;
+
     private RatingBar rating;
     private ImageView photo;
     private TextView name;
@@ -44,6 +50,9 @@ public class LocationView extends AppCompatActivity {
     private Button done;
     private long id;
 
+    private ExposurePhoto[] photos;
+    private int picCount;
+    private ImageSwitcher imgs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +66,6 @@ public class LocationView extends AppCompatActivity {
 
 
         id = extras.getLong("locationID");
-
-        photo = (ImageView) findViewById(R.id.photo);
-        Bitmap imageBitmap = BitmapFactory.decodeFile(photoPath);
-        photo.setImageBitmap(imageBitmap);
 
         name = (TextView) findViewById(R.id.name);
         name.setText(extras.getString("name"));
@@ -93,6 +98,53 @@ public class LocationView extends AppCompatActivity {
                 startActivity(back);
             }
         });
+
+        new GetPicturesTask().execute(id);
+    }
+
+    /**
+     * Retrieves a list of pictures the user has added to the Exposure app,
+     * and stores them in the 'photos' array
+     */
+    private class GetPicturesTask extends AsyncTask<Long, Void, Integer> {
+        @Override
+        protected Integer doInBackground(Long... ids) {
+            photos = new DatabaseManager(getApplicationContext()).getLocationPhotos(ids[0]);
+            return photos.length;
+        }
+
+        protected void onPostExecute(Integer result) {
+            imgs = (ImageSwitcher) findViewById(R.id.photo);
+            imgs.setFactory(new ViewSwitcher.ViewFactory() {
+
+                public View makeView() {
+                    // Create a new ImageView set it's properties
+                    ImageView imageView = new ImageView(getApplicationContext());
+                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    return imageView;
+                }
+            });
+
+            if (result > 0) {
+                imgs.setVisibility(View.VISIBLE);
+                setupImageSwitcher();
+            } else {
+                imgs.setVisibility(View.INVISIBLE);
+            }
+        }
+    }
+
+    private void setupImageSwitcher() {
+        picCount = 0;
+        imgs.postDelayed(new Runnable() {
+            public void run() {
+                int picNum = picCount++ % photos.length;
+                Bitmap bmp = BitmapFactory.decodeFile(photos[picNum].getFile().getPath());
+                BitmapDrawable pic = new BitmapDrawable(bmp);
+                imgs.setImageDrawable(pic);
+                imgs.postDelayed(this, SWITCH_DELAY);
+            }
+        }, 1000);
     }
 
     public void postNewComment() {
