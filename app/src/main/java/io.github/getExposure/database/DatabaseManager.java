@@ -448,7 +448,7 @@ public class DatabaseManager {
      * @return true if the user has rated this location before, and false otherwise
      */
     public boolean userHasRatedLocation(long uid, long lid) {
-        final String url = WEB_SERVICE + "userHasRatedLocation?uid=" + uid + "&lid" + lid;
+        final String url = WEB_SERVICE + "userHasRatedLocation?lid=" + lid + "&uid" + uid;
         return restTemplate.getForObject(url, Boolean.class);
     }
 
@@ -458,9 +458,9 @@ public class DatabaseManager {
      * @param uid User ID of user that rated the location
      * @param lid Location ID of the location the user rated
      */
-    public boolean insertUserRating(long uid, long lid) {
-        final String url = WEB_SERVICE + "userHasRatedLocation?uid=" + uid + "&lid" + lid;
-        //return restTemplate.getForObject(url, uid, lid, Boolean.class);
+    public boolean insertUserRating(long lid, long uid, int totalRating, int totalNumberRatings) {
+        final String url = WEB_SERVICE + "updateRating?lid=" + lid + "&uid" + uid + "&totalRating"
+                + totalRating + "&totalNumberRatings" + totalNumberRatings;
         return true;
     }
 
