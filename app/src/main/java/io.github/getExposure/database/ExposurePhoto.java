@@ -1,5 +1,15 @@
 package io.github.getExposure.database;
+import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
 import java.sql.Time;
 
@@ -166,5 +176,98 @@ public final class ExposurePhoto {
      */
     public ExposurePhoto addID(long id) {
         return new ExposurePhoto(id,authorID,locID,source,new Date(date.getTime()),new Time(time.getTime()),file);
+    }
+
+    /**
+     * ImageManager is a utility that handles downloading images.
+     */
+    public static class ImageManager {
+
+        public static File DownloadFromUrl(String imageURL, Context context) {
+            return DownloadFromUrl(imageURL, "", context);
+        }
+
+        public static File DownloadFromUrl(String imageURL, String file_name, Context context) {  //this is the downloader method
+            File file = null;
+            File dir;
+
+            boolean mExternalStorageAvailable = false;
+            boolean mExternalStorageWriteable = false;
+            String state = Environment.getExternalStorageState();
+
+            if (Environment.MEDIA_MOUNTED.equals(state)) {
+                // We can read and write the media
+                mExternalStorageAvailable = mExternalStorageWriteable = true;
+            } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+                // We can only read the media
+                mExternalStorageAvailable = true;
+                mExternalStorageWriteable = false;
+                System.out.println("We can only read");
+                System.exit(1);
+            } else {
+                // Something else is wrong. It may be one of many other states, but all we need
+                //  to know is we can neither read nor write
+                System.out.println("HOLY SHIT HUSTON WE FOUND THE PROBLEM");
+                System.exit(1);
+            }
+            System.out.println();
+
+            try {
+                URL url = new URL(imageURL); //you can write here any link
+
+                String name = "tempImage" + file_name + ".jpg";
+                file = new File(context.getCacheDir(), name);
+
+                System.out.println();
+
+                if (!file.createNewFile() && !file.exists()) {
+                    System.out.println("\nERROR WHEN CREATING FILE\n");
+                    System.exit(1);
+                }
+
+                long startTime = System.currentTimeMillis();
+                    /*
+                    Log.d("ImageManager", "download begining");
+                    Log.d("ImageManager", "download url:" + url);
+                    //Log.d("ImageManager", "downloaded file name:" + fileName);
+                            Open a connection to that URL.
+                    */
+                URLConnection ucon = url.openConnection();
+
+                            /*
+                             * Define InputStreams to read from the URLConnection.
+                             */
+                InputStream is = ucon.getInputStream();
+                BufferedInputStream bis = new BufferedInputStream(is);
+
+                            /*
+                             * Read bytes to the Buffer until there is nothing more to read(-1).
+                             */
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+                //We create an array of bytes
+                byte[] data = new byte[50];
+                int current = 0;
+
+                while((current = bis.read(data,0,data.length)) != -1){
+                    buffer.write(data, 0, current);
+                }
+                //System.out.println("Create File OutputStream");
+                            /* Convert the Bytes read to a String. */
+                FileOutputStream fos = new FileOutputStream(file);
+                //System.out.println("Write to Buffer");
+                fos.write(buffer.toByteArray());
+                fos.close();
+                //Log.d("ImageManager", "download ready in "
+                //        + ((System.currentTimeMillis() - startTime) / 1000)
+                //        + " sec");
+
+            } catch (Exception e) {
+                Log.d("ImageManager", "Error: " + e);
+            }
+
+            return file;
+
+        }
     }
 }
