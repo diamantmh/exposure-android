@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,6 +52,8 @@ public class LocationView extends AppCompatActivity {
     private Button done;
     private long locationID;
     private long userID;
+    private int total_rating;
+    private int num_rating;
 
     private ExposurePhoto[] photos;
     private int picCount;
@@ -63,30 +67,50 @@ public class LocationView extends AppCompatActivity {
         final DatabaseManager m = new DatabaseManager(getApplicationContext());
 
         locationID = extras.getLong("locationID");
+        total_rating = extras.getInt("total_rating");
+        num_rating = extras.getInt("num_rating");
         final Profile thing = Profile.getCurrentProfile();
+        final Handler h = new Handler(){
+            @Override
+            public void handleMessage(Message msg){
+                if(msg.what == 0) {
+                    rating.setIsIndicator(false);
+                } else {
+                    rating.setIsIndicator(true);
+                    //change color
+                }
+            }
+        };
         rating = (RatingBar) findViewById(R.id.ratingBar);
         rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                if(thing == null) {
+                final int cur = (int) (rating * 2);
+                if (thing == null) {
                     Toast toast = Toast.makeText(getApplicationContext(), "must be logged in to rate!", Toast.LENGTH_SHORT);
                     toast.show();
                 } else {
                     new Thread(new Runnable() {
                         public void run() {
-                            //add rating
+                            //m.updateRating(locationID, userID, total_rating + cur, num_rating + 1);
+                            h.sendEmptyMessage(1);
                         }
                     }).start();
                 }
             }
         });
-        rating.setRating((float) 5.0);
+        rating.setRating((float) total_rating / num_rating);
         rating.setIsIndicator(true);
+
         if(thing != null) {
             userID = Long.parseLong(thing.getId());
             new Thread(new Runnable() {
                 public void run() {
-                    //checkRating(m.userHasRatedLocation(userID, locationID));
+                    if(!m.userHasRatedLocation(userID, locationID)) {
+                        h.sendEmptyMessage(0);
+                    } else {
+                        h.sendEmptyMessage(1);
+                    }
                 }
             }).start();
         } else {
@@ -104,9 +128,16 @@ public class LocationView extends AppCompatActivity {
         categories.setText(extras.getString("categories"));
 
         commentArea = (LinearLayout) findViewById(R.id.comments);
-        String[] comments = {"dopest photo ever!", "I love this pic"};
-        fillComments(comments);
+        String rawComments = extras.getString("comments");
+        if(rawComments == null) {
 
+        } else {
+            for(String s : rawComments.split(";")) {
+                String[] data = s.split(",");
+                Log.d("GGGGe", s);
+                addComment(data[2], data[0], data[1]);
+            }
+        }
         newComment = (EditText) findViewById(R.id.new_comment);
         postComment = (Button) findViewById(R.id.post_comment);
         postComment.setOnClickListener(new View.OnClickListener() {
@@ -197,14 +228,6 @@ public class LocationView extends AppCompatActivity {
         newComment.setText("");
     }
 
-    public void checkRating(boolean flag) {
-        if(!flag) {
-            rating.setIsIndicator(false);
-        } else {
-            // change star color
-        }
-    }
-
     public void addComment(String content, String author, String time) {
         LayoutInflater inflater = getLayoutInflater();
         View comment = inflater.inflate(R.layout.comment_layout, null);
@@ -216,11 +239,4 @@ public class LocationView extends AppCompatActivity {
         commentText.setText(content);
         commentArea.addView(comment);
     }
-
-    private void fillComments(String[] comments) {
-        for (String s : comments) {
-            addComment(s, "Test commentator", "12-12-2012");
-        }
-    }
-
 }

@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -47,6 +48,7 @@ import java.util.Set;
 
 import io.github.getExposure.ExposureFragmentActivity;
 import io.github.getExposure.database.Category;
+import io.github.getExposure.database.Comment;
 import io.github.getExposure.database.DatabaseManager;
 import io.github.getExposure.database.ExposureLocation;
 import io.github.getExposure.database.ExposurePhoto;
@@ -92,6 +94,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     private boolean mRequestingLocationUpdates;
     private AddressResultReceiver mResultReceiver;
     private DatabaseManager db;
+    private Map<Marker, ExposureLocation> findPin;
     protected Map<ExposureLocation, ExposurePhoto[]> locToPhotos;
 
     /**
@@ -138,6 +141,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         }
         // Initialize database
         db = new DatabaseManager(getApplicationContext());
+        findPin = new HashMap<Marker, ExposureLocation>();
 
     }
 
@@ -297,24 +301,17 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
                 System.out.println("path: " + c.getFile().getAbsolutePath());
             }
             */
-            String snippet;
 
             // just get the first photo
             if (tempPhotos.length > 0) {
                 System.out.println("# photos: " + tempPhotos.length);
                 System.out.println("path of photo to display:" + tempPhotos[0].getFile().getAbsolutePath());
                 String photoPath = tempPhotos[0].getFile().getAbsolutePath();
-                snippet = e.getName() + "," + photoPath + "," +
-                        e.getDesc() + "," + e.getCategories();
-                // test for how categories is stored
-                /*
-                for (Category c: e.getCategories()) {
-                    System.out.println("categories content: " + c.getContent());
-                }
-                */
                 if (currentFilter == getFilterFromCategories(e.getCategories())) {
                 // if it matches the current category, will always pass for now since categories needs development
-                    mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()).snippet(snippet));
+                    Marker currentMarker = mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()));
+                    findPin.put(currentMarker, e);
+
                 }
             } else { // what to do if the location exists but no photos
                 // don't add a pin
@@ -573,14 +570,28 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             System.out.println("Pin clicked");
             Toast.makeText(MapsActivity.this, "Pin clicked", Toast.LENGTH_SHORT).show();
             // change this to post view
+            ExposureLocation currentLocation = findPin.get(marker);
             Intent locationViewIntent = new Intent(getApplicationContext(), LocationView.class);
-            String info = marker.getSnippet();
-            String[] params = info.split(",");
-            System.out.println("params length: " + params.length);
-            locationViewIntent.putExtra("name", params[0]);
-            locationViewIntent.putExtra("photo", params[1]);
-            locationViewIntent.putExtra("description", params[2]);
-            locationViewIntent.putExtra("categories", params[3]);
+            locationViewIntent.putExtra("name", currentLocation.getName());
+            //locationViewIntent.putExtra("photo", params[1]);
+            locationViewIntent.putExtra("description", currentLocation.getDesc());
+            String cats = "";
+            for (Category c: currentLocation.getCategories()) {
+                cats += c.getContent() + ", ";
+            }
+            if(cats.length() > 0) {
+                cats = cats.substring(0, cats.length() - 2);
+            }
+            locationViewIntent.putExtra("categories", cats);
+            locationViewIntent.putExtra("total_rating", currentLocation.getTotalRating());
+            locationViewIntent.putExtra("num_rating", currentLocation.getNumOfRatings());
+            locationViewIntent.putExtra("locationID", currentLocation.getID());
+            String comments = "";
+            for (Comment c: currentLocation.getComments()) {
+                comments += c.getAuthorID() + "," + c.getDate().toString() + "," + c.getContent() + ";";
+            }
+            comments = comments.substring(0, comments.length() - 1);
+            locationViewIntent.putExtra("comments", comments);
             System.out.println("phooto: " + locationViewIntent.getExtras().getString("photo"));
             startActivity(locationViewIntent);
         }

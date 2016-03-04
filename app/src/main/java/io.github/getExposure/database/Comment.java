@@ -9,7 +9,7 @@ import java.util.Date;
  *
  * specfield id : long  // uniquely identifies this Category for database interactions
  */
-public class Comment implements Serializable {
+public class Comment {
 
     private final long id;
     private final long authorID;
