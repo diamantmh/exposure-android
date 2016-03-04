@@ -53,6 +53,7 @@ public class ExposureFragmentActivity extends FragmentActivity {
      */
     public void launchPostView(View view) {
         Intent postViewIntent = new Intent(view.getContext(), PostActivity.class);
+        postViewIntent.putExtra("add_photo", false);
         startActivity(postViewIntent);
     }
 

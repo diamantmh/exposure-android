@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:text="Description.."
             android:id="@+id/description"
-            android:textSize="12pt"
+            android:textSize="8pt"
             android:layout_below="@+id/name"
             android:layout_centerHorizontal="true" />
 
