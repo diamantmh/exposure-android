@@ -173,10 +173,10 @@ public class ProfileActivity extends AppCompatActivity {
             if (photos == null || photos.length == 0) {
                 // DO NOTHING
             } else if (photos.length == 1) {
-                setupImage(imageTwo, photos[1]);
+                setupImage(imageTwo, photos[0]);
             } else if (photos.length == 2) {
                 setupImage(imageOne, photos[0]);
-                setupImage(imageThree, photos[2]);
+                setupImage(imageThree, photos[1]);
             } else {
                 setupImage(imageOne, photos[0]);
                 setupImage(imageTwo, photos[1]);
