@@ -202,6 +202,7 @@ public class PostActivity extends AppCompatActivity {
             String[] cat = categories.getText().toString().split(", ");
             Set<Category> cats = new HashSet<Category>();
             for(String s : cat) {
+                Log.d("GUNTS", s);
                 cats.add(new Category(s));
             }
             ExposureLocation loc = new ExposureLocation(Float.parseFloat(latitude.getText().toString()),
