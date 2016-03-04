@@ -4,27 +4,19 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
-import com.facebook.login.LoginResult;
 import com.facebook.login.widget.ProfilePictureView;
 
 import org.json.JSONException;
@@ -37,21 +29,59 @@ import io.github.getExposure.post.PostActivity;
 import io.github.getExposure.R;
 import io.github.getExposure.maps.MapsActivity;
 
+/**
+ *  ProfileActivity is the activity class responsible for the "profile view" of Exposure.
+ *  It allows users to view their basic profile information, as well as a few of their most
+ *  recent photo uploads. It also facilitates Login with Facebook if the user is not logged
+ *  in, and allows the user to logout if they are logged in
+ *
+ *  @author Calob Symonds
+ *  @version 1.0
+ *  @since 2016-03-02
+ *
+ */
+
 public class ProfileActivity extends AppCompatActivity {
+    // Holds the basic Facebook Profile information of the logged in user
     private Profile profile;
+
+    // Displays the Facebook Profile Picture of the logged in user
     private ProfilePictureView picview;
+
+    // Displays the current city (as listed on Facebook) of the logged in user
     private TextView profilecity;
+
+    // Displays the full name (as listed on Facebook) of the logged in user
     private TextView profilename;
+
+    // Displays the number of photos added by the user
     private TextView picsAdded;
     private TextView count;
-    private TextView loading;
+
+    // Informs the user that they need to log in
+    private TextView loginMessage;
+
+    // Indicates whether recently added photos are being loaded or not
+    private TextView loadingText;
+
+    // Label for the most recently added photos
+    private TextView recentlyAddedLabel;
+
+    // Displays up to three of the user's most recently added photos
+    private ImageView imageOne;
+    private ImageView imageTwo;
+    private ImageView imageThree;
+
+    // Holds the list of photos that the user has uploaded
     private ExposurePhoto[] photos;
 
+    // Controls the behavior of the Facebook LoginButton
     private CallbackManager mCallbackManager;
 
-    private AccessTokenTracker mTokenTracker;
+    // Controls the behavior when the Facebook Profile is changed
     private ProfileTracker mProfileTracker;
 
+    // Controls the calls to the database
     private DatabaseManager db;
 
     @Override
@@ -59,15 +89,14 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_view);
 
+        // Initialize the DatabaseManager that will be used to access the database
         db = new DatabaseManager(getApplicationContext());
+
+        // Setup the
         mCallbackManager = CallbackManager.Factory.create();
         updateActivity();
 
-        setupTokenTracker();
         setupProfileTracker();
-
-        mTokenTracker.startTracking();
-        mProfileTracker.startTracking();
     }
 
     /*
@@ -86,7 +115,6 @@ public class ProfileActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         mProfileTracker.stopTracking();
-        mTokenTracker.stopTracking();
     }
 
     @Override
@@ -106,77 +134,91 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method is called whenever the user reenters the activity or the current profile
+     * information changes. It updates the basic UI elements of the activity
+     */
     private void updateActivity() {
+        // Determine if the user is logged in by whether the Facebook SDK can find a profile
         profile = Profile.getCurrentProfile();
-        boolean isLoggedIn;
-        if (profile == null)
-            isLoggedIn = false;
-        else
-            isLoggedIn = true;
+        boolean isLoggedIn = (profile != null);
 
+        // Setup the various UI elements
         setupProfilePicture(isLoggedIn);
         setupName(isLoggedIn);
         setupCity(isLoggedIn);
         setupAddedText(isLoggedIn);
         setupLoginMessage(isLoggedIn);
         setupImages(isLoggedIn);
-        if (isLoggedIn)
-            findViewById(R.id.notLoggedInMessage).setVisibility(View.INVISIBLE);
-        else
-            findViewById(R.id.notLoggedInMessage).setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Sets up the 'recently added' images section of the ProfileActivity
+     * @param isLoggedIn represent whether a user is currently logged in
+     */
     private void setupImages(boolean isLoggedIn) {
-        ImageView one = (ImageView) findViewById(R.id.imageView1);
-        ImageView two = (ImageView) findViewById(R.id.imageView2);
-        ImageView three = (ImageView) findViewById(R.id.imageView3);
+        imageOne = (ImageView) findViewById(R.id.imageView1);
+        imageTwo = (ImageView) findViewById(R.id.imageView2);
+        imageThree = (ImageView) findViewById(R.id.imageView3);
 
-        TextView mTextView = (TextView) findViewById(R.id.textView);
-        mTextView.setPaintFlags(mTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        recentlyAddedLabel = (TextView) findViewById(R.id.textView);
+        recentlyAddedLabel.setPaintFlags(recentlyAddedLabel.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         if (isLoggedIn) {
-            one.setVisibility(View.VISIBLE);
-            two.setVisibility(View.VISIBLE);
-            three.setVisibility(View.VISIBLE);
-            mTextView.setVisibility(View.VISIBLE);
+            imageOne.setVisibility(View.VISIBLE);
+            imageTwo.setVisibility(View.VISIBLE);
+            imageThree.setVisibility(View.VISIBLE);
+            recentlyAddedLabel.setVisibility(View.VISIBLE);
 
             if (photos == null || photos.length == 0) {
-
+                // DO NOTHING
             } else if (photos.length == 1) {
-                Bitmap bitmap2 = BitmapFactory.decodeFile(photos[1].getFile().getPath());
-                two.setImageBitmap(bitmap2);
+                setupImage(imageTwo, photos[1]);
             } else if (photos.length == 2) {
-                Bitmap bitmap1 = BitmapFactory.decodeFile(photos[0].getFile().getPath());
-                one.setImageBitmap(bitmap1);
-                Bitmap bitmap3 = BitmapFactory.decodeFile(photos[1].getFile().getPath());
-                three.setImageBitmap(bitmap3);
+                setupImage(imageOne, photos[0]);
+                setupImage(imageThree, photos[2]);
             } else {
-                Bitmap bitmap1 = BitmapFactory.decodeFile(photos[0].getFile().getPath());
-                one.setImageBitmap(bitmap1);
-                Bitmap bitmap2 = BitmapFactory.decodeFile(photos[1].getFile().getPath());
-                two.setImageBitmap(bitmap2);
-                Bitmap bitmap3 = BitmapFactory.decodeFile(photos[2].getFile().getPath());
-                three.setImageBitmap(bitmap3);
+                setupImage(imageOne, photos[0]);
+                setupImage(imageTwo, photos[1]);
+                setupImage(imageThree, photos[2]);
             }
         } else {
-            one.setVisibility(View.INVISIBLE);
-            two.setVisibility(View.INVISIBLE);
-            three.setVisibility(View.INVISIBLE);
-            mTextView.setVisibility(View.INVISIBLE);
+            imageOne.setVisibility(View.INVISIBLE);
+            imageTwo.setVisibility(View.INVISIBLE);
+            imageThree.setVisibility(View.INVISIBLE);
+            recentlyAddedLabel.setVisibility(View.INVISIBLE);
         }
     }
 
+    /**
+     * Displays a single ExposurePhoto in an ImageView
+     * @param img The ImageView to display the photo in
+     * @param photo The ExposurePhoto to display
+     */
+    private void setupImage(ImageView img, ExposurePhoto photo) {
+        Bitmap bmp = BitmapFactory.decodeFile(photo.getFile().getPath());
+        img.setImageBitmap(bmp);
+    }
+
+    /**
+     * Sets up the user's displayed name, as represented in Facebook
+     * @param isLoggedIn represent whether a user is currently logged in
+     */
     private void setupName(boolean isLoggedIn) {
         profilename = (TextView) findViewById(R.id.profileName);
 
         if (!isLoggedIn) {
             profilename.setVisibility(View.INVISIBLE);
         } else {
-            profilename.setVisibility(View.VISIBLE);
             profilename.setText(profile.getName());
+            profilename.setVisibility(View.VISIBLE);
         }
     }
 
+    /**
+     * Sets up the user's displayed city, as represented in Facebook
+     * @param isLoggedIn represent whether a user is currently logged in
+     */
     private void setupCity(boolean isLoggedIn) {
         profilecity = (TextView) findViewById(R.id.currentCity);
 
@@ -209,22 +251,44 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets up the 'pictures added' count section of the ProfileActivity
+     * @param isLoggedIn represent whether a user is currently logged in
+     */
     private void setupAddedText(boolean isLoggedIn) {
         picsAdded = (TextView) findViewById(R.id.picsAdded);
         count = (TextView) findViewById(R.id.picCount);
 
         if (isLoggedIn) {
+            loadingText = (TextView) findViewById(R.id.loadingText);
+            loadingText.setVisibility(View.VISIBLE);
+
+            picsAdded.setVisibility(View.VISIBLE);
+            count.setVisibility(View.VISIBLE);
             long id = Long.parseLong(profile.getId());
             new GetPicturesTask().execute(id);
+        } else {
+            picsAdded.setVisibility(View.INVISIBLE);
+            count.setVisibility(View.INVISIBLE);
         }
     }
 
+    /**
+     * Sets up the login message if the user is not logged in
+     * @param isLoggedIn represent whether a user is currently logged in
+     */
     private void setupLoginMessage(boolean isLoggedIn) {
-        TextView msg = (TextView) findViewById(R.id.notLoggedInMessage);
-        if (isLoggedIn) msg.setVisibility(View.INVISIBLE);
-        else            msg.setVisibility(View.VISIBLE);
+        loginMessage = (TextView) findViewById(R.id.notLoggedInMessage);
+        if (isLoggedIn)
+            loginMessage.setVisibility(View.INVISIBLE);
+        else
+            loginMessage.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Retrieves a list of pictures the user has added to the Exposure app,
+     * and stores them in the 'photos' array
+     */
     private class GetPicturesTask extends AsyncTask<Long, Void, Integer> {
         @Override
         protected Integer doInBackground(Long... ids) {
@@ -237,8 +301,7 @@ public class ProfileActivity extends AppCompatActivity {
             picsAdded = (TextView) findViewById(R.id.picsAdded);
             picsAdded.setVisibility(View.VISIBLE);
 
-            loading = (TextView) findViewById(R.id.loadingText);
-            loading.setVisibility(View.INVISIBLE);
+            loadingText.setVisibility(View.INVISIBLE);
 
             count = (TextView) findViewById(R.id.picCount);
             count.setVisibility(View.VISIBLE);
@@ -246,87 +309,52 @@ public class ProfileActivity extends AppCompatActivity {
             count.setText(text);
 
             if (result == 1)
-                picsAdded.setText("Picture Added");
+                text = "Picture Added";
             else
-                picsAdded.setText("Pictures Added");
+                text = "Pictures Added";
+            picsAdded.setText(text);
 
-            setupImages((profile != null));;
+            setupImages((profile != null));
         }
     }
 
-    private FacebookCallback<LoginResult> mFacebookCallback = new FacebookCallback<LoginResult>() {
-        /*
-        Actions to take when the user successfully logs in. Gets an AccessToken and a Profile
-        object for accessing basic profile information. The methods here will execute before
-        methods in getProfileTracker and getAccessTokenTracker
-         */
-        @Override
-        public void onSuccess(LoginResult loginResult) {
-            // The user successfully logs in
-            // AccessToken accessToken = loginResult.getAccessToken();
-        }
-
-        /*
-        Actions to take when the user cancels the login.
-         */
-        @Override
-        public void onCancel() {
-            // The user cancels the login at any point
-            profile = null;
-            // message.setText(LOGGED_OUT_TEXT);
-        }
-
-        /*
-        Actions to take when an error occurs during the login process.
-         */
-        @Override
-        public void onError(FacebookException e) {
-            profile = null;
-            // message.setText(ERROR_TEXT);
-        }
-    };
-
-    private ExposureUser getExposureUser() {
+    /**
+     * Gets the ExposureUser associated with the current Facebook account,
+     * or attempts to create one if one does not yet exist.
+     */
+    private void getExposureUser() {
         long id = Long.parseLong(profile.getId());
         new GetUserTask().execute(id);
-        return null;
     }
 
+    /**
+     * Attempts to locate the user in the database.
+     */
     private class GetUserTask extends AsyncTask<Long, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Long... ids) {
             ExposureUser user = db.getUser(ids[0]);
-            if (user != null) {
-                return false;
-            } else return true;
+            return (user == null);
         }
 
         protected void onPostExecute(Boolean result) {
-            if (result) {
+            if (result)
                 new InsertUserTask().execute();
-            }
         }
     }
 
+    /**
+     * Adds the user to the database.
+     */
     private class InsertUserTask extends AsyncTask<Void, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Void... params) {
-            // return db.insert(new ExposureUser(Long.parseLong(profile.getId()), profile.getName(), profile.getProfilePictureUri(100, 100).toString(), ""));
             return db.insert(new ExposureUser(Long.parseLong(profile.getId()), profile.getName(), "LINK", "ABOUTME"));
         }
     }
 
-    private void setupTokenTracker() {
-        mTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-
-            }
-        };
-    }
-
-    /*
-    Setup what happens when a new profile is logged in
+    /**
+     * Setup what happens when a new profile is logged in or an old profile is logged out
      */
     private void setupProfileTracker() {
         mProfileTracker = new ProfileTracker() {
@@ -337,6 +365,7 @@ public class ProfileActivity extends AppCompatActivity {
                     getExposureUser();
             }
         };
+        mProfileTracker.startTracking();
     }
 
     /**
