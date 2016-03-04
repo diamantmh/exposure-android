@@ -220,7 +220,7 @@ public class LocationView extends AppCompatActivity {
         new Thread(new Runnable() {
             public void run() {
                 // TODO: Fill in username for comment c
-                Comment c = new Comment(userID, locationID, newComment.getText().toString(), new Date(), new Time(0));
+                Comment c = new Comment(userID, locationID, "TEMPORARY USERNAME UNTIL MICHAEL D FIXES THIS",newComment.getText().toString(), new Date(), new Time(0));
                 long result = m.insert(c);
                 Log.d("BUENOs", "" + result);
             }
