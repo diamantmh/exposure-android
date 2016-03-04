@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -128,12 +129,13 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
                     .addApi(LocationServices.API)
                     .build();
         }
-
-        // Get location permissions
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
-        ActivityCompat.requestPermissions(this, permissions, MAPS_LOCATION_REQUEST_CODE);
-        createLocationRequest();
-
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Get location permissions
+            String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
+            ActivityCompat.requestPermissions(this, permissions, MAPS_LOCATION_REQUEST_CODE);
+            createLocationRequest();
+        }
         // Initialize database
         db = new DatabaseManager(getApplicationContext());
 
