@@ -97,7 +97,7 @@ public class DataDriverTest2 extends FragmentActivity {
         System.out.print("Creating Comment Objects... ");
 
         for (int i = 0; i < numberOfLocations; i++) {
-            comments[i] = new Comment(userID, -1, "DataDriverTestInsertComment" + i, new Date(i), new Time(i));
+            comments[i] = new Comment(userID, -1, "TestInsertCommentAuthor" + i, "DataDriverTestInsertComment" + i, new Date(i), new Time(i));
         }
         System.out.println("\t\tComplete");
         System.out.println("## Note Comment ID and Location ID are set to -1 ##");
@@ -178,7 +178,7 @@ public class DataDriverTest2 extends FragmentActivity {
         System.out.println("First, Updating Comment Location ID's with Location IDs returned by Database");
         for (int i = 0; i < numberOfLocations; i++) {
             comments[i] = new Comment(comments[i].getId(),comments[i].getAuthorID(),
-                    locationIDs[i],comments[i].getContent(),comments[i].getDate(),comments[i].getTime());
+                    locationIDs[i],comments[i].getUsername(),comments[i].getContent(),comments[i].getDate(),comments[i].getTime());
         }
         System.out.println("Update Comment Location ID's COMPLETE");
 
