@@ -42,16 +42,16 @@ public class Comment {
      * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
      * @param locID unique identifier of location where photo was taken,
      *              supplied by DatabaseManager
-     * @param username the username of the user who authored this comment
+     * @param userName the userName of the user who authored this comment
      * @param content the body of the message posted to the location
      * @param date the date this comment was posted
      * @param time the time this comment was posted
      */
-    public Comment(long id, long authorID, long locID, String username, String content, Date date, Time time) {
+    public Comment(long id, long authorID, long locID, String userName, String content, Date date, Time time) {
         this.id = id;
         this.authorID = authorID;
         this.locID = locID;
-        this.userName = (username==null) ? "" : username;
+        this.userName = (userName==null) ? "" : userName;
         this.content = (content==null) ? "" : content;
         this.date = new Date(date.getTime());
         this.time = new Time(time.getTime());
@@ -68,13 +68,13 @@ public class Comment {
      * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
      * @param locID unique identifier of location where photo was taken,
      *              supplied by DatabaseManager
-     * @param username the username of the user who authored this comment
+     * @param userName the userName of the user who authored this comment
      * @param content the body of the message posted to the location
      * @param date the date this comment was posted
      * @param time the time this comment was posted
      */
-    public Comment (long authorID, long locID, String username, String content, Date date, Time time) {
-        this(NULL_ID, authorID, locID, username, content, date, time);
+    public Comment (long authorID, long locID, String userName, String content, Date date, Time time) {
+        this(NULL_ID, authorID, locID, userName, content, date, time);
     }
 
     public Comment () {
@@ -124,9 +124,9 @@ public class Comment {
     }
 
     /**
-     * Returns the username of the author of this comment
+     * Returns the userName of the author of this comment
      *
-     * @return the username of the author of this comment
+     * @return the userName of the author of this comment
      */
     public String getUsername() {
         return userName;
