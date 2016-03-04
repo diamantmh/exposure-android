@@ -111,7 +111,7 @@ public class DataDriver extends FragmentActivity {
         // test insert comment
         System.out.println();
         System.out.println("Inserting new comment with no ID specified");
-        Comment newCom = new Comment(userID, retLocID, "This is a comment!", new Date(100000), new Time(100000));
+        Comment newCom = new Comment(userID, retLocID, "Good writer", "This is a comment!", new Date(100000), new Time(100000));
         long comID = man.insert(newCom);
         if (comID <= 0) { throw new AssertionError(); }
         Comment retCom = newCom.addID(comID);

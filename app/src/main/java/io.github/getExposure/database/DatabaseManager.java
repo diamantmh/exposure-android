@@ -406,7 +406,7 @@ public class DatabaseManager {
         // associates it with the given location
         for (Comment com : loc.getComments()) {
             if (com.getId() == Comment.NULL_ID) { // if unregistered
-                Comment registeredCom = new Comment(com.getAuthorID(),loc.getID(),
+                Comment registeredCom = new Comment(com.getAuthorID(),loc.getID(), com.getUsername(),
                         com.getContent(),com.getDate(),com.getTime());
                 insert(com);
             }

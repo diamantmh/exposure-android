@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
+ * Tests functionality for Filter on different inputs to check against expected results
  */
 public class FilterTest {
 

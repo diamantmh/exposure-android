@@ -47,8 +47,8 @@ public class DatabaseManagerTest {
     @BeforeClass
     public static void initializeDataObjects() {
         List<Comment> comments = new ArrayList<>();
-        newCom = new Comment(1,1,"I don't like this place at all, it stinks and is ugly.",new Date(1000000),new Time(1000000));
-        retCom = new Comment(1,1,1,"I don't like this place at all, it stinks and is ugly.", new Date(1000000),new Time(1000000));
+        newCom = new Comment(1,1,"best user","I don't like this place at all, it stinks and is ugly.",new Date(1000000),new Time(1000000));
+        retCom = new Comment(1,1,1,"best user","I don't like this place at all, it stinks and is ugly.", new Date(1000000),new Time(1000000));
         comments.add(retCom);
 
         long dummyLocID = 1;
