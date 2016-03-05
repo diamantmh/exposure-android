@@ -33,8 +33,6 @@ public class DatabaseManager {
     //protected static final String WEB_SERVICE = "http://kekonatvm.cloudapp.net/RESTfulProject/REST/WebService/";
     //protected static final String WEB_SERVICE = "http://10.0.2.2:8080/RESTfulProject/REST/WebService/";
 
-    protected static final String DEFAULT_URL = "https://exposurestorage.blob.core.windows.net/exposurecontainer/10";
-
     private static final long NULL_ID = -1;
 
     /*
@@ -43,7 +41,7 @@ public class DatabaseManager {
      */
 
     /**
-     * Constructs a DatabaseManager with the given context con.
+     * Constructs a DatabaseManager.
      */
     public DatabaseManager() {
         this(new RestTemplate());
