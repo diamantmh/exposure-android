@@ -199,7 +199,7 @@ public class LocationView extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        //new GetPicturesTask().execute(locationID);
+        new GetPicturesTask().execute(locationID);
     }
 
     /**
@@ -224,9 +224,21 @@ public class LocationView extends AppCompatActivity {
         }
     }
 
+    /**
+     * Downloads an ExposurePhoto
+     */
+    private class DownloadPhotoTask extends AsyncTask<Integer, Void, Void> {
+        @Override
+        protected Void doInBackground(Integer... nums) {
+            photos[nums[0]] = photos[nums[0]].downloadPhoto(getApplicationContext());
+            return null;
+        }
+    }
+
     private void setupImageSwitcher() {
         Button prev = (Button) findViewById(R.id.prev);
         Button next = (Button) findViewById(R.id.next);
+        new DownloadPhotoTask().execute(picCount);
         Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
         BitmapDrawable pic = new BitmapDrawable(bmp);
         imgs.setImageDrawable(pic);
@@ -237,6 +249,7 @@ public class LocationView extends AppCompatActivity {
                 picCount--;
                 if (picCount == -1)
                     picCount = photos.length - 1;
+                new DownloadPhotoTask().execute(picCount);
                 Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
                 BitmapDrawable pic = new BitmapDrawable(bmp);
                 imgs.setImageDrawable(pic);
@@ -249,6 +262,7 @@ public class LocationView extends AppCompatActivity {
                 picCount++;
                 if (picCount == photos.length)
                     picCount = 0;
+                new DownloadPhotoTask().execute(picCount);
                 Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
                 BitmapDrawable pic = new BitmapDrawable(bmp);
                 imgs.setImageDrawable(pic);
