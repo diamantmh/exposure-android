@@ -233,15 +233,19 @@ public class LocationView extends AppCompatActivity {
             photos[nums[0]] = photos[nums[0]].downloadPhoto(getApplicationContext());
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
+            BitmapDrawable pic = new BitmapDrawable(bmp);
+            imgs.setImageDrawable(pic);
+        }
     }
 
     private void setupImageSwitcher() {
         Button prev = (Button) findViewById(R.id.prev);
         Button next = (Button) findViewById(R.id.next);
         new DownloadPhotoTask().execute(picCount);
-        Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
-        BitmapDrawable pic = new BitmapDrawable(bmp);
-        imgs.setImageDrawable(pic);
 
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,9 +254,6 @@ public class LocationView extends AppCompatActivity {
                 if (picCount == -1)
                     picCount = photos.length - 1;
                 new DownloadPhotoTask().execute(picCount);
-                Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
-                BitmapDrawable pic = new BitmapDrawable(bmp);
-                imgs.setImageDrawable(pic);
             }
         });
 
@@ -263,9 +264,6 @@ public class LocationView extends AppCompatActivity {
                 if (picCount == photos.length)
                     picCount = 0;
                 new DownloadPhotoTask().execute(picCount);
-                Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
-                BitmapDrawable pic = new BitmapDrawable(bmp);
-                imgs.setImageDrawable(pic);
             }
         });
     }
