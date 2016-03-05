@@ -31,7 +31,7 @@ public class DataDriver extends FragmentActivity {
         System.out.println("-----------------");
         System.out.println();
         System.out.println("Instantiating DatabaseManager...");
-        man = new DatabaseManager(this);
+        man = new DatabaseManager();
         System.out.println("DatabaseManager initiated!");
 
         System.out.println("Allowing networking on main thread (this causes lock-ups so don't do this)");
@@ -42,7 +42,11 @@ public class DataDriver extends FragmentActivity {
 
         System.out.println("Trying out some functionality...");
 
-        File newPNG = man.downLoadImage();
+        String url = "https://exposurestorage.blob.core.windows.net/exposurecontainer/10";
+        ExposurePhoto dummy = new ExposurePhoto(-1,-1,-1,url,null,null,null);
+        dummy.downloadPhoto(this);
+
+        File newPNG = dummy.getFile();
 
         System.out.println();
 
