@@ -58,9 +58,10 @@ public class LocationView extends AppCompatActivity {
     private int total_rating;
     private int num_rating;
 
+    private TextView loading;
     private ExposurePhoto[] photos;
-    private int picCount;
     private ImageSwitcher imgs;
+    private int picCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,6 +179,20 @@ public class LocationView extends AppCompatActivity {
             }
         });
 
+
+        imgs = (ImageSwitcher) findViewById(R.id.photo);
+        imgs.setFactory(new ViewSwitcher.ViewFactory() {
+
+            public View makeView() {
+                // Create a new ImageView set it's properties
+                ImageView imageView = new ImageView(getApplicationContext());
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+                return imageView;
+            }
+        });
+        loading = (TextView) findViewById(R.id.loading);
+        loading.setVisibility(View.VISIBLE);
         new GetPicturesTask().execute(locationID);
     }
 
@@ -199,17 +214,7 @@ public class LocationView extends AppCompatActivity {
         }
 
         protected void onPostExecute(Integer result) {
-            imgs = (ImageSwitcher) findViewById(R.id.photo);
-            imgs.setFactory(new ViewSwitcher.ViewFactory() {
-
-                public View makeView() {
-                    // Create a new ImageView set it's properties
-                    ImageView imageView = new ImageView(getApplicationContext());
-                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    return imageView;
-                }
-            });
-
+            loading.setVisibility(View.INVISIBLE);
             if (result > 0) {
                 imgs.setVisibility(View.VISIBLE);
                 setupImageSwitcher();
@@ -220,16 +225,35 @@ public class LocationView extends AppCompatActivity {
     }
 
     private void setupImageSwitcher() {
-        picCount = 0;
-        imgs.postDelayed(new Runnable() {
-            public void run() {
-                int picNum = picCount++ % photos.length;
-                Bitmap bmp = BitmapFactory.decodeFile(photos[picNum].getFile().getPath());
+        Button prev = (Button) findViewById(R.id.prev);
+        Button next = (Button) findViewById(R.id.next);
+        Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
+        BitmapDrawable pic = new BitmapDrawable(bmp);
+        imgs.setImageDrawable(pic);
+
+        prev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                picCount--;
+                if (picCount == -1)
+                    picCount = photos.length - 1;
+                Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
                 BitmapDrawable pic = new BitmapDrawable(bmp);
                 imgs.setImageDrawable(pic);
-                imgs.postDelayed(this, SWITCH_DELAY);
             }
-        }, 1000);
+        });
+
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                picCount++;
+                if (picCount == photos.length)
+                    picCount = 0;
+                Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
+                BitmapDrawable pic = new BitmapDrawable(bmp);
+                imgs.setImageDrawable(pic);
+            }
+        });
     }
 
     public void postNewComment() {
