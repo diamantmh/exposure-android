@@ -84,6 +84,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     // Fields for interval of location requests, in seconds
     private static final int LOCATION_REQUEST_INTERVAL = 10;
     private static final int LOCATION_REQUEST_INTERVAL_FASTEST = 5;
+    private static final int CITY_ZOOM_LEVEL = 10; // default zoom level for the maps
 
     private GoogleMap mMap;
     private int currentFilter = 0; // Current filter to select which pins to display
@@ -138,8 +139,9 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             // Get location permissions
             String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
             ActivityCompat.requestPermissions(this, permissions, MAPS_LOCATION_REQUEST_CODE);
-            createLocationRequest();
+            //createLocationRequest();
         }
+        createLocationRequest();
         // Initialize database
         db = new DatabaseManager();
         findPin = new HashMap<Marker, ExposureLocation>();
@@ -187,7 +189,6 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             // Or remind the user that permissions are needed for this function
             else {
                 startLocationUpdates();
-                Toast.makeText(MapsActivity.this, "Make sure that location is enabled", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -201,6 +202,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         Toast.makeText(MapsActivity.this, "startLocationUpdates", Toast.LENGTH_SHORT).show();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // if we have no permissions to find the user's location, do nothing
+            Toast.makeText(MapsActivity.this, "Location permissions required.", Toast.LENGTH_SHORT).show();
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(
@@ -247,7 +249,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         //defaults map to center at UW's Drumheller Fountain
         LatLng drum = new LatLng(DRUMHELLER_LATITUDE, DRUMHELLER_LONGITUDE);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(drum));
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(CITY_ZOOM_LEVEL));
 
     }
 
@@ -276,11 +278,13 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * Called once the locations have been found, and starts the next asynchronous task to retrieve
      * the photos for each location
      */
+    /*
     private void placePins() {
         mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
         new GetPhotosTask().execute();
         Toast.makeText(MapsActivity.this, "Loading photos for pins...", Toast.LENGTH_SHORT).show();
     }
+    */
 
     /**
      * Once the photos have been mapped to the locations, this method adds the markers/pins for
@@ -288,20 +292,24 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * TODO: multiple photos per location
      */
     protected void actuallyPlacePins() {
+        mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
+        //Toast.makeText(MapsActivity.this, "Loading photos for pins...", Toast.LENGTH_SHORT).show();
+
         if (locToPhotos == null) {
             throw new IllegalStateException("locToPhotos cannot be null, don't call this method directly");
         }
         // place 1 pin per location
         for (ExposureLocation e: locToPhotos.keySet()) {
             LatLng temp = new LatLng(e.getLat(), e.getLon());
-            ExposurePhoto[] tempPhotos = locToPhotos.get(e);
-            /*
-            System.out.println("tempPhotos length: " + tempPhotos.length);
-            for (ExposurePhoto c: tempPhotos) {
-                System.out.println("link: " + c.getSource());
-                System.out.println("path: " + c.getFile().getAbsolutePath());
+
+            if (currentFilter == getFilterFromCategories(e.getCategories())) {
+                // if it matches the current category, will always pass for now since categories needs development
+                Marker currentMarker = mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()).snippet("Click here for more info"));
+                findPin.put(currentMarker, e);
+
             }
-            */
+            /*
+            ExposurePhoto[] tempPhotos = locToPhotos.get(e);
 
             // just get the first photo
             if (tempPhotos.length > 0) {
@@ -316,8 +324,8 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
                 }
             } else { // what to do if the location exists but no photos
                 // don't add a pin
-                //snippet = e.getName() + "," + "bleh" + "," + e.getDesc() + "," + e.getCategories();
-            }
+           }
+           */
         }
         Toast.makeText(MapsActivity.this, "Pins placed on screen.", Toast.LENGTH_SHORT).show();
     }
@@ -486,7 +494,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             for (ExposureLocation e: result) {
                 locToPhotos.put(e, null);
             }
-            placePins();
+            actuallyPlacePins();
         }
     }
 
@@ -494,6 +502,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * Asynchronous inner class used to retrieve the photos given a location,
      * and perform it on a separate thread/in the background.
      */
+    /*
     private class GetPhotosTask extends AsyncTask<Void, Void, Boolean> {
 
         /**
@@ -501,7 +510,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
          * ExposureLocation, and stores it in the local field locToPhotos
          * @param params the parameters passed in (irrelevant)
          * @return true if there are locations in locToPhotos, false if it is null
-         */
+
         @Override
         protected Boolean doInBackground(Void... params) {
             // remember paramaters are: originLat, originLon, radiusLat, radiusLon
@@ -510,6 +519,11 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             }
             for (ExposureLocation e: locToPhotos.keySet()) {
                 ExposurePhoto[] tempPhoto = db.getLocationPhotos(e.getID());
+                for (ExposurePhoto c: tempPhoto) {
+                    if (!c.hasPhoto()) {
+                        c.downloadPhoto(getApplicationContext());
+                    }
+                }
                 locToPhotos.put(e, tempPhoto);
             }
             return true;
@@ -519,7 +533,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
          * Called when doInBackground() finishes, and calls the GoogleMap to place pins if there
          * are photos, or ends if there are no photos
          * @param result the boolean representing whether there are any locations to place pins for
-         */
+         *
         protected void onPostExecute(Boolean result) {
             if (result) {
                 actuallyPlacePins();
@@ -529,7 +543,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         }
 
     }
-
+    */
 
     /**
      * Callback class called when the asynchronous service to fetch the geocoded location returns
