@@ -90,7 +90,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile_view);
 
         // Initialize the DatabaseManager that will be used to access the database
-        db = new DatabaseManager(getApplicationContext());
+        db = new DatabaseManager();
 
         // Setup the
         mCallbackManager = CallbackManager.Factory.create();
