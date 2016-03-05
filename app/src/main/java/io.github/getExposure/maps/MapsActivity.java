@@ -87,7 +87,8 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     private static final int CITY_ZOOM_LEVEL = 10; // default zoom level for the maps
 
     private GoogleMap mMap;
-    private int currentFilter = 0; // Current filter to select which pins to display
+    private long currentFilter; // Current filter to select which pins to display, corresponding
+                                   // to the setting on the spinner (drop down menu)
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private LocationRequest mLocationRequest;
@@ -299,11 +300,14 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         for (ExposureLocation e: listOfCurrentLocations) {
             LatLng temp = new LatLng(e.getLat(), e.getLon());
 
-            if (currentFilter == getFilterFromCategories(e.getCategories())) {
+            if (isCurrentFilter(e.getCategories(), currentFilter)) {
                 // if it matches the current category, will always pass for now since categories needs development
                 Marker currentMarker = mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()).snippet("Click here for more info"));
                 findPin.put(currentMarker, e);
+                Toast.makeText(MapsActivity.this, "Pins placed on screen.", Toast.LENGTH_SHORT).show();
 
+            } else {
+                Toast.makeText(MapsActivity.this, "No pins to place with current filter.", Toast.LENGTH_SHORT).show();
             }
             /*
             ExposurePhoto[] tempPhotos = listOfCurrentLocations.get(e);
@@ -324,18 +328,28 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
            }
            */
         }
-        Toast.makeText(MapsActivity.this, "Pins placed on screen.", Toast.LENGTH_SHORT).show();
     }
 
     /**
      * Returns an int representing the categories that the input contains, to compare to the int
      * that the current filter the spinner is set on
+     * Returns true if the currFilter (setting on the spinner) corresponds to a category in input
      * @param input the Categories
+     * @param currFilter the current filter to compare
      * @return the int representing the categories it contains
      */
     //TODO: To be implemented correctly, need info about other modules
-    private int getFilterFromCategories(Set<Category> input) {
-        return 0;
+    private boolean isCurrentFilter(Set<Category> input, long currFilter) {
+        if (currFilter == 0) { // filter is "All"
+            return true;
+        }
+        for (Category c: input) {
+            System.out.println("category id: " + c.getId());
+            if (c.getId() == currFilter) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -629,6 +643,8 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             // parent.getItemAtPosition(pos)
             currentFilter = pos;
             System.out.println(parent.getItemAtPosition(pos)); // for debugging
+            Toast.makeText(MapsActivity.this, "filter at position: " + pos, Toast.LENGTH_SHORT).show();
+
         }
 
         /**
