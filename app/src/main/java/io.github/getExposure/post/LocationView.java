@@ -68,7 +68,7 @@ public class LocationView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_view);
         Bundle extras = getIntent().getExtras();
-        final DatabaseManager m = new DatabaseManager(getApplicationContext());
+        final DatabaseManager m = new DatabaseManager();
 
         locationID = extras.getLong("locationID");
         total_rating = extras.getInt("total_rating");
@@ -209,7 +209,7 @@ public class LocationView extends AppCompatActivity {
     private class GetPicturesTask extends AsyncTask<Long, Void, Integer> {
         @Override
         protected Integer doInBackground(Long... ids) {
-            photos = new DatabaseManager(getApplicationContext()).getLocationPhotos(ids[0]);
+            photos = new DatabaseManager().getLocationPhotos(ids[0]);
             return photos.length;
         }
 
@@ -268,7 +268,7 @@ public class LocationView extends AppCompatActivity {
             toast.show();
             return;
         }
-        final DatabaseManager m = new DatabaseManager(getApplicationContext());
+        final DatabaseManager m = new DatabaseManager();
         new Thread(new Runnable() {
             public void run() {
                 Comment c = new Comment(userID, locationID, Profile.getCurrentProfile().getName(), newComment.getText().toString(), new Date(), new Time(0));
