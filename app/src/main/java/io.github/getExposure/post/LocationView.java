@@ -1,11 +1,13 @@
 package io.github.getExposure.post;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,12 +31,6 @@ import android.widget.ViewSwitcher;
 
 import com.facebook.Profile;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,7 +45,6 @@ public class LocationView extends AppCompatActivity {
     private static final int SWITCH_DELAY = 5000;
 
     private RatingBar rating;
-    private ImageView photo;
     private TextView name;
     private TextView description;
     private TextView categories;
@@ -62,11 +57,11 @@ public class LocationView extends AppCompatActivity {
     private long userID;
     private int total_rating;
     private int num_rating;
-    private String newPhotoPath;
 
+    private TextView loading;
     private ExposurePhoto[] photos;
-    private int picCount;
     private ImageSwitcher imgs;
+    private int picCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +73,9 @@ public class LocationView extends AppCompatActivity {
         locationID = extras.getLong("locationID");
         total_rating = extras.getInt("total_rating");
         num_rating = extras.getInt("num_rating");
+        rating = (RatingBar) findViewById(R.id.ratingBar);
+        rating.setRating((float) total_rating / num_rating);
+        rating.setIsIndicator(true);
         final Profile thing = Profile.getCurrentProfile();
         final Handler h = new Handler(){
             @Override
@@ -86,36 +84,22 @@ public class LocationView extends AppCompatActivity {
                     rating.setIsIndicator(false);
                 } else {
                     rating.setIsIndicator(true);
-                    //change color
+                    Drawable drawable = rating.getProgressDrawable();
+                    drawable.setColorFilter(Color.parseColor("#FFD700"), PorterDuff.Mode.SRC_ATOP);
+                    LayerDrawable stars = (LayerDrawable) rating.getProgressDrawable();
+                    stars.getDrawable(2).setColorFilter(Color.parseColor("#FFD700"), PorterDuff.Mode.SRC_ATOP); // for filled stars
+                    stars.getDrawable(1).setColorFilter(Color.parseColor("#FFD700"), PorterDuff.Mode.SRC_ATOP); // for half filled stars
+                    stars.getDrawable(0).setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP); // for empty stars
+                    Toast.makeText(getApplicationContext(), "thanks for rating!", Toast.LENGTH_SHORT).show();
                 }
             }
         };
-        rating = (RatingBar) findViewById(R.id.ratingBar);
-        rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                final int cur = (int) (rating * 2);
-                if (thing == null) {
-                    Toast toast = Toast.makeText(getApplicationContext(), "must be logged in to rate!", Toast.LENGTH_SHORT);
-                    toast.show();
-                } else {
-                    new Thread(new Runnable() {
-                        public void run() {
-                            //m.updateRating(locationID, userID, total_rating + cur, num_rating + 1);
-                            h.sendEmptyMessage(1);
-                        }
-                    }).start();
-                }
-            }
-        });
-        rating.setRating((float) total_rating / num_rating);
-        rating.setIsIndicator(true);
-
         if(thing != null) {
             userID = Long.parseLong(thing.getId());
             new Thread(new Runnable() {
                 public void run() {
-                    if(!m.userHasRatedLocation(userID, locationID)) {
+                    boolean flag = m.userHasRatedLocation(userID, locationID);
+                    if(!flag) {
                         h.sendEmptyMessage(0);
                     } else {
                         h.sendEmptyMessage(1);
@@ -126,6 +110,27 @@ public class LocationView extends AppCompatActivity {
             userID = 0;
             rating.setIsIndicator(false);
         }
+
+
+        rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                final int cur = (int) (rating * 2);
+                if (thing == null) {
+                    Toast toast = Toast.makeText(getApplicationContext(), "must be logged in to rate!", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    total_rating += cur;
+                    num_rating += 1;
+                    h.sendEmptyMessage(1);
+                    new Thread(new Runnable() {
+                        public void run() {
+                            boolean result = m.updateRating(locationID, userID, total_rating, num_rating);
+                        }
+                    }).start();
+                }
+            }
+        });
 
         name = (TextView) findViewById(R.id.name);
         name.setText(extras.getString("name"));
@@ -138,13 +143,12 @@ public class LocationView extends AppCompatActivity {
 
         commentArea = (LinearLayout) findViewById(R.id.comments);
         String rawComments = extras.getString("comments");
-        if(rawComments == null) {
-
-        } else {
+        if(rawComments != null) {
             for(String s : rawComments.split(";")) {
-                String[] data = s.split(",");
-                Log.d("BEED", s);
-                addComment(data[2], data[0], data[1]);
+                if(s.length() > 0) {
+                    String[] data = s.split(",");
+                    addComment(data[2], data[0], data[1]);
+                }
             }
         }
         newComment = (EditText) findViewById(R.id.new_comment);
@@ -160,8 +164,7 @@ public class LocationView extends AppCompatActivity {
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent back = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(back);
+                onBackPressed();
             }
         });
 
@@ -169,73 +172,34 @@ public class LocationView extends AppCompatActivity {
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent back = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(back);
+                Intent newPhoto = new Intent(getApplicationContext(), PostActivity.class);
+                newPhoto.putExtra("add_photo", true);
+                newPhoto.putExtra("locationID", locationID);
+                startActivity(newPhoto);
             }
         });
 
+
+        imgs = (ImageSwitcher) findViewById(R.id.photo);
+        imgs.setFactory(new ViewSwitcher.ViewFactory() {
+
+            public View makeView() {
+                // Create a new ImageView set it's properties
+                ImageView imageView = new ImageView(getApplicationContext());
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+                return imageView;
+            }
+        });
+        loading = (TextView) findViewById(R.id.loading);
+        loading.setVisibility(View.VISIBLE);
         new GetPicturesTask().execute(locationID);
     }
 
-    private void selectImage() {
-        final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(LocationView.this);
-        builder.setTitle("Add Photo!");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int item) {
-                if (options[item].equals("Take Photo")) {
-                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                        File photoFile = null;
-                        try {
-                            photoFile = createImageFile();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                        // Continue only if the File was successfully created
-                        if (photoFile != null) {
-                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                                    Uri.fromFile(photoFile));
-                            startActivityForResult(takePictureIntent, 1);
-                        }
-                    }
-                }
-                else if (options[item].equals("Choose from Gallery")) {
-                    Intent intent = new   Intent();
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_PICK);
-                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), 2);
-                }
-                else if (options[item].equals("Cancel")) {
-                    dialog.dismiss();
-                }
-            }
-        });
-        builder.show();
-    }
-
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-        newPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
-    private void galleryAddPic() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(newPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
+    @Override
+    public void onResume() {
+        super.onResume();
+        //new GetPicturesTask().execute(locationID);
     }
 
     /**
@@ -250,17 +214,7 @@ public class LocationView extends AppCompatActivity {
         }
 
         protected void onPostExecute(Integer result) {
-            imgs = (ImageSwitcher) findViewById(R.id.photo);
-            imgs.setFactory(new ViewSwitcher.ViewFactory() {
-
-                public View makeView() {
-                    // Create a new ImageView set it's properties
-                    ImageView imageView = new ImageView(getApplicationContext());
-                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    return imageView;
-                }
-            });
-
+            loading.setVisibility(View.INVISIBLE);
             if (result > 0) {
                 imgs.setVisibility(View.VISIBLE);
                 setupImageSwitcher();
@@ -271,16 +225,35 @@ public class LocationView extends AppCompatActivity {
     }
 
     private void setupImageSwitcher() {
-        picCount = 0;
-        imgs.postDelayed(new Runnable() {
-            public void run() {
-                int picNum = picCount++ % photos.length;
-                Bitmap bmp = BitmapFactory.decodeFile(photos[picNum].getFile().getPath());
+        Button prev = (Button) findViewById(R.id.prev);
+        Button next = (Button) findViewById(R.id.next);
+        Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
+        BitmapDrawable pic = new BitmapDrawable(bmp);
+        imgs.setImageDrawable(pic);
+
+        prev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                picCount--;
+                if (picCount == -1)
+                    picCount = photos.length - 1;
+                Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
                 BitmapDrawable pic = new BitmapDrawable(bmp);
                 imgs.setImageDrawable(pic);
-                imgs.postDelayed(this, SWITCH_DELAY);
             }
-        }, 1000);
+        });
+
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                picCount++;
+                if (picCount == photos.length)
+                    picCount = 0;
+                Bitmap bmp = BitmapFactory.decodeFile(photos[picCount].getFile().getPath());
+                BitmapDrawable pic = new BitmapDrawable(bmp);
+                imgs.setImageDrawable(pic);
+            }
+        });
     }
 
     public void postNewComment() {

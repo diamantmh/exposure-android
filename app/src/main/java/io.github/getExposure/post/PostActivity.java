@@ -55,6 +55,9 @@ public class PostActivity extends AppCompatActivity {
     private EditText description;
     private TextView categories;
     private TextView logMessage;
+    private Button submit;
+    private boolean flag;
+    private long locationID;
 
     static final int REQUEST_GALLERY_PHOTO = 3;
     static final int REQUEST_IMAGE_CAPTURE = 2;
@@ -75,7 +78,7 @@ public class PostActivity extends AppCompatActivity {
         longitude = (EditText) findViewById(R.id.longitude);
         description = (EditText) findViewById(R.id.description);
         categories = (TextView) findViewById(R.id.categories);
-
+        submit = (Button) findViewById(R.id.submit);
         logMessage = (TextView) findViewById(R.id.notLoggedInMessage);
 
         if (Profile.getCurrentProfile() == null) {
@@ -84,36 +87,23 @@ public class PostActivity extends AppCompatActivity {
             longitude.setVisibility(View.INVISIBLE);
             categories.setVisibility(View.INVISIBLE);
             description.setVisibility(View.INVISIBLE);
-            findViewById(R.id.submit).setVisibility(View.INVISIBLE);
+            submit.setVisibility(View.INVISIBLE);
             logMessage.setVisibility(View.VISIBLE);
             return;
         }
-
-        m = new DatabaseManager(getApplicationContext());
-
         name.setVisibility(View.VISIBLE);
         latitude.setVisibility(View.VISIBLE);
         longitude.setVisibility(View.VISIBLE);
         categories.setVisibility(View.VISIBLE);
         description.setVisibility(View.VISIBLE);
-        findViewById(R.id.submit).setVisibility(View.VISIBLE);
+        submit.setVisibility(View.VISIBLE);
         logMessage.setVisibility(View.INVISIBLE);
 
-        categories.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(getApplicationContext(), PopUpCategoriesView.class), GET_CATEGORIES);
-            }
-        });
-
-        description = (EditText) findViewById(R.id.description);
-
-        Button post = (Button) findViewById(R.id.submit);
-        post.setOnClickListener(new View.OnClickListener() {
+        m = new DatabaseManager(getApplicationContext());
+        submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 post();
-
             }
         });
 
@@ -128,24 +118,44 @@ public class PostActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 5);
         }
 
-        lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        Bundle extras = getIntent().getExtras();
+        flag = extras.getBoolean("add_photo");
+        if(flag) {
+            name.setVisibility(View.INVISIBLE);
+            latitude.setVisibility(View.INVISIBLE);
+            longitude.setVisibility(View.INVISIBLE);
+            categories.setVisibility(View.INVISIBLE);
+            description.setVisibility(View.INVISIBLE);
+            findViewById(R.id.add_photo).setVisibility(View.VISIBLE);
+            locationID = extras.getLong("locationID");
 
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION}, 7);
-        }
+        } else {
+            categories.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivityForResult(new Intent(getApplicationContext(), PopUpCategoriesView.class), GET_CATEGORIES);
+                }
+            });
 
-        final LocationListener locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                log = location.getLongitude();
-                lat = location.getLatitude();
+            lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION}, 7);
             }
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
-            public void onProviderEnabled(String provider) {}
-            public void onProviderDisabled(String provider) {}
-        };
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+            final LocationListener locationListener = new LocationListener() {
+                public void onLocationChanged(Location location) {
+                    log = location.getLongitude();
+                    lat = location.getLatitude();
+                }
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+                public void onProviderEnabled(String provider) {}
+                public void onProviderDisabled(String provider) {}
+            };
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        }
     }
 
     @Override
@@ -159,48 +169,52 @@ public class PostActivity extends AppCompatActivity {
             toast.show();
             return;
         }
+        if(!flag) {
+            if(name.getText().toString().equals("")) {
+                Toast toast = Toast.makeText(getApplicationContext(), "name your location first!", Toast.LENGTH_SHORT);
+                toast.show();
+                return;
+            }
 
-        if(name.getText().toString().equals("")) {
-            Toast toast = Toast.makeText(getApplicationContext(), "name your location first!", Toast.LENGTH_SHORT);
-            toast.show();
-            return;
-        }
+            if(latitude.getText().toString().equals("")) {
+                Toast toast = Toast.makeText(getApplicationContext(), "need latitude first!", Toast.LENGTH_SHORT);
+                toast.show();
+                return;
+            }
 
-        if(latitude.getText().toString().equals("")) {
-            Toast toast = Toast.makeText(getApplicationContext(), "need latitude first!", Toast.LENGTH_SHORT);
-            toast.show();
-            return;
-        }
+            if(longitude.getText().toString().equals("")) {
+                Toast toast = Toast.makeText(getApplicationContext(), "need longitude first!", Toast.LENGTH_SHORT);
+                toast.show();
+                return;
+            }
 
-        if(longitude.getText().toString().equals("")) {
-            Toast toast = Toast.makeText(getApplicationContext(), "need longitude first!", Toast.LENGTH_SHORT);
-            toast.show();
-            return;
-        }
+            if(description.getText().toString().equals("")) {
+                Toast toast = Toast.makeText(getApplicationContext(), "you need to enter a description first!", Toast.LENGTH_SHORT);
+                toast.show();
+                return;
+            }
 
-        if(description.getText().toString().equals("")) {
-            Toast toast = Toast.makeText(getApplicationContext(), "you need to enter a description first!", Toast.LENGTH_SHORT);
-            toast.show();
-            return;
+            if(categories.getText().toString().equals("Categories")) {
+                Toast toast = Toast.makeText(getApplicationContext(), "please add some categories!", Toast.LENGTH_SHORT);
+                toast.show();
+                return;
+            }
+            String[] cat = categories.getText().toString().split(", ");
+            Set<Category> cats = new HashSet<Category>();
+            for(String s : cat) {
+                Log.d("GUNTS", s);
+                cats.add(new Category(s));
+            }
+            ExposureLocation loc = new ExposureLocation(Float.parseFloat(latitude.getText().toString()),
+                    Float.parseFloat(longitude.getText().toString()), 0, 0, name.getText().toString(),
+                    description.getText().toString(), cats, new ArrayList<Comment>());
+            new post().execute(loc);
+        } else {
+            addPhotoToLocation(locationID);
         }
-
-        if(categories.getText().toString().equals("Categories")) {
-            Toast toast = Toast.makeText(getApplicationContext(), "please add some categories!", Toast.LENGTH_SHORT);
-            toast.show();
-            return;
-        }
-        String[] cat = categories.getText().toString().split(", ");
-        Set<Category> cats = new HashSet<Category>();
-        for(String s : cat) {
-            cats.add(new Category(s));
-        }
-        ExposureLocation loc = new ExposureLocation(Float.parseFloat(latitude.getText().toString()),
-                Float.parseFloat(longitude.getText().toString()), 0, 0, name.getText().toString(),
-                description.getText().toString(), cats, new ArrayList<Comment>());
-        new post().execute(loc);
     }
 
-    public void go(final long id) {
+    public void addPhotoToLocation(final long id) {
         Profile thing = Profile.getCurrentProfile();
         final Long userID = Long.parseLong(thing.getId());
         new Thread(new Runnable() {
@@ -210,8 +224,12 @@ public class PostActivity extends AppCompatActivity {
                 Log.d("BUENOs", "" + result);
             }
         }).start();
+        onBackPressed();
+    }
+
+    public void go(long id) {
+        addPhotoToLocation(id);
         Intent locationView = new Intent(getApplicationContext(), LocationView.class);
-        locationView.putExtra("photo", mCurrentPhotoPath);
         locationView.putExtra("name", name.getText().toString());
         locationView.putExtra("latitude", latitude.getText().toString());
         locationView.putExtra("longitude", longitude.getText().toString());

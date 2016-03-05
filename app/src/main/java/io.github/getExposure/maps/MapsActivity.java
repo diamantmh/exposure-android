@@ -574,7 +574,6 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             ExposureLocation currentLocation = findPin.get(marker);
             Intent locationViewIntent = new Intent(getApplicationContext(), LocationView.class);
             locationViewIntent.putExtra("name", currentLocation.getName());
-            //locationViewIntent.putExtra("photo", params[1]);
             locationViewIntent.putExtra("description", currentLocation.getDesc());
             String cats = "";
             for (Category c: currentLocation.getCategories()) {
@@ -592,9 +591,10 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
                 String date = new SimpleDateFormat("MM-dd-yyyy").format(c.getDate());
                 comments += c.getUsername() + "," + date + "," + c.getContent() + ";";
             }
-            comments = comments.substring(0, comments.length() - 1);
+            if(comments.length() > 0) {
+                comments = comments.substring(0, comments.length() - 1);
+            }
             locationViewIntent.putExtra("comments", comments);
-            System.out.println("phooto: " + locationViewIntent.getExtras().getString("photo"));
             startActivity(locationViewIntent);
         }
     }
