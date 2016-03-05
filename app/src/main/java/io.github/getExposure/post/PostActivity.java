@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import io.github.getExposure.ExposureFragmentActivity;
 import io.github.getExposure.R;
 import io.github.getExposure.database.Category;
 import io.github.getExposure.database.Comment;
@@ -47,7 +48,7 @@ import io.github.getExposure.database.DatabaseManager;
 import io.github.getExposure.database.ExposureLocation;
 import io.github.getExposure.database.ExposurePhoto;
 
-public class PostActivity extends AppCompatActivity {
+public class PostActivity extends ExposureFragmentActivity {
     private ImageView photo;
     private EditText name;
     private EditText latitude;

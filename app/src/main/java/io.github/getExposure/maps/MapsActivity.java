@@ -62,13 +62,12 @@ import io.github.getExposure.R;
  *  by their devices' GPS, and displays them on a map.
  *
  *  @author Michael Shintaku
- *  @version 0.5
+ *  @version 0.75
  *  @since 2016-02-03
  *
  */
 
-//TODO: save state of activity, changing screen orientation/language can break it
-//TODO: make the loading photos/locations efficient in calling order
+//TODO: save state of activity
 public class MapsActivity extends ExposureFragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, ActivityCompat.OnRequestPermissionsResultCallback, LocationListener, OnMapReadyCallback {
     //Latitude/longitude of the Paul G Allen Center
@@ -273,19 +272,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     }
 
     /**
-     * Called once the locations have been found, and starts the next asynchronous task to retrieve
-     * the photos for each location
-     */
-    /*
-    private void placePins() {
-        mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
-        new GetPhotosTask().execute();
-        Toast.makeText(MapsActivity.this, "Loading photos for pins...", Toast.LENGTH_SHORT).show();
-    }
-    */
-
-    /**
-     * Once the locations have been retrieved, this method adds markers for locations that pass
+     * Called once the locations have been found, this method adds markers for locations that pass
      * through the current filter.
      */
     protected void actuallyPlacePins() {
@@ -333,14 +320,12 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * @param view passed in for drawing/event handling
      */
     public void search(View view) {
-        //should never happen
         if (!mGoogleApiClient.isConnected()) {
             throw new IllegalStateException("google api client needs to be connected");
         }
 
         EditText editText = (EditText) findViewById(R.id.search_exposure);
         String searchText = editText.getText().toString();
-        //Toast.makeText(MapsActivity.this, "search: " + searchText, Toast.LENGTH_SHORT).show();
 
         mResultReceiver = new AddressResultReceiver(new Handler());
         Intent intent = new Intent(this, FetchAddressIntentService.class);
@@ -378,18 +363,16 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     @Override
     public void onConnected(Bundle connectionHint) {
         // No code needed, always connected by the time the user can interact with the GoogleApiClient
-        /*
-        if (canRequestLocation) {
-            startLocationUpdates();
-        }
-        */
+        // Method needed for interface
     }
 
-    //TODO: request location updates at slower/stop location updates when unnecessary
+    /**
+     * Callback called when activity is paused.
+     */
     @Override
     protected void onPause() {
         super.onPause();
-        //stopLocationUpdates();
+        stopLocationUpdates();
     }
 
     /**
@@ -407,8 +390,6 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * Method to stop the service from calling location updates (and save battery!)
      */
     private void stopLocationUpdates() {
-        //System.out.println("stopLocationUpdates");
-        //Toast.makeText(MapsActivity.this, "stopLocationUpdates", Toast.LENGTH_SHORT).show();
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
     }
@@ -419,8 +400,10 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      */
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        // no location services, but we can still do all other functionality on Maps, so no other
-        // code needed
+        // If there is no google services, it just can't retrieve current location
+        // but can do all other functionality
+        System.out.println("Connection failed, contents: " + connectionResult.describeContents());
+        System.out.println("                   toString: " + connectionResult.toString());
     }
 
     /**
@@ -429,8 +412,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      */
     @Override
     public void onConnectionSuspended(int i) {
-        // since there are no ui elements that require location in real-time and Maps functions
-        // without a location or an old location, no code needed
+        System.out.println("Connection suspended, cause: " + i);
     }
 
     /**
@@ -482,52 +464,6 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         }
     }
 
-    /**
-     * Asynchronous inner class used to retrieve the photos given a location,
-     * and perform it on a separate thread/in the background.
-     */
-    /*
-    private class GetPhotosTask extends AsyncTask<Void, Void, Boolean> {
-
-        /**
-         * Called when this.execute(params) is called, and downloads/gets the photos tied to each
-         * ExposureLocation, and stores it in the local field listOfCurrentLocations
-         * @param params the parameters passed in (irrelevant)
-         * @return true if there are locations in listOfCurrentLocations, false if it is null
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // remember paramaters are: originLat, originLon, radiusLat, radiusLon
-            if (listOfCurrentLocations == null) { // no locations
-                return false;
-            }
-            for (ExposureLocation e: listOfCurrentLocations.keySet()) {
-                ExposurePhoto[] tempPhoto = db.getLocationPhotos(e.getID());
-                for (ExposurePhoto c: tempPhoto) {
-                    if (!c.hasPhoto()) {
-                        c.downloadPhoto(getApplicationContext());
-                    }
-                }
-                listOfCurrentLocations.put(e, tempPhoto);
-            }
-            return true;
-        }
-
-        /**
-         * Called when doInBackground() finishes, and calls the GoogleMap to place pins if there
-         * are photos, or ends if there are no photos
-         * @param result the boolean representing whether there are any locations to place pins for
-         *
-        protected void onPostExecute(Boolean result) {
-            if (result) {
-                actuallyPlacePins();
-            } else { // don't place pins, because no locations
-                Toast.makeText(MapsActivity.this, "No pins found", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-    }
-    */
 
     /**
      * Callback class called when the asynchronous service to fetch the geocoded location returns
