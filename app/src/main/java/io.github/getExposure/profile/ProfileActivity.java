@@ -198,6 +198,9 @@ public class ProfileActivity extends ExposureFragmentActivity {
      */
     private void setupImage(ImageView img, int photo) {
         new DownloadPhotoTask().execute(photo);
+        while (photos[photo].getFile() == null) {
+            try { Thread.sleep(100); } catch (Exception e) {}
+        }
         Bitmap bmp = BitmapFactory.decodeFile(photos[photo].getFile().getPath());
         img.setImageBitmap(bmp);
     }
