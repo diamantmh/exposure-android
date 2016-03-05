@@ -148,7 +148,7 @@ public class DatabaseManagerTest {
                 .thenReturn(null);
 
         // make a new DatabaseManager that has a mocked RestTemplate inside
-        man = new DatabaseManager(mockedRest, new MockContext());
+        man = new DatabaseManager(mockedRest);
     }
 
     @Test
