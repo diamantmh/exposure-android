@@ -141,7 +141,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             createLocationRequest();
         }
         // Initialize database
-        db = new DatabaseManager(getApplicationContext());
+        db = new DatabaseManager();
         findPin = new HashMap<Marker, ExposureLocation>();
 
     }
