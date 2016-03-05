@@ -22,6 +22,7 @@ import com.facebook.login.widget.ProfilePictureView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.github.getExposure.ExposureFragmentActivity;
 import io.github.getExposure.database.DatabaseManager;
 import io.github.getExposure.database.ExposurePhoto;
 import io.github.getExposure.database.ExposureUser;
@@ -41,7 +42,7 @@ import io.github.getExposure.maps.MapsActivity;
  *
  */
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends ExposureFragmentActivity {
     // Holds the basic Facebook Profile information of the logged in user
     private Profile profile;
 
@@ -378,35 +379,5 @@ public class ProfileActivity extends AppCompatActivity {
             }
         };
         mProfileTracker.startTracking();
-    }
-
-    /**
-     * Callback called when the user clicks the "Maps" button
-     * Switches the activity to MapsActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchMapView(View view) {
-        Intent mapViewIntent = new Intent(getApplicationContext(), MapsActivity.class);
-        startActivity(mapViewIntent);
-    }
-
-    /**
-     * Callback called when the user clicks the "Profile" button
-     * Switches the activity to ProfileViewActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchProfileView(View view) {
-        Intent profileViewIntent = new Intent(getApplicationContext(), ProfileActivity.class);
-        startActivity(profileViewIntent);
-    }
-
-    /**
-     * Callback called when the user clicks the "Post" button
-     * Switches the activity to PostActivity
-     * @param view passed in for drawing/event handling
-     */
-    public void launchPostView(View view) {
-        Intent postViewIntent = new Intent(getApplicationContext(), PostActivity.class);
-        startActivity(postViewIntent);
     }
 }
