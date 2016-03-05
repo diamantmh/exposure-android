@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="exposure.getExposure.ListActivity">
+
+    <EditText android:id="@+id/search_exposure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/search"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/button2"
+        android:layout_above="@+id/map" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_search"
+        android:onClick="search"
+        android:id="@+id/button2"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+    <!-- 3 buttons at the bottom -->
+    <LinearLayout
+        android:id="@+id/viewSwitchers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:weightSum="3">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_maps"
+            android:onClick="launchMapView"
+            android:layout_weight="1"
+            android:id="@+id/button3" />
+
+        <!-- open post view -->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_post"
+            android:onClick="launchPostView"
+            android:layout_weight="1"
+            android:id="@+id/button4" />
+
+        <!-- open profile view -->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_profile"
+            android:onClick="launchProfileView"
+            android:layout_weight="1"
+            android:id="@+id/button5" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -6,4 +6,11 @@
 .DS_Store
 /build
 /captures
-.idea*
+*.class
+/web/target/*
+/web/target/
+/.idea/
+/capture
+
+
+>>>>>>> 2e2704bebcb06562fc12aedacd2d24e9a88c54c9

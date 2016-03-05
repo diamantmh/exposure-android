@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="io.github.getExposure.PostViewActivity"
+    tools:showIn="@layout/activity_post_view">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView" >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:contentDescription="@string/target_upload_photo"
+            android:layout_height="100dp"
+            android:layout_marginTop="30dp"
+            android:id="@+id/photo"
+            android:src="@mipmap/take_photo_clipart"
+            android:layout_centerHorizontal="true" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/name"
+            android:hint="What is your location called?"
+            android:layout_below="@id/photo"
+            android:layout_centerHorizontal="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/latitude"
+            android:hint="Latitude"
+            android:inputType="numberDecimal|numberSigned"
+            android:layout_below="@id/name"
+            android:layout_alignParentLeft="true" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/longitude"
+            android:hint="Longitude"
+            android:inputType="numberDecimal|numberSigned"
+            android:layout_below="@id/name"
+            android:layout_alignParentRight="true" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:id="@+id/description"
+            android:hint="Description..."
+            android:layout_below="@id/latitude"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Categories"
+            android:textSize="20sp"
+            android:layout_below="@id/description"
+            android:layout_marginTop="30dp"
+            android:id="@+id/categories" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/submit"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/categories"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="20dp"
+            android:text="Post"
+            android:background="@drawable/color_border"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="You are not logged in. Log in with Facebook from the &apos;Profile&apos; page to post photos!"
+            android:id="@+id/notLoggedInMessage"
+            android:textAlignment="center"
+            android:textSize="32dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:visibility="invisible"
+            android:layout_alignTop="@+id/photo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Add a photo!"
+            android:id="@+id/add_photo"
+            android:textAlignment="center"
+            android:textSize="32dp"
+            android:visibility="invisible"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+             />
+    </RelativeLayout>
+
+</android.support.v4.widget.NestedScrollView>

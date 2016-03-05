@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="io.github.getExposure.LocationViewActivity"
+    tools:showIn="@layout/activity_location_view">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ratingBar"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"/>
+
+        <ImageSwitcher
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:id="@+id/photo"
+            android:src="@mipmap/take_photo_clipart"
+            android:layout_below="@id/ratingBar"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:textSize="15pt"
+            android:id="@+id/name"
+            android:layout_below="@id/photo"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description.."
+            android:id="@+id/description"
+            android:textSize="8pt"
+            android:layout_below="@+id/name"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="categories"
+            android:id="@+id/categories"
+            android:textSize="10pt"
+            android:layout_below="@+id/description"
+            android:layout_centerHorizontal="true" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:id="@+id/comments"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/categories"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true">
+        </LinearLayout>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/comments"
+            android:id="@+id/new_comment"
+            android:hint="add a comment..."
+            android:layout_toStartOf="@+id/post_comment"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Post!"
+            android:id="@+id/post_comment"
+            android:layout_below="@+id/comments"
+            android:layout_alignParentRight="true"
+            android:padding="1dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Done"
+            android:id="@+id/done"
+            android:layout_below="@+id/new_comment"
+            android:layout_centerHorizontal="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Photo"
+            android:layout_alignBottom="@id/done"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/add" />
+
+
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text=">"
+            android:id="@+id/next"
+            android:textSize="24dp"
+            android:layout_marginTop="100dp"
+            android:layout_alignTop="@+id/photo"
+            android:layout_alignParentEnd="true" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;"
+            android:id="@+id/prev"
+            android:textSize="24dp"
+            android:layout_alignTop="@+id/next"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Loading...."
+            android:id="@+id/loading"
+            android:layout_alignBottom="@+id/next"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+
+</ScrollView>
