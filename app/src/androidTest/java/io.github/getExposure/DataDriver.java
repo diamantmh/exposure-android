@@ -1,4 +1,4 @@
-package io.github.getExposure.database;
+package io.github.getExposure;
 
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -11,6 +11,13 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+
+import io.github.getExposure.database.Category;
+import io.github.getExposure.database.Comment;
+import io.github.getExposure.database.DatabaseManager;
+import io.github.getExposure.database.ExposureLocation;
+import io.github.getExposure.database.ExposurePhoto;
+import io.github.getExposure.database.ExposureUser;
 
 /**
  * Example class that demonstrates the use of DatabaseManager
