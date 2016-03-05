@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,8 +41,10 @@ import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,7 +53,6 @@ import io.github.getExposure.database.Category;
 import io.github.getExposure.database.Comment;
 import io.github.getExposure.database.DatabaseManager;
 import io.github.getExposure.database.ExposureLocation;
-import io.github.getExposure.database.ExposurePhoto;
 import io.github.getExposure.post.LocationView;
 import io.github.getExposure.R;
 
@@ -93,11 +93,11 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
     private String mLastUpdateTime;
-    private boolean mRequestingLocationUpdates;
+    private boolean canRequestLocation;
     private AddressResultReceiver mResultReceiver;
     private DatabaseManager db;
     private Map<Marker, ExposureLocation> findPin;
-    protected Map<ExposureLocation, ExposurePhoto[]> locToPhotos;
+    private List<ExposureLocation> listOfCurrentLocations;
 
     /**
      * Method called when MapsActivity is active
@@ -218,16 +218,13 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        //System.out.println("permissions results length: " + grantResults.length);
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            //System.out.println("thanks for allowing permissions");
             Toast.makeText(MapsActivity.this, "Thanks for allowing permissions", Toast.LENGTH_SHORT).show();
-            mRequestingLocationUpdates = true;
+            canRequestLocation = true;
         } else {
             Toast.makeText(MapsActivity.this, "You have not allowed permissions, we will not be able to center" +
                     "at your location.", Toast.LENGTH_SHORT).show();
-            //System.out.println("permissions not granted");
-            mRequestingLocationUpdates = false;
+            canRequestLocation = false;
         }
     }
 
@@ -295,11 +292,11 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
         //Toast.makeText(MapsActivity.this, "Loading photos for pins...", Toast.LENGTH_SHORT).show();
 
-        if (locToPhotos == null) {
-            throw new IllegalStateException("locToPhotos cannot be null, don't call this method directly");
+        if (listOfCurrentLocations == null) {
+            throw new IllegalStateException("listOfCurrentLocations cannot be null, don't call this method directly");
         }
         // place 1 pin per location
-        for (ExposureLocation e: locToPhotos.keySet()) {
+        for (ExposureLocation e: listOfCurrentLocations) {
             LatLng temp = new LatLng(e.getLat(), e.getLon());
 
             if (currentFilter == getFilterFromCategories(e.getCategories())) {
@@ -309,7 +306,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
 
             }
             /*
-            ExposurePhoto[] tempPhotos = locToPhotos.get(e);
+            ExposurePhoto[] tempPhotos = listOfCurrentLocations.get(e);
 
             // just get the first photo
             if (tempPhotos.length > 0) {
@@ -362,7 +359,6 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         intent.putExtra("searchText", searchText);
         intent.putExtra("receiver", mResultReceiver);
         startService(intent);
-
     }
 
 
@@ -395,7 +391,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     public void onConnected(Bundle connectionHint) {
         // No code needed, always connected by the time the user can interact with the GoogleApiClient
         /*
-        if (mRequestingLocationUpdates) {
+        if (canRequestLocation) {
             startLocationUpdates();
         }
         */
@@ -414,7 +410,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     @Override
     public void onResume() {
         super.onResume();
-        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+        if (mGoogleApiClient.isConnected() && !canRequestLocation) {
             startLocationUpdates();
         }
     }
@@ -490,9 +486,9 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
          * @param result the locations within the origin and lat/long radius
          */
         protected void onPostExecute(ExposureLocation[] result) {
-            locToPhotos = new HashMap<>();
+            listOfCurrentLocations = new ArrayList<>();
             for (ExposureLocation e: result) {
-                locToPhotos.put(e, null);
+                listOfCurrentLocations.add(e);
             }
             actuallyPlacePins();
         }
@@ -507,24 +503,24 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
 
         /**
          * Called when this.execute(params) is called, and downloads/gets the photos tied to each
-         * ExposureLocation, and stores it in the local field locToPhotos
+         * ExposureLocation, and stores it in the local field listOfCurrentLocations
          * @param params the parameters passed in (irrelevant)
-         * @return true if there are locations in locToPhotos, false if it is null
+         * @return true if there are locations in listOfCurrentLocations, false if it is null
 
         @Override
         protected Boolean doInBackground(Void... params) {
             // remember paramaters are: originLat, originLon, radiusLat, radiusLon
-            if (locToPhotos == null) { // no locations
+            if (listOfCurrentLocations == null) { // no locations
                 return false;
             }
-            for (ExposureLocation e: locToPhotos.keySet()) {
+            for (ExposureLocation e: listOfCurrentLocations.keySet()) {
                 ExposurePhoto[] tempPhoto = db.getLocationPhotos(e.getID());
                 for (ExposurePhoto c: tempPhoto) {
                     if (!c.hasPhoto()) {
                         c.downloadPhoto(getApplicationContext());
                     }
                 }
-                locToPhotos.put(e, tempPhoto);
+                listOfCurrentLocations.put(e, tempPhoto);
             }
             return true;
         }
@@ -565,6 +561,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
                 mMap.setOnInfoWindowClickListener(null);
                 mMap.addMarker(new MarkerOptions().position(query).title(resultData.getString("searchText")));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(query));
+                addPins(getCurrentFocus());
             }
         }
     }
