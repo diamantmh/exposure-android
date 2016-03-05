@@ -44,7 +44,7 @@ public class DataDriver extends FragmentActivity {
 
         String url = "https://exposurestorage.blob.core.windows.net/exposurecontainer/10";
         ExposurePhoto dummy = new ExposurePhoto(-1,-1,-1,url,null,null,null);
-        dummy.downloadPhoto(this);
+        dummy = dummy.downloadPhoto(this);
 
         File newPNG = dummy.getFile();
 

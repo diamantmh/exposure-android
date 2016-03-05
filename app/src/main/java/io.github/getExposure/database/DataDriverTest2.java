@@ -228,6 +228,7 @@ public class DataDriverTest2 extends FragmentActivity {
         File[] files = new File[numberOfLocations];
         for (int i = 0; i < 3; i++) {
             ExposurePhoto dummy = new ExposurePhoto(i,i,i,photoUrls[i],null,null,null);
+            dummy = dummy.downloadPhoto(this);
             files[i] = dummy.getFile();
         }
         System.out.println("\t\tComplete");
