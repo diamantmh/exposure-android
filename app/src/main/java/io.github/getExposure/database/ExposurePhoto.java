@@ -44,7 +44,10 @@ public final class ExposurePhoto {
      * Only use this constructor when you have an ID provided by DatabaseManager.
      *
      * Parameters date and time must not be null. You must fill in the date and
-     * time at instantiation. Behavior not specified if file is null.
+     * time at instantiation.
+     *
+     * if file is null, that means the file has not been downloaded. Download the file
+     * using downloadPhoto in a new thread.
      *
      * @param id unique identifier supplied by DatabaseManager
      * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
@@ -72,7 +75,10 @@ public final class ExposurePhoto {
      * DatabaseManager to insert a new photo into the database.
      *
      * Parameters date and time must not be null. You must fill in the date and
-     * time at instantiation. Behavior not specified if file is null.
+     * time at instantiation.
+     *
+     * * if file is null, that means the file has not been downloaded. Download the file
+     * using downloadPhoto in a new thread.
      *
      * @param authorID unique identifier of the author of photo, supplied by DatabaseManager
      * @param locID unique identifier of location where photo was taken,
@@ -157,9 +163,9 @@ public final class ExposurePhoto {
     }
 
     /**
-     * Returns the File of this photo.
+     * Returns the File of this photo. Or null if there is no file downloaded.
      *
-     * @return the File of this photo.
+     * @return the File of this photo or null if there is no file downloaded.
      */
     public File getFile() {
         return file;
@@ -176,6 +182,27 @@ public final class ExposurePhoto {
      */
     public ExposurePhoto addID(long id) {
         return new ExposurePhoto(id,authorID,locID,source,new Date(date.getTime()),new Time(time.getTime()),file);
+    }
+
+    /**
+     * Returns true if and only if this ExposurePhoto has an image stored inside.
+     *
+     * @return true iff this has an image stored inside
+     */
+    public boolean hasPhoto() {
+        return file!=null;
+    }
+
+    /**
+     * Returns a new ExposurePhoto with the photo at the source url downloaded inside.
+     *
+     * @param context the android context that Exposure is running on.
+     * @return a new ExposurePhoto with the photo at the source url downloaded inside.
+     */
+    public ExposurePhoto downloadPhoto(Context context) {
+        File imgFile = ImageManager.DownloadFromUrl(getSource(), String.valueOf(getID()), context);
+        return new ExposurePhoto(getID(),getAuthorID(),getLocID(),
+                getSource(),getDate(),getTime(),imgFile);
     }
 
     /**
