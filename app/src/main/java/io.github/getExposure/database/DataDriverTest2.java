@@ -55,7 +55,7 @@ public class DataDriverTest2 extends FragmentActivity {
         System.out.println("-----------------");
         System.out.println();
         System.out.println("Instantiating DatabaseManager...");
-        man = new DatabaseManager(this);
+        man = new DatabaseManager();
         System.out.println("DatabaseManager initiated!");
 
         System.out.println("Allowing networking on main thread (this causes lock-ups so don't do this)");
@@ -227,7 +227,9 @@ public class DataDriverTest2 extends FragmentActivity {
         System.out.print("Downloading Images...");
         File[] files = new File[numberOfLocations];
         for (int i = 0; i < 3; i++) {
-            files[i] = man.downLoadImage(photoUrls[i], "DataDriverTestInsertPhoto" + i);
+            ExposurePhoto dummy = new ExposurePhoto(i,i,i,photoUrls[i],null,null,null);
+            dummy = dummy.downloadPhoto(this);
+            files[i] = dummy.getFile();
         }
         System.out.println("\t\tComplete");
         System.out.println();
