@@ -6,6 +6,12 @@ You can find user documentation [here](http://getexposure.github.io/product/inde
 
 Additionally, you can view up-to-date [Software Design Specifications](https://docs.google.com/document/d/18sWdtOYFfbUSAQKPTqaiaJ1Nb6MXersM-5ZnIk4cGmY/edit?usp=sharing) and [Software Requirements Specifications](https://docs.google.com/document/d/1nNvZxgk5k2VMcxixJDl_mAD0NAWXg_9bimPEH4NHPy4/edit?usp=sharing).
 
+## User Documentation
+
+Download the Exposure APK file [here]().
+
+If you need to find more information on how to use the application or install the application as a user, you can find that document [here](https://docs.google.com/document/d/1ZT6u75tTV0oWnKEOdW2WJdhG2FlktyoXmdl4aUMio_M/edit?usp=sharing).
+
 ## Developer Documentation
 
 ### Initial Install
