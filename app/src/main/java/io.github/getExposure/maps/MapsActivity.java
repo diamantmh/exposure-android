@@ -285,61 +285,35 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     */
 
     /**
-     * Once the photos have been mapped to the locations, this method adds the markers/pins for
-     * each location, with 1 photo per location.
-     * TODO: multiple photos per location
+     * Once the locations have been retrieved, this method adds markers for locations that pass
+     * through the current filter.
      */
     protected void actuallyPlacePins() {
-        mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
-        //Toast.makeText(MapsActivity.this, "Loading photos for pins...", Toast.LENGTH_SHORT).show();
-
         if (listOfCurrentLocations == null) {
             throw new IllegalStateException("listOfCurrentLocations cannot be null, don't call this method directly");
         }
+        mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
+        mMap.clear(); // clear markers of prior filter
+
         // place 1 pin per location
         for (ExposureLocation e: listOfCurrentLocations) {
             LatLng temp = new LatLng(e.getLat(), e.getLon());
-
-            if (isCurrentFilter(e.getCategories(), currentFilter)) {
+            if (hasApplicableCategory(e.getCategories(), currentFilter)) {
                 // if it matches the current category, will always pass for now since categories needs development
                 Marker currentMarker = mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()).snippet("Click here for more info"));
                 findPin.put(currentMarker, e);
-                Toast.makeText(MapsActivity.this, "Pins placed on screen.", Toast.LENGTH_SHORT).show();
-
-            } else {
-                Toast.makeText(MapsActivity.this, "No pins to place with current filter.", Toast.LENGTH_SHORT).show();
             }
-            /*
-            ExposurePhoto[] tempPhotos = listOfCurrentLocations.get(e);
-
-            // just get the first photo
-            if (tempPhotos.length > 0) {
-                System.out.println("# photos: " + tempPhotos.length);
-                System.out.println("path of photo to display:" + tempPhotos[0].getFile().getAbsolutePath());
-                String photoPath = tempPhotos[0].getFile().getAbsolutePath();
-                if (currentFilter == getFilterFromCategories(e.getCategories())) {
-                // if it matches the current category, will always pass for now since categories needs development
-                    Marker currentMarker = mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()));
-                    findPin.put(currentMarker, e);
-
-                }
-            } else { // what to do if the location exists but no photos
-                // don't add a pin
-           }
-           */
         }
+        Toast.makeText(MapsActivity.this, "Pins placed on screen.", Toast.LENGTH_SHORT).show();
     }
 
     /**
-     * Returns an int representing the categories that the input contains, to compare to the int
-     * that the current filter the spinner is set on
      * Returns true if the currFilter (setting on the spinner) corresponds to a category in input
      * @param input the Categories
      * @param currFilter the current filter to compare
      * @return the int representing the categories it contains
      */
-    //TODO: To be implemented correctly, need info about other modules
-    private boolean isCurrentFilter(Set<Category> input, long currFilter) {
+    private boolean hasApplicableCategory(Set<Category> input, long currFilter) {
         if (currFilter == 0) { // filter is "All"
             return true;
         }
@@ -643,8 +617,6 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             // parent.getItemAtPosition(pos)
             currentFilter = pos;
             System.out.println(parent.getItemAtPosition(pos)); // for debugging
-            Toast.makeText(MapsActivity.this, "filter at position: " + pos, Toast.LENGTH_SHORT).show();
-
         }
 
         /**
