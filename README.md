@@ -8,7 +8,7 @@ Additionally, you can view up-to-date [Software Design Specifications](https://d
 
 ## User Documentation
 
-Download the Exposure APK file [here]().
+Download the Exposure APK file [here](https://github.com/getexposure/exposure-apk/raw/master/exposure.apk).
 
 If you need to find more information on how to use the application or install the application as a user, you can find that document [here](https://docs.google.com/document/d/1ZT6u75tTV0oWnKEOdW2WJdhG2FlktyoXmdl4aUMio_M/edit?usp=sharing).
 
