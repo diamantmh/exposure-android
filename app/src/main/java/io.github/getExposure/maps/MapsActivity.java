@@ -70,15 +70,17 @@ import io.github.getExposure.R;
 //TODO: save state of activity
 public class MapsActivity extends ExposureFragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, ActivityCompat.OnRequestPermissionsResultCallback, LocationListener, OnMapReadyCallback {
+
     //Latitude/longitude of the Paul G Allen Center
     private final static double CSE_LATITUDE = 47.6532295;
     private final static double CSE_LONGITUDE = -122.306897;
+
     //Latitude/longitude of Drumheller fountain
     private final static double DRUMHELLER_LATITUDE = 47.653808;
     private final static double DRUMHELLER_LONGITUDE = -122.307832;
 
     private static final int MAPS_LOCATION_REQUEST_CODE = 42; // unique request code to maps
-    public static final int SEARCH_RESULT_CODE = 39; // unique result code for the search functionality
+    protected static final int SEARCH_RESULT_CODE = 39; // unique result code for the search functionality
 
     // Fields for interval of location requests, in seconds
     private static final int LOCATION_REQUEST_INTERVAL = 10;

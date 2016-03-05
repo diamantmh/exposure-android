@@ -44,4 +44,5 @@
         <item>Forest</item>
         <item>NONE</item>
     </string-array>
+    <string name="title_activity_list_view">ListView</string>
 </resources>

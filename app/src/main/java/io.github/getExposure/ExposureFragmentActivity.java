@@ -4,7 +4,8 @@ import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
-import io.github.getExposure.maps.MapsActivity;
+import io.github.getExposure.maps.*;
+import io.github.getExposure.post.ExposureListView;
 import io.github.getExposure.post.PostActivity;
 import io.github.getExposure.profile.ProfileActivity;
 
@@ -32,7 +33,7 @@ public class ExposureFragmentActivity extends FragmentActivity {
      * @param view passed in for drawing/event handling
      */
     public void launchListView(View view) {
-        Intent listViewIntent = new Intent(view.getContext(), ListActivity.class);
+        Intent listViewIntent = new Intent(view.getContext(), ExposureListView.class);
         startActivity(listViewIntent);
     }
 
