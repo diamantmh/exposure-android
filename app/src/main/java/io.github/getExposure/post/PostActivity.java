@@ -99,7 +99,7 @@ public class PostActivity extends AppCompatActivity {
         submit.setVisibility(View.VISIBLE);
         logMessage.setVisibility(View.INVISIBLE);
 
-        m = new DatabaseManager(getApplicationContext());
+        m = new DatabaseManager();
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
