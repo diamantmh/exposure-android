@@ -90,7 +90,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile_view);
 
         // Initialize the DatabaseManager that will be used to access the database
-        db = new DatabaseManager(getApplicationContext());
+        db = new DatabaseManager();
 
         // Setup the
         mCallbackManager = CallbackManager.Factory.create();
@@ -173,14 +173,14 @@ public class ProfileActivity extends AppCompatActivity {
             if (photos == null || photos.length == 0) {
                 // DO NOTHING
             } else if (photos.length == 1) {
-                setupImage(imageTwo, photos[0]);
+                setupImage(imageTwo, 0);
             } else if (photos.length == 2) {
-                setupImage(imageOne, photos[0]);
-                setupImage(imageThree, photos[1]);
+                setupImage(imageOne, 0);
+                setupImage(imageThree, 1);
             } else {
-                setupImage(imageOne, photos[0]);
-                setupImage(imageTwo, photos[1]);
-                setupImage(imageThree, photos[2]);
+                setupImage(imageOne, 0);
+                setupImage(imageTwo, 1);
+                setupImage(imageThree, 2);
             }
         } else {
             imageOne.setVisibility(View.INVISIBLE);
@@ -195,8 +195,9 @@ public class ProfileActivity extends AppCompatActivity {
      * @param img The ImageView to display the photo in
      * @param photo The ExposurePhoto to display
      */
-    private void setupImage(ImageView img, ExposurePhoto photo) {
-        Bitmap bmp = BitmapFactory.decodeFile(photo.getFile().getPath());
+    private void setupImage(ImageView img, int photo) {
+        new DownloadPhotoTask().execute(photo);
+        Bitmap bmp = BitmapFactory.decodeFile(photos[photo].getFile().getPath());
         img.setImageBitmap(bmp);
     }
 
@@ -315,6 +316,17 @@ public class ProfileActivity extends AppCompatActivity {
             picsAdded.setText(text);
 
             setupImages((profile != null));
+        }
+    }
+
+    /**
+     * Downloads an ExposurePhoto
+     */
+    private class DownloadPhotoTask extends AsyncTask<Integer, Void, Void> {
+        @Override
+        protected Void doInBackground(Integer... nums) {
+            photos[nums[0]] = photos[nums[0]].downloadPhoto(getApplicationContext());
+            return null;
         }
     }
 
