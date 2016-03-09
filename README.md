@@ -58,7 +58,7 @@ The app functions are rather intuitive, but there are a few reminders for the Ma
 	- Open the terminal in Android Studio, next to the Android Monitor tab
 	- Type: "telnet localhost <emulator id>" where <emulator id> is 5554 by default
 		-If telnet is not recognized, you may need to turn the feature on.  For Windows users: [fix](http://stackoverflow.com/questions/25031090/telnet-is-not-recognized-as-internal-or-external-command)
-	- Type: "geo fix <longitude> <latitude>"
+	- Type: "geo fix (longitude) (latitude)"
 	- (notice that it's longitude first, and backspace does not work correctly once connected to the emulator terminal)
 - The "Loc" button will center the map at your most recent location, if available
 - The "Apply Filter" button will load all pins that can be visible on the current orientation of the map
@@ -66,7 +66,7 @@ The app functions are rather intuitive, but there are a few reminders for the Ma
 		- Search for latitude/longitude "10,10", or "50,50" and zoom out 11-13 times.
 		- Set categories to "All" and click "Apply Filter"
 		- Click pin and then pin's info window to load location/photo info.
-- Loading the pictures and locations may take a minute to load, be patient (will be sped up for Release candidate)
+- Loading the pictures and locations may take up to 30s to load, be patient.
 
 
 ### Design Patterns
