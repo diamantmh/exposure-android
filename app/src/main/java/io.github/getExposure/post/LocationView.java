@@ -231,6 +231,9 @@ public class LocationView extends AppCompatActivity {
         }
 
         protected void onPostExecute(Integer result) {
+            if (loading == null) {
+                return;
+            }
             loading.setVisibility(View.INVISIBLE);
             if (result > 0) {
                 imgs.setVisibility(View.VISIBLE);
