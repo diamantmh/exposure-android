@@ -69,9 +69,7 @@ public class ProfileActivity extends ExposureFragmentActivity {
     private TextView recentlyAddedLabel;
 
     // Displays up to three of the user's most recently added photos
-    private ImageView imageOne;
-    private ImageView imageTwo;
-    private ImageView imageThree;
+    private ImageView[] imageViews;
 
     // Holds the list of photos that the user has uploaded
     private ExposurePhoto[] photos;
@@ -158,52 +156,41 @@ public class ProfileActivity extends ExposureFragmentActivity {
      * @param isLoggedIn represent whether a user is currently logged in
      */
     private void setupImages(boolean isLoggedIn) {
-        imageOne = (ImageView) findViewById(R.id.imageView1);
-        imageTwo = (ImageView) findViewById(R.id.imageView2);
-        imageThree = (ImageView) findViewById(R.id.imageView3);
+        imageViews = new ImageView[3];
+        imageViews[0] = (ImageView) findViewById(R.id.imageView1);
+        imageViews[1] = (ImageView) findViewById(R.id.imageView2);
+        imageViews[02] = (ImageView) findViewById(R.id.imageView3);
 
         recentlyAddedLabel = (TextView) findViewById(R.id.textView);
         recentlyAddedLabel.setPaintFlags(recentlyAddedLabel.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         if (isLoggedIn) {
-            imageOne.setVisibility(View.VISIBLE);
-            imageTwo.setVisibility(View.VISIBLE);
-            imageThree.setVisibility(View.VISIBLE);
+            imageViews[0].setVisibility(View.VISIBLE);
+            imageViews[1].setVisibility(View.VISIBLE);
+            imageViews[2].setVisibility(View.VISIBLE);
             recentlyAddedLabel.setVisibility(View.VISIBLE);
 
             if (photos == null || photos.length == 0) {
                 // DO NOTHING
             } else if (photos.length == 1) {
-                setupImage(imageTwo, 0);
+                new DownloadPhotoTask().execute(0);
             } else if (photos.length == 2) {
-                setupImage(imageOne, 0);
-                setupImage(imageThree, 1);
+                new DownloadPhotoTask().execute(0);
+                new DownloadPhotoTask().execute(1);
             } else {
-                setupImage(imageOne, 0);
-                setupImage(imageTwo, 1);
-                setupImage(imageThree, 2);
+                new DownloadPhotoTask().execute(0);
+                new DownloadPhotoTask().execute(1);
+                new DownloadPhotoTask().execute(2);
             }
         } else {
-            imageOne.setVisibility(View.INVISIBLE);
-            imageTwo.setVisibility(View.INVISIBLE);
-            imageThree.setVisibility(View.INVISIBLE);
+            imageViews[0].setVisibility(View.INVISIBLE);
+            imageViews[1].setVisibility(View.INVISIBLE);
+            imageViews[2].setVisibility(View.INVISIBLE);
             recentlyAddedLabel.setVisibility(View.INVISIBLE);
         }
     }
 
-    /**
-     * Displays a single ExposurePhoto in an ImageView
-     * @param img The ImageView to display the photo in
-     * @param photo The ExposurePhoto to display
-     */
-    private void setupImage(ImageView img, int photo) {
-        new DownloadPhotoTask().execute(photo);
-        while (photos[photo].getFile() == null) {
-            try { Thread.sleep(100); } catch (Exception e) {}
-        }
-        Bitmap bmp = BitmapFactory.decodeFile(photos[photo].getFile().getPath());
-        img.setImageBitmap(bmp);
-    }
+
 
     /**
      * Sets up the user's displayed name, as represented in Facebook
@@ -298,7 +285,6 @@ public class ProfileActivity extends ExposureFragmentActivity {
         @Override
         protected Integer doInBackground(Long... ids) {
             photos = db.getUserPhotos(ids[0]);
-            // photos = db.getUserPhotos(3859745);
             return photos.length;
         }
 
@@ -324,13 +310,27 @@ public class ProfileActivity extends ExposureFragmentActivity {
     }
 
     /**
+     * Displays a single ExposurePhoto in an ImageView
+     * @param photo The photo index to setup
+     */
+    private void setupImage(int photo) {
+        Bitmap bmp = BitmapFactory.decodeFile(photos[photo].getFile().getPath());
+        imageViews[photo].setImageBitmap(bmp);
+    }
+
+    /**
      * Downloads an ExposurePhoto
      */
-    private class DownloadPhotoTask extends AsyncTask<Integer, Void, Void> {
+    private class DownloadPhotoTask extends AsyncTask<Integer, Void, Integer> {
         @Override
-        protected Void doInBackground(Integer... nums) {
-            photos[nums[0]] = photos[nums[0]].downloadPhoto(getApplicationContext());
-            return null;
+        protected Integer doInBackground(Integer... nums) {
+            if (!photos[nums[0]].hasPhoto())
+                photos[nums[0]] = photos[nums[0]].downloadPhoto(getApplicationContext());
+            return nums[0];
+        }
+
+        protected void onPostExecute(Integer photo) {
+            setupImage(photo);
         }
     }
 
