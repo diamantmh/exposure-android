@@ -258,7 +258,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * This method is a callback and is called when the "Apply Filter" button is pressed.
      * @param view the view
      */
-    protected void addPinsHelper(View view) {
+    public void addPinsHelper(View view) {
         Toast.makeText(MapsActivity.this, "Loading pins...", Toast.LENGTH_SHORT).show();
         mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
         VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
@@ -321,7 +321,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * app's text box
      * @param view passed in for drawing/event handling
      */
-    protected void search(View view) {
+    public void search(View view) {
         if (!mGoogleApiClient.isConnected()) {
             throw new IllegalStateException("google api client needs to be connected");
         }
