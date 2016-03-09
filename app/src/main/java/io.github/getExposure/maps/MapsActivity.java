@@ -62,12 +62,11 @@ import io.github.getExposure.R;
  *  by their devices' GPS, and displays them on a map.
  *
  *  @author Michael Shintaku
- *  @version 0.75
+ *  @version 1.0
  *  @since 2016-02-03
  *
  */
 
-//TODO: save state of activity
 public class MapsActivity extends ExposureFragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, ActivityCompat.OnRequestPermissionsResultCallback, LocationListener, OnMapReadyCallback {
 
@@ -103,7 +102,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
 
     /**
      * Method called when MapsActivity is active
-     * initializes the mapFragment, spinner, and Facebook sdk
+     * initializes the database functionality, mapFragment, spinner, permissions, and Facebook sdk
      * @param savedInstanceState passed in Bundle to create the activity off of
      */
     @Override
@@ -254,11 +253,12 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
 
 
     /**
-     * Adds all of the pins that can be seen on the screen (at its location).
-     * This method is a callback and is called when the "Apply Filter" button is pressed
+     * Finds all of the pins that can be seen on the screen (at its location), and prepares to
+     * add them to the map.
+     * This method is a callback and is called when the "Apply Filter" button is pressed.
      * @param view the view
      */
-    public void addPins(View view) {
+    protected void addPinsHelper(View view) {
         Toast.makeText(MapsActivity.this, "Loading pins...", Toast.LENGTH_SHORT).show();
         mMap.setOnInfoWindowClickListener(new MapsInfoWindowClickListener());
         VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
@@ -274,10 +274,10 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
     }
 
     /**
-     * Called once the locations have been found, this method adds markers for locations that pass
-     * through the current filter.
+     * Called once the locations have been found, this method adds markers to the map for locations
+     * that pass through the current filter.
      */
-    protected void actuallyPlacePins() {
+    protected void addPins() {
         if (listOfCurrentLocations == null) {
             throw new IllegalStateException("listOfCurrentLocations cannot be null, don't call this method directly");
         }
@@ -321,7 +321,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
      * app's text box
      * @param view passed in for drawing/event handling
      */
-    public void search(View view) {
+    protected void search(View view) {
         if (!mGoogleApiClient.isConnected()) {
             throw new IllegalStateException("google api client needs to be connected");
         }
@@ -462,7 +462,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
             for (ExposureLocation e: result) {
                 listOfCurrentLocations.add(e);
             }
-            actuallyPlacePins();
+            addPins();
         }
     }
 
@@ -487,7 +487,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
                 mMap.setOnInfoWindowClickListener(null);
                 mMap.addMarker(new MarkerOptions().position(query).title(resultData.getString("searchText")));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(query));
-                addPins(getCurrentFocus());
+                addPinsHelper(getCurrentFocus());
             }
         }
     }

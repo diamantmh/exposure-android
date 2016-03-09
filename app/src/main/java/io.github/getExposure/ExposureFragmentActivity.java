@@ -10,12 +10,13 @@ import io.github.getExposure.post.PostActivity;
 import io.github.getExposure.profile.ProfileActivity;
 
 /**
- * Class to abstract button functionality for view switcher
- * Created by Michael on 2/22/2016.
+ * Class to abstract button functionality for view switcher/screen taskbar
+ *  author Michael Shintaku
+ *  @version 1.0
+ *  @since 2016-02-22
  */
 public class ExposureFragmentActivity extends FragmentActivity {
 
-    // Called when the user clicks the map/list button
 
     /**
      * Callback called when the user clicks the "Maps" button

@@ -33,16 +33,35 @@ import io.github.getExposure.post.LocationView;
 import io.github.getExposure.post.PostActivity;
 import io.github.getExposure.profile.ProfileActivity;
 
+/**
+ *  ExposureListView is the activity class responsible for the "list view" of Exposure.
+ *  It allows users to find pins based on user-given search queries, and displays the related Exposure
+ *  pins in a concise list.
+ *
+ *  @author Michael Shintaku
+ *  @version 1.0
+ *  @since 2016-02-03
+ *
+ */
+
 public class ExposureListView extends ListActivity  {
 
-    private ListView thisListView;
-    private List<String> locationPreviewSnippets;
-    private AddressResultReceiver mResultReceiver;
-    private LatLng result;
-    private DatabaseManager db;
-    private List<ExposureLocation> listOfCurrentLocations;
-    private int currentFilter;
+    private static final float QUERY_LATITUDE_RADIUS = 1; // latitude radius to limit results to pins
+    private static final float QUERY_LONGITUDE_RADIUS = 1;// in lat/long radius of search query
 
+    private ListView thisListView;
+    private AddressResultReceiver mResultReceiver;
+    private LatLng searchResult;
+    private DatabaseManager db;
+    private List<ExposureLocation> listOfCurrentLocations; // locations displayed/to be displayed
+    private List<String> currentLocationNames;
+    private int currentFilter; // int representing the setting of the spinner/menu for filters
+
+    /**
+     * Method called when ExposureListView is active
+     * initializes the database manager, spinner, and Facebook sdk
+     * @param savedInstanceState passed in Bundle to create the activity off of
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +71,7 @@ public class ExposureListView extends ListActivity  {
         db = new DatabaseManager();
 
         thisListView = getListView();
-        locationPreviewSnippets = new ArrayList<String>();
+        currentLocationNames = new ArrayList<String>();
 
         // Add the spinner
         Spinner spinner = (Spinner) findViewById(R.id.Filters_spinner);
@@ -84,23 +103,29 @@ public class ExposureListView extends ListActivity  {
     }
 
 
-
-    private void addPins(View view) {
-        if (result == null) {
-            throw new IllegalStateException("Result LatLng is null, addPins should never be called" +
+    /**
+     * Prepares to add all of the pins in the vicinity of the search query to the list view.
+     * @param view the view
+     */
+    private void addPinsHelper(View view) {
+        if (searchResult == null) {
+            throw new IllegalStateException("Result LatLng is null, addPinsHelper should never be called" +
                     " unless search query is succesful");
         }
         //Toast.makeText(ExposureListView.this, "Loading pins...", Toast.LENGTH_SHORT).show();
-        float originLat = (float) result.latitude;
-        float originLon = (float) result.longitude;
-        float radiusLat = 1;
-        float radiusLon = 1;
+        float originLat = (float) searchResult.latitude;
+        float originLon = (float) searchResult.longitude;
+        float radiusLat = QUERY_LATITUDE_RADIUS;
+        float radiusLon = QUERY_LONGITUDE_RADIUS;
         new GetLocationsTask().execute(originLat, originLon, radiusLat, radiusLon);
     }
 
-    // add locations to list
-    private void actuallyPlacePins() {
-        locationPreviewSnippets.clear(); // clear list of pins from prior list/filter/search combinations
+    /**
+     * Called once the locations have been found, this method adds locations that pass through the current
+     * filter to the list on screen.
+     */
+    private void addPins() {
+        currentLocationNames.clear(); // clear list of pins from prior list/filter/search combinations
         for (Iterator<ExposureLocation> iterator = listOfCurrentLocations.iterator(); iterator.hasNext(); ) {
             ExposureLocation next = iterator.next();
             if (!hasApplicableCategory(next.getCategories(), currentFilter)) {
@@ -108,16 +133,15 @@ public class ExposureListView extends ListActivity  {
                 iterator.remove();
             } else {
                 // add the names to the list of names of locations
-                locationPreviewSnippets.add(next.getName());
+                currentLocationNames.add(next.getName());
             }
         }
 
-        if (locationPreviewSnippets.isEmpty()) {
+        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, currentLocationNames);
+        thisListView.setAdapter(listAdapter);
+        if (currentLocationNames.isEmpty()) {
             Toast.makeText(ExposureListView.this, "No pins near this location with this filter", Toast.LENGTH_SHORT).show();
         } else {
-
-            ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, locationPreviewSnippets);
-            thisListView.setAdapter(listAdapter);
             thisListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -209,7 +233,7 @@ public class ExposureListView extends ListActivity  {
     }
 
     /**
-     * Asynchronous inner class used to find the locationPreviewSnippets, given an origin and lat/long radiuses,
+     * Asynchronous inner class used to find the ExposureLocations, given an origin and lat/long radiuses,
      * and perform it on a separate thread/in the background.
      */
     private class GetLocationsTask extends AsyncTask<Float, Void, ExposureLocation[]> {
@@ -237,7 +261,7 @@ public class ExposureListView extends ListActivity  {
             for (ExposureLocation e: result) {
                 listOfCurrentLocations.add(e);
             }
-            actuallyPlacePins();
+            addPins();
         }
     }
 
@@ -256,10 +280,11 @@ public class ExposureListView extends ListActivity  {
             if (query == null) {
                 Toast.makeText(ExposureListView.this, "No locations matching the search query", Toast.LENGTH_SHORT).show();
             } else {
+                Toast.makeText(ExposureListView.this, "Search completed, loading Exposure pins.", Toast.LENGTH_SHORT).show();
                 // put it in the list
-                result = query;
+                searchResult = query;
                 //Toast.makeText(ExposureListView.this, "Result: " + query.toString(), Toast.LENGTH_SHORT).show();
-                addPins(getCurrentFocus());
+                addPinsHelper(getCurrentFocus());
             }
         }
     }
