@@ -45,4 +45,5 @@
         <item>NONE</item>
     </string-array>
     <string name="title_activity_list_view">ListView</string>
+    <string name="button_list_search">Search/Apply Filter</string>
 </resources>

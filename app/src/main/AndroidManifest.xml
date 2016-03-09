@@ -90,7 +90,7 @@
             android:label="DataDriverTest2"
             android:theme="@style/AppTheme.CustomPOP" />
         <activity
-            android:name=".post.ExposureListView"
+            android:name=".maps.ExposureListView"
             android:label="@string/title_activity_list_view"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>

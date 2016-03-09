@@ -288,7 +288,7 @@ public class MapsActivity extends ExposureFragmentActivity implements GoogleApiC
         for (ExposureLocation e: listOfCurrentLocations) {
             LatLng temp = new LatLng(e.getLat(), e.getLon());
             if (hasApplicableCategory(e.getCategories(), currentFilter)) {
-                // if it matches the current category, will always pass for now since categories needs development
+                // if it matches the current category, we add it
                 Marker currentMarker = mMap.addMarker(new MarkerOptions().position(temp).title(e.getName()).snippet("Click here for more info"));
                 findPin.put(currentMarker, e);
             }

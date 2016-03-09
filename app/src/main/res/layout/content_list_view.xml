@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".post.ExposureListView"
+    tools:context=".maps.ExposureListView"
     tools:showIn="@layout/activity_list_view">
 
 
@@ -21,11 +21,22 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_search"
-        android:onClick="search"
+        android:text="@string/button_list_search"
+        android:onClick="searchList"
         android:id="@+id/button2"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
+
+    <Spinner
+        android:id="@+id/Filters_spinner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:background="#cbcbcb"
+        android:elevation="@android:dimen/app_icon_size"
+        android:layout_below="@+id/search_exposure"
+        android:layout_alignEnd="@+id/button2"
+        android:layout_toEndOf="@+id/search_exposure"> </Spinner>
 
     <!-- 3 buttons at the bottom -->
     <LinearLayout
@@ -70,7 +81,7 @@
         android:layout_height="wrap_content"
         android:id="@android:id/list"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/button2"
-        android:layout_above="@+id/viewSwitchers" />
+        android:layout_above="@+id/viewSwitchers"
+        android:layout_below="@+id/Filters_spinner" />
 
 </RelativeLayout>

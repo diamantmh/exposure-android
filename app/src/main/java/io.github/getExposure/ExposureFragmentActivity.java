@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import io.github.getExposure.maps.*;
-import io.github.getExposure.post.ExposureListView;
+import io.github.getExposure.maps.ExposureListView;
 import io.github.getExposure.post.PostActivity;
 import io.github.getExposure.profile.ProfileActivity;
 
