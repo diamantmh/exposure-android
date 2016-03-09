@@ -39,7 +39,16 @@ import io.github.getExposure.R;
 import io.github.getExposure.database.Comment;
 import io.github.getExposure.database.DatabaseManager;
 import io.github.getExposure.database.ExposurePhoto;
-import io.github.getExposure.maps.MapsActivity;
+
+/**
+ * @author Michael Diamant
+ * @version 1.0
+ * @since 3-8-16
+ *
+ * LocationView class represents the controller for the LocationView layout.
+ * handles displaying the content of an ExposureLocation and user input of
+ * adding a new rating or comment to the given location.
+ */
 
 public class LocationView extends AppCompatActivity {
     private static final int SWITCH_DELAY = 5000;
@@ -77,6 +86,7 @@ public class LocationView extends AppCompatActivity {
         rating.setRating((float) total_rating / num_rating);
         rating.setIsIndicator(true);
         final Profile thing = Profile.getCurrentProfile();
+        // set up the handler for when a user rates a location
         final Handler h = new Handler(){
             @Override
             public void handleMessage(Message msg){
@@ -94,6 +104,7 @@ public class LocationView extends AppCompatActivity {
                 }
             }
         };
+        // check if user is logged in
         if(thing != null) {
             userID = Long.parseLong(thing.getId());
             new Thread(new Runnable() {
@@ -111,7 +122,7 @@ public class LocationView extends AppCompatActivity {
             rating.setIsIndicator(false);
         }
 
-
+        // make a call to update a rating if the user is logged in
         rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
@@ -143,6 +154,7 @@ public class LocationView extends AppCompatActivity {
 
         commentArea = (LinearLayout) findViewById(R.id.comments);
         String rawComments = extras.getString("comments");
+        // extract comments out
         if(rawComments != null) {
             for(String s : rawComments.split(";")) {
                 if(s.length() > 0) {
@@ -168,6 +180,7 @@ public class LocationView extends AppCompatActivity {
             }
         });
 
+        // button to add photos to already created locations
         addPhoto = (Button) findViewById(R.id.add);
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,7 +192,7 @@ public class LocationView extends AppCompatActivity {
             }
         });
 
-
+        // set i[ the ImageSwitcher
         imgs = (ImageSwitcher) findViewById(R.id.photo);
         imgs.setFactory(new ViewSwitcher.ViewFactory() {
 
@@ -242,6 +255,9 @@ public class LocationView extends AppCompatActivity {
         }
     }
 
+    /**
+     * set up the buttons and onclicks for the ImageSwitcher
+     */
     private void setupImageSwitcher() {
         Button prev = (Button) findViewById(R.id.prev);
         Button next = (Button) findViewById(R.id.next);
@@ -268,6 +284,11 @@ public class LocationView extends AppCompatActivity {
         });
     }
 
+    /**
+     * action method for when a user tries to upload a new comment.
+     * includes checks on the fields for a new comment and actually attempts
+     * to post to the db. Will also add the new comment to the displayed comments
+     */
     public void postNewComment() {
         if(userID == 0) {
             Toast toast = Toast.makeText(getApplicationContext(), "please login before commenting!", Toast.LENGTH_SHORT);
@@ -281,6 +302,8 @@ public class LocationView extends AppCompatActivity {
             return;
         }
         final DatabaseManager m = new DatabaseManager();
+        //make db call to add new comment
+        // log the result as the id of the new comment or -1 if fail
         new Thread(new Runnable() {
             public void run() {
                 Comment c = new Comment(userID, locationID, Profile.getCurrentProfile().getName(), newComment.getText().toString(), new Date(), new Time(0));
@@ -293,6 +316,12 @@ public class LocationView extends AppCompatActivity {
         newComment.setText("");
     }
 
+    /**
+     * actually builds and inserts the comment view into the list of comments
+     * @param content of the comment
+     * @param author of the comment
+     * @param time of the comment
+     */
     public void addComment(String content, String author, String time) {
         LayoutInflater inflater = getLayoutInflater();
         View comment = inflater.inflate(R.layout.comment_layout, null);

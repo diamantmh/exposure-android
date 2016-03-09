@@ -12,7 +12,13 @@ import android.widget.CheckBox;
 import io.github.getExposure.R;
 
 /**
- * Created by michaeldiamant on 2/12/16.
+ * @author Michael Diamant
+ * @version  1.0
+ * @since 3-8-16
+ *
+ * PopUpCategoriesView class represents controller for categories layout.
+ * handles the selecting of different categories for a new ExposureLocation object
+ * and passes this data back to the PostView controller.
  */
 public class PopUpCategoriesView extends AppCompatActivity {
     private ViewGroup rel;
@@ -27,11 +33,12 @@ public class PopUpCategoriesView extends AppCompatActivity {
 
         int w = dm.widthPixels;
         int h = dm.heightPixels;
-
+        // set up the categories view
         getWindow().setLayout((int) (w * .8), (int) (h * .6));
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         rel = (ViewGroup) root.getChildAt(0);
 
+        // put the selected categories into the return intent
         Button submit = (Button) findViewById(R.id.submit);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
