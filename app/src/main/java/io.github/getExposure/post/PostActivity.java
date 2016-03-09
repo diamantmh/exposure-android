@@ -410,7 +410,10 @@ public class PostActivity extends ExposureFragmentActivity {
 
         @Override
         protected Long doInBackground(ExposureLocation... loc) {
-            return m.insert(loc[0]);
+            // log locationId or -1 if fail
+            Long result =  m.insert(loc[0]);
+            Log.d("BUENOS", "" + result);
+            return result;
         }
 
         @Override

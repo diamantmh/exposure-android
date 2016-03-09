@@ -77,6 +77,9 @@ public class LocationView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_view);
         Bundle extras = getIntent().getExtras();
+        if(extras == null) {
+            return;
+        }
         final DatabaseManager m = new DatabaseManager();
 
         locationID = extras.getLong("locationID");
@@ -159,6 +162,7 @@ public class LocationView extends AppCompatActivity {
             for(String s : rawComments.split(";")) {
                 if(s.length() > 0) {
                     String[] data = s.split(",");
+                    Log.d("HERO", s);
                     addComment(data[2], data[0], data[1]);
                 }
             }
@@ -304,15 +308,16 @@ public class LocationView extends AppCompatActivity {
         final DatabaseManager m = new DatabaseManager();
         //make db call to add new comment
         // log the result as the id of the new comment or -1 if fail
+        final String content = newComment.getText().toString();
         new Thread(new Runnable() {
             public void run() {
-                Comment c = new Comment(userID, locationID, Profile.getCurrentProfile().getName(), newComment.getText().toString(), new Date(), new Time(0));
+                Comment c = new Comment(userID, locationID, Profile.getCurrentProfile().getName(), content, new Date(), new Time(0));
                 long result = m.insert(c);
                 Log.d("BUENOs", "" + result);
             }
         }).start();
         String date = new SimpleDateFormat("MM-dd-yyyy").format(new Date());
-        addComment(newComment.getText().toString(), Profile.getCurrentProfile().getName(), date);
+        addComment(content, Profile.getCurrentProfile().getName(), date);
         newComment.setText("");
     }
 
