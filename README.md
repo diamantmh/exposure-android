@@ -2,6 +2,8 @@
 
 Exposure is an Android application that helps you find and tell other people about nearby photo locations. Exposure allows you to view photo locations in different forms. From a quick glance in a map view to a detailed list view, Exposure helps you either spontaneously or methodically choose your next photo destination.
 
+You can find a quick overview of Exposure in our [final presentation slidedeck](https://github.com/getexposure/getexposure.github.io/raw/master/documents/final_presentation.pdf).
+
 You can find user documentation [here](http://getexposure.github.io/product/index.html), and developer documentation below.
 
 Additionally, you can view up-to-date [Software Design Specifications](https://docs.google.com/document/d/18sWdtOYFfbUSAQKPTqaiaJ1Nb6MXersM-5ZnIk4cGmY/edit?usp=sharing) and [Software Requirements Specifications](https://docs.google.com/document/d/1nNvZxgk5k2VMcxixJDl_mAD0NAWXg_9bimPEH4NHPy4/edit?usp=sharing).
